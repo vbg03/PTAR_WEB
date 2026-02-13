@@ -2,82 +2,17 @@
 
 #root {
   min-height: 100vh;
-  background: #f1f1f1;
+  background: #ececec;
 }
 
 .ptar-app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(90deg, #f1f1f1 2px, transparent 2px) 0 0 / 160px
-      160px,
-    linear-gradient(180deg, #f1f1f1 2px, transparent 2px) 0 0 / 160px 160px,
-    #ffffff;
+  background-color: #ececec;
+  background-image:
+    linear-gradient(to right, rgba(185, 185, 185, 0.5) 3px, transparent 3px),
+    linear-gradient(to bottom, rgba(185, 185, 185, 0.5) 3px, transparent 3px);
+  background-size: 220px 220px;
   padding: 8px 0 32px;
-}
-
-.ptar-hero {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 1;
-  width: min(100%, 1180px);
-  margin: 0 auto;
-  padding: 32px 24px 24px;
-}
-
-.ptar-hero__canvas {
-  position: relative;
-  isolation: isolate;
-  text-align: center;
-  width: min(100%, 1980px);
-  padding: clamp(90px, 20vw, 140px) 28px;
-  background-image: linear-gradient(
-      rgba(255, 255, 255, 0.24),
-      rgba(255, 255, 255, 0.24)
-    ),
-    url('/images/fondito.png');
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
-  min-height: 220px;
-  clip-path: polygon(10% 2%, 93% 0, 98% 15%, 92% 21%, 97% 43%, 92% 52%, 96% 73%, 89% 87%, 84% 98%, 17% 100%, 11% 88%, 7% 63%, 5% 37%, 9% 20%);
-}
-
-.ptar-hero__canvas h1 {
-  margin: 0 0 8px;
-  font-size: clamp(50px, 7vw, 90px);
-  color: #700014;
-  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
-  letter-spacing: 1px;
-  line-height: 1;
-}
-
-.ptar-hero__canvas p {
-  margin: 0 auto 24px;
-  max-width: 660px;
-  font-size: clamp(20px, 2vw, 45px);
-  color: #ffffff;
-  font-weight: 500;
-  text-shadow: 0 3px 4px rgb(0, 0, 0);
-  line-height: 1.02;
-}
-
-.ptar-hero__canvas button {
-  background: linear-gradient(180deg, #F20732 0%, #F20732 100%);
-  color: #ffffff;
-  border: none;
-  font-family: inherit;
-  border-radius: 999px;
-  padding: 14px 36px;
-  font-size: 20px;
-  font-weight: 300;
-  cursor: pointer;
-  box-shadow: 0 10px 20px rgba(230, 0, 45, 0.35);
-}
-
-@media (max-width: 1024px) {
-  .ptar-hero__canvas button {
-    font-size: clamp(22px, 5vw, 33px);
-  }
 }
