@@ -3,31 +3,28 @@ import './informacion.css'
 
 function Informacion() {
   const [mostrarPtar, setMostrarPtar] = useState(false)
-  const [textoSaliendo, setTextoSaliendo] = useState(false)
-  const timeoutCambioTextoRef = useRef(null)
+  const bloqueoScrollRef = useRef(false)
 
   useEffect(() => {
     const manejarRueda = (event) => {
-      if (textoSaliendo) {
+      if (bloqueoScrollRef.current) {
         return
       }
 
       if (event.deltaY > 0 && !mostrarPtar) {
-        setTextoSaliendo(true)
-
-        timeoutCambioTextoRef.current = window.setTimeout(() => {
-          setMostrarPtar(true)
-          setTextoSaliendo(false)
-        }, 420)
+        bloqueoScrollRef.current = true
+        setMostrarPtar(true)
+        window.setTimeout(() => {
+          bloqueoScrollRef.current = false
+        }, 520)
       }
 
       if (event.deltaY < 0 && mostrarPtar) {
-        setTextoSaliendo(true)
-
-        timeoutCambioTextoRef.current = window.setTimeout(() => {
-          setMostrarPtar(false)
-          setTextoSaliendo(false)
-        }, 420)
+        bloqueoScrollRef.current = true
+        setMostrarPtar(false)
+        window.setTimeout(() => {
+          bloqueoScrollRef.current = false
+        }, 520)
       }
     }
 
@@ -35,11 +32,8 @@ function Informacion() {
 
     return () => {
       window.removeEventListener('wheel', manejarRueda)
-      if (timeoutCambioTextoRef.current) {
-        window.clearTimeout(timeoutCambioTextoRef.current)
-      }
     }
-  }, [mostrarPtar, textoSaliendo])
+  }, [mostrarPtar])
 
   return (
     <main className="ptar-info">
@@ -49,12 +43,24 @@ function Informacion() {
           src="/images/estudianteNormal.png"
           alt="Estudiante"
         />
-        <h2
-          key={mostrarPtar ? 'texto-ptar' : 'texto-bienvenido'}
-          className={`ptar-info__titulo ${textoSaliendo ? 'is-exiting' : ''}`}
-        >
-          {mostrarPtar ? '¿PTAR?' : '¡BIENVENIDO!'}
-        </h2>
+
+        <div className="ptar-info__titulos">
+          <h2
+            className={`ptar-info__titulo ${
+              mostrarPtar ? 'is-hidden-left' : 'is-visible'
+            }`}
+          >
+            ¡BIENVENIDO!
+          </h2>
+          <h2
+            className={`ptar-info__titulo ${
+              mostrarPtar ? 'is-visible' : 'is-hidden-right'
+            }`}
+          >
+            ¿PTAR?
+          </h2>
+        </div>
+
         <img
           className="ptar-info__personaje ptar-info__personaje--derecha"
           src="/images/estudianteAmbiental.png"

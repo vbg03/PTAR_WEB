@@ -2,54 +2,71 @@
   flex: 1;
   width: min(100%, 1700px);
   margin: 0 auto;
-  padding: 8px 24px 20px;
+  padding: 8px 24px 0;
   min-height: 0;
   height: 100%;
+  display: flex;
 }
 
 .ptar-info__bienvenida {
   position: relative;
-  height: 100%;
-  min-height: min(72vh, 880px);
+  flex: 1;
+  min-height: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
 }
 
+.ptar-info__titulos {
+  position: relative;
+  width: min(100%, 1080px);
+  min-height: clamp(120px, 18vh, 240px);
+}
+
 .ptar-info__titulo {
+  position: absolute;
+  inset: 0;
   margin: 0;
-  color: #700014;
-  font-size: clamp(66px, 8vw, 160px);
-  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #7a001b;
+  font-size: clamp(90px, 11vw, 150px);
+  font-weight: 700;
   letter-spacing: 1px;
-  animation: zoom-in 700ms ease-out both;
+  text-shadow: 0 5px 10px rgba(0, 0, 0, 0.28);
+  transition: transform 520ms ease, opacity 520ms ease;
+}
+
+.ptar-info__titulo.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.ptar-info__titulo.is-hidden-left {
+  opacity: 0;
+  transform: translateX(-28vw);
+}
+
+.ptar-info__titulo.is-hidden-right {
+  opacity: 0;
+  transform: translateX(28vw);
 }
 
 .ptar-info__personaje {
   position: absolute;
   bottom: 0;
-  height: clamp(40px, 35vw, 300px);
+  height: clamp(145px, 20vw, 320px);
   width: auto;
   pointer-events: none;
 }
 
 .ptar-info__personaje--izquierda {
-  left: clamp(0px, 2vw, 26px);
+  left: clamp(14px, 2.5vw, 34px);
 }
 
 .ptar-info__personaje--derecha {
-  right: clamp(0px, 2vw, 26px);
-}
-
-@keyframes zoom-in {
-  from {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  right: clamp(14px, 2.5vw, 34px);
 }

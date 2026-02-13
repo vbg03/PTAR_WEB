@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
 
 #root {
-  height: 100dvh;
+  min-height: 100vh;
   background: #ececec;
 }
 
 .ptar-app {
-  height: 100dvh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #ececec;
@@ -14,11 +14,5 @@
     linear-gradient(to right, rgba(185, 185, 185, 0.5) 3px, transparent 3px),
     linear-gradient(to bottom, rgba(185, 185, 185, 0.5) 3px, transparent 3px);
   background-size: 220px 220px;
-  overflow: hidden;
-}
-
-.ptar-app__content {
-  flex: 1;
-  min-height: 0;
-  display: flex;
+  padding: 8px 0 32px;
 }
