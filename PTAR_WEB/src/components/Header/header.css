@@ -46,8 +46,8 @@
   border-radius: 0 0 14px 14px;
   padding: 12px 24px;
   font-size: 18px;
-  font-weight: 200;
-  
+  font-weight: 300;
+  font-family: inherit;
   cursor: pointer;
   box-shadow: 0 4px 5px rgba(0, 0, 0, 0.252);
   display: inline-flex;
@@ -87,12 +87,13 @@
   top: 52px;
   left: 0;
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 9px;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
   padding: 12px 10px;
   display: grid;
+  font-family: inherit;
   gap: 8px;
-  min-width: 220px;
+  min-width: 200px;
   opacity: 0;
   pointer-events: none;
   transform: translateY(-8px);
@@ -104,7 +105,7 @@
   border: none;
   border-radius: 8px;
   padding: 8px 12px;
-  font-size: 14px;
+  font-size: 15px;
   color: #821010;
   text-align: left;
   cursor: pointer;

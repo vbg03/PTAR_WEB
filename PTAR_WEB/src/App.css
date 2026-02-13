@@ -67,10 +67,11 @@
   background: linear-gradient(180deg, #F20732 0%, #F20732 100%);
   color: #ffffff;
   border: none;
+  font-family: inherit;
   border-radius: 999px;
   padding: 14px 36px;
   font-size: 20px;
-  font-weight: 200;
+  font-weight: 300;
   cursor: pointer;
   box-shadow: 0 10px 20px rgba(230, 0, 45, 0.35);
 }
