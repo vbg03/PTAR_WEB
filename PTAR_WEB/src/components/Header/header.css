@@ -25,6 +25,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  border: none;
+  cursor: pointer;
+}
+
+.ptar-header__logo:hover {
+  filter: brightness(0.97);
 }
 
 .ptar-header__logo img {

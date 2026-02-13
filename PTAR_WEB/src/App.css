@@ -2,11 +2,13 @@
 
 #root {
   min-height: 100vh;
+  height: 100vh;
   background: #ececec;
 }
 
 .ptar-app {
   min-height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   background-color: #ececec;
@@ -15,4 +17,10 @@
     linear-gradient(to bottom, rgba(185, 185, 185, 0.5) 3px, transparent 3px);
   background-size: 220px 220px;
   padding: 8px 0 32px;
+}
+
+.ptar-app__content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
 }

@@ -9,7 +9,7 @@ function App() {
 
   return (
     <div className="ptar-app">
-      <Header />
+      <Header onLogoClick={() => setSeccionActiva('inicio')} />
       <div className="ptar-app__content">
         {seccionActiva === 'inicio' ? (
           <Inicio onIniciarRecorrido={() => setSeccionActiva('informacion')} />

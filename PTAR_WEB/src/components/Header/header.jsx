@@ -14,7 +14,11 @@ const estaciones = [
   'Pozo de Bombeo N°2'
 ]
 
-function Header({ logoSrc = '/images/logouao.png', logoAlt = 'Logo UAO' }) {
+function Header({
+  logoSrc = '/images/logouao.png',
+  logoAlt = 'Logo UAO',
+  onLogoClick
+}) {
   const [isHidden, setIsHidden] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -36,9 +40,14 @@ function Header({ logoSrc = '/images/logouao.png', logoAlt = 'Logo UAO' }) {
 
   return (
     <header className={`ptar-header ${isHidden ? 'ptar-header--hidden' : ''}`}>
-      <div className="ptar-header__logo">
+      <button
+        className="ptar-header__logo"
+        type="button"
+        onClick={onLogoClick}
+        aria-label="Ir al inicio"
+      >
         <img src={logoSrc} alt={logoAlt} />
-      </div>
+      </button>
       <nav className="ptar-header__nav">
         <div
           className={`ptar-header__dropdown ${isMenuOpen ? 'is-open' : ''}`}
