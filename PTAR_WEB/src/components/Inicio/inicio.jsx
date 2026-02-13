@@ -1,12 +1,54 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './inicio.css'
 
 function Inicio() {
   const [recorridoIniciado, setRecorridoIniciado] = useState(false)
+  const [mostrarPtar, setMostrarPtar] = useState(false)
+  const [textoSaliendo, setTextoSaliendo] = useState(false)
+  const timeoutCambioTextoRef = useRef(null)
 
   const iniciarRecorrido = () => {
     setRecorridoIniciado(true)
   }
+
+  useEffect(() => {
+    if (!recorridoIniciado) {
+      return undefined
+    }
+
+    const manejarRueda = (event) => {
+      if (textoSaliendo) {
+        return
+      }
+
+      if (event.deltaY > 0 && !mostrarPtar) {
+        setTextoSaliendo(true)
+
+        timeoutCambioTextoRef.current = window.setTimeout(() => {
+          setMostrarPtar(true)
+          setTextoSaliendo(false)
+        }, 420)
+      }
+
+      if (event.deltaY < 0 && mostrarPtar) {
+        setTextoSaliendo(true)
+
+        timeoutCambioTextoRef.current = window.setTimeout(() => {
+          setMostrarPtar(false)
+          setTextoSaliendo(false)
+        }, 420)
+      }
+    }
+
+    window.addEventListener('wheel', manejarRueda, { passive: true })
+
+    return () => {
+      window.removeEventListener('wheel', manejarRueda)
+      if (timeoutCambioTextoRef.current) {
+        window.clearTimeout(timeoutCambioTextoRef.current)
+      }
+    }
+  }, [mostrarPtar, recorridoIniciado, textoSaliendo])
 
   return (
     <main className="ptar-hero">
@@ -30,7 +72,12 @@ function Inicio() {
             src="/images/estudianteNormal.png"
             alt="Estudiante"
           />
-          <h2 className="ptar-hero__bienvenida">¡BIENVENIDO!</h2>
+          <h2
+            key={mostrarPtar ? 'texto-ptar' : 'texto-bienvenido'}
+            className={`ptar-hero__bienvenida ${textoSaliendo ? 'is-exiting' : ''}`}
+          >
+            {mostrarPtar ? '¿PTAR?' : '¡BIENVENIDO!'}
+          </h2>
           <img
             className="ptar-hero__personaje ptar-hero__personaje--derecha"
             src="/images/estudianteAmbiental.png"
