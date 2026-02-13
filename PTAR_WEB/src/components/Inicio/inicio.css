@@ -1,11 +1,31 @@
 .ptar-hero {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   flex: 1;
   width: min(100%, 1180px);
   margin: 0 auto;
-  padding: 32px 24px 24px;
+  padding: 32px 0px 24px;
+  overflow: hidden;
+}
+
+.ptar-hero__slider {
+  display: flex;
+  width: 200%;
+  transition: transform 850ms ease;
+  transform: translateX(0);
+}
+
+.ptar-hero__slider.is-started {
+  transform: translateX(-50%);
+}
+
+.ptar-hero__panel {
+  width: 50%;
+  flex-shrink: 0;
+}
+
+.ptar-hero__panel--inicio {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .ptar-hero__canvas {
@@ -31,8 +51,6 @@
   font-size: clamp(50px, 7vw, 90px);
   color: #700014;
   text-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
-  letter-spacing: 1px;
-  line-height: 1;
 }
 
 .ptar-hero__canvas p {
@@ -56,6 +74,53 @@
   font-weight: 300;
   cursor: pointer;
   box-shadow: 0 10px 20px rgba(230, 0, 45, 0.35);
+}
+
+.ptar-hero__panel--bienvenida {
+  position: relative;
+  min-height: clamp(360px, 62vw, 580px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ptar-hero__bienvenida {
+  margin: 0;
+  color: #700014;
+  font-size: clamp(38px, 7vw, 80px);
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  letter-spacing: 1px;
+  animation: zoom-in 700ms ease-out both;
+}
+
+.ptar-hero__personaje {
+  position: absolute;
+  bottom: 12px;
+  height: clamp(170px, 29vw, 220px);
+  width: auto;
+  pointer-events: none;
+}
+
+.ptar-hero__personaje--izquierda {
+  left: clamp(0px, 1vw, 12px);
+}
+
+.ptar-hero__personaje--derecha {
+  right: clamp(0px, 1vw, 12px);
+}
+
+
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @media (max-width: 1024px) {
