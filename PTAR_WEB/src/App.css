@@ -30,16 +30,17 @@
   position: relative;
   isolation: isolate;
   text-align: center;
-  width: min(100%, 940px);
-  padding: clamp(76px, 12vw, 120px) 28px;
+  width: min(100%, 1980px);
+  padding: clamp(90px, 20vw, 140px) 28px;
   background-image: linear-gradient(
       rgba(255, 255, 255, 0.24),
       rgba(255, 255, 255, 0.24)
     ),
     url('/images/fondito.png');
   background-position: center;
-  background-size: cover;
+  background-size: contain;
   background-repeat: no-repeat;
+  min-height: 220px;
   clip-path: polygon(10% 2%, 93% 0, 98% 15%, 92% 21%, 97% 43%, 92% 52%, 96% 73%, 89% 87%, 84% 98%, 17% 100%, 11% 88%, 7% 63%, 5% 37%, 9% 20%);
 }
 

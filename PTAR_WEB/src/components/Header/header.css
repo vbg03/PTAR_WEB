@@ -40,7 +40,7 @@
 }
 
 .ptar-header__button {
-  background: #F20732;
+  background: #DA1E25;
   color: #ffffff;
   border: none;
   border-radius: 14px;
@@ -48,7 +48,7 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 6px 0 rgba(128, 0, 0, 0.35);
+  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.252);
   display: inline-flex;
   align-items: center;
   gap: 10px;
