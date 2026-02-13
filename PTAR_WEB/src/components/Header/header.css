@@ -2,13 +2,13 @@
 
 .ptar-header {
   position: sticky;
-  top: 16px;
+  top: 0px;
   z-index: 10;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 24px;
-  padding: 0 28px;
+  gap: 20px;
+  padding: 0;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
@@ -18,40 +18,41 @@
 }
 
 .ptar-header__logo {
-  background: #f7f7f7;
-  padding: 8px 14px;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  background: #FBF5EC;
+  padding: 8px 20px;
+  border-radius: 0 0 14px 0;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .ptar-header__logo img {
-  height: 36px;
+  height: 44px;
   width: auto;
   display: block;
 }
 
 .ptar-header__nav {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 4px;
 }
 
 .ptar-header__button {
   background: #DA1E25;
   color: #ffffff;
   border: none;
-  border-radius: 14px;
-  padding: 12px 18px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: 0 0 14px 14px;
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: 200;
+  
   cursor: pointer;
   box-shadow: 0 4px 5px rgba(0, 0, 0, 0.252);
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .ptar-header__button:hover {
