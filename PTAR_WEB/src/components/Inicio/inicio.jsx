@@ -1,90 +1,20 @@
-import { useEffect, useRef, useState } from 'react'
 import './inicio.css'
 
-function Inicio() {
-  const [recorridoIniciado, setRecorridoIniciado] = useState(false)
-  const [mostrarPtar, setMostrarPtar] = useState(false)
-  const [textoSaliendo, setTextoSaliendo] = useState(false)
-  const timeoutCambioTextoRef = useRef(null)
-
-  const iniciarRecorrido = () => {
-    setRecorridoIniciado(true)
-  }
-
-  useEffect(() => {
-    if (!recorridoIniciado) {
-      return undefined
-    }
-
-    const manejarRueda = (event) => {
-      if (textoSaliendo) {
-        return
-      }
-
-      if (event.deltaY > 0 && !mostrarPtar) {
-        setTextoSaliendo(true)
-
-        timeoutCambioTextoRef.current = window.setTimeout(() => {
-          setMostrarPtar(true)
-          setTextoSaliendo(false)
-        }, 420)
-      }
-
-      if (event.deltaY < 0 && mostrarPtar) {
-        setTextoSaliendo(true)
-
-        timeoutCambioTextoRef.current = window.setTimeout(() => {
-          setMostrarPtar(false)
-          setTextoSaliendo(false)
-        }, 420)
-      }
-    }
-
-    window.addEventListener('wheel', manejarRueda, { passive: true })
-
-    return () => {
-      window.removeEventListener('wheel', manejarRueda)
-      if (timeoutCambioTextoRef.current) {
-        window.clearTimeout(timeoutCambioTextoRef.current)
-      }
-    }
-  }, [mostrarPtar, recorridoIniciado, textoSaliendo])
-
+function Inicio({ onIniciarRecorrido }) {
   return (
     <main className="ptar-hero">
-      <div className={`ptar-hero__slider ${recorridoIniciado ? 'is-started' : ''}`}>
-        <section className="ptar-hero__panel ptar-hero__panel--inicio">
-          <div className="ptar-hero__canvas">
-            <h1>EL VIAJE DEL AGUA</h1>
-            <p>
-              Un recorrido por la planta de tratamiento de aguas residuales (PTAR) de
-              la UAO
-            </p>
-            <button type="button" onClick={iniciarRecorrido}>
-              Iniciar el Recorrido
-            </button>
-          </div>
-        </section>
-
-        <section className="ptar-hero__panel ptar-hero__panel--bienvenida">
-          <img
-            className="ptar-hero__personaje ptar-hero__personaje--izquierda"
-            src="/images/estudianteNormal.png"
-            alt="Estudiante"
-          />
-          <h2
-            key={mostrarPtar ? 'texto-ptar' : 'texto-bienvenido'}
-            className={`ptar-hero__bienvenida ${textoSaliendo ? 'is-exiting' : ''}`}
-          >
-            {mostrarPtar ? '¿PTAR?' : '¡BIENVENIDO!'}
-          </h2>
-          <img
-            className="ptar-hero__personaje ptar-hero__personaje--derecha"
-            src="/images/estudianteAmbiental.png"
-            alt="Guía ambiental"
-          />
-        </section>
-      </div>
+      <section className="ptar-hero__panel ptar-hero__panel--inicio">
+        <div className="ptar-hero__canvas">
+          <h1>EL VIAJE DEL AGUA</h1>
+          <p>
+            Un recorrido por la planta de tratamiento de aguas residuales (PTAR) de la
+            UAO
+          </p>
+          <button type="button" onClick={onIniciarRecorrido}>
+            Iniciar el Recorrido
+          </button>
+        </div>
+      </section>
     </main>
   )
 }

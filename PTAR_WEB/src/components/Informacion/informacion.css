@@ -1,0 +1,55 @@
+.ptar-info {
+  flex: 1;
+  width: min(100%, 1700px);
+  margin: 0 auto;
+  padding: 8px 24px 20px;
+  min-height: 0;
+  height: 100%;
+}
+
+.ptar-info__bienvenida {
+  position: relative;
+  height: 100%;
+  min-height: min(72vh, 880px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ptar-info__titulo {
+  margin: 0;
+  color: #700014;
+  font-size: clamp(66px, 8vw, 160px);
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  letter-spacing: 1px;
+  animation: zoom-in 700ms ease-out both;
+}
+
+.ptar-info__personaje {
+  position: absolute;
+  bottom: 0;
+  height: clamp(40px, 35vw, 300px);
+  width: auto;
+  pointer-events: none;
+}
+
+.ptar-info__personaje--izquierda {
+  left: clamp(0px, 2vw, 26px);
+}
+
+.ptar-info__personaje--derecha {
+  right: clamp(0px, 2vw, 26px);
+}
+
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

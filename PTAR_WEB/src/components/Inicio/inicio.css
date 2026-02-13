@@ -1,25 +1,15 @@
 .ptar-hero {
   flex: 1;
-  width: min(100%, 1180px);
+  width: min(100%, 1700px);
   margin: 0 auto;
-  padding: 32px 24px 24px;
-  overflow: hidden;
-}
-
-.ptar-hero__slider {
-  display: flex;
-  width: 200%;
-  transition: transform 850ms ease;
-  transform: translateX(0);
-}
-
-.ptar-hero__slider.is-started {
-  transform: translateX(-50%);
+  padding: 8px 24px 20px;
+  min-height: 0;
+  height: 100%;
 }
 
 .ptar-hero__panel {
-  width: 50%;
-  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .ptar-hero__panel--inicio {
@@ -32,31 +22,34 @@
   position: relative;
   isolation: isolate;
   text-align: center;
-  width: min(100%, 1980px);
-  padding: clamp(90px, 20vw, 140px) 28px;
+  width: min(100%, 1600px);
+  min-height: min(72vh, 900px);
+  padding: clamp(90px, 20vh, 160px) 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   background-image: linear-gradient(
       rgba(255, 255, 255, 0.24),
       rgba(255, 255, 255, 0.24)
     ),
     url('/images/fondito.png');
   background-position: center;
-  background-size: contain;
+  background-size: 1200px;
   background-repeat: no-repeat;
-  min-height: 220px;
-  clip-path: polygon(10% 2%, 93% 0, 98% 15%, 92% 21%, 97% 43%, 92% 52%, 96% 73%, 89% 87%, 84% 98%, 17% 100%, 11% 88%, 7% 63%, 5% 37%, 9% 20%);
+  /*clip-path: polygon(10% 2%, 93% 0, 98% 15%, 92% 21%, 97% 43%, 92% 52%, 96% 73%, 89% 87%, 84% 98%, 17% 100%, 11% 88%, 7% 63%, 5% 37%, 9% 20%);*/
 }
 
 .ptar-hero__canvas h1 {
   margin: 0 0 8px;
-  font-size: clamp(50px, 7vw, 90px);
+  font-size: clamp(64px, 6.2vw, 120px);
   color: #700014;
   text-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
 }
 
 .ptar-hero__canvas p {
-  margin: 0 auto 24px;
-  max-width: 660px;
-  font-size: clamp(20px, 2vw, 45px);
+  margin: 0 auto 28px;
+  max-width: 900px;
+  font-size: clamp(30px, 2.6vw, 52px);
   color: #ffffff;
   font-weight: 500;
   text-shadow: 0 3px 4px rgb(0, 0, 0);
@@ -64,67 +57,21 @@
 }
 
 .ptar-hero__canvas button {
+  align-self: center;
   background: linear-gradient(180deg, #f20732 0%, #f20732 100%);
   color: #ffffff;
   border: none;
   font-family: inherit;
   border-radius: 999px;
-  padding: 14px 36px;
-  font-size: 20px;
+  padding: 16px 42px;
+  font-size: clamp(24px, 1.8vw, 36px);
   font-weight: 300;
   cursor: pointer;
   box-shadow: 0 10px 20px rgba(230, 0, 45, 0.35);
 }
 
-.ptar-hero__panel--bienvenida {
-  position: relative;
-  min-height: clamp(360px, 62vw, 580px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-.ptar-hero__bienvenida {
-  margin: 0;
-  color: #700014;
-  font-size: clamp(38px, 7vw, 80px);
-  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-  letter-spacing: 1px;
-  animation: zoom-in 700ms ease-out both;
-}
-
-.ptar-hero__personaje {
-  position: absolute;
-  bottom: 12px;
-  height: clamp(170px, 29vw, 220px);
-  width: auto;
-  pointer-events: none;
-}
-
-.ptar-hero__personaje--izquierda {
-  left: clamp(0px, 1vw, 12px);
-}
-
-.ptar-hero__personaje--derecha {
-  right: clamp(0px, 1vw, 12px);
-}
-
-
-@keyframes zoom-in {
-  from {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@media (max-width: 1024px) {
-  .ptar-hero__canvas button {
-    font-size: clamp(22px, 5vw, 33px);
-  }
+.ptar-hero__canvas button:hover {
+    background: #b71515;
+    transform: scale(1.05);
+    transition: all 0.3s ease;
 }
