@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
+
 .ptar-header {
   position: sticky;
   top: 16px;
@@ -38,7 +40,7 @@
 }
 
 .ptar-header__button {
-  background: #cf1c1c;
+  background: #F20732;
   color: #ffffff;
   border: none;
   border-radius: 14px;
