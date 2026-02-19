@@ -7,7 +7,7 @@ const ETAPA_VIDEO = 2
 
 function Informacion() {
   const [etapaActual, setEtapaActual] = useState(ETAPA_BIENVENIDA)
-  const [mostrarResumen, setMostrarResumen] = useState(true)
+  const [mostrarResumen, setMostrarResumen] = useState(false)
   const [abrirReproductor, setAbrirReproductor] = useState(false)
   const bloqueoScrollRef = useRef(false)
 
@@ -64,46 +64,48 @@ function Informacion() {
           <h2
             className={`ptar-info__titulo ptar-info__titulo--ptar ${
               mostrarPtar ? 'is-visible' : 'is-hidden-right'
-            } ${mostrarBloqueVideo ? 'is-zoom-out' : ''}`}
+            }`}
           >
             ¿PTAR?
           </h2>
         </div>
 
         <div className={`ptar-info__media ${mostrarBloqueVideo ? 'is-visible' : ''}`}>
-          <button
-            type="button"
-            className="ptar-info__video-preview"
-            onClick={() => setAbrirReproductor(true)}
-            aria-label="Abrir reproductor de video"
-          >
-            <img src="/images/fondito.png" alt="Vista previa del video de PTAR" />
-            <span className="ptar-info__play-icon" aria-hidden="true">
-              ▶
-            </span>
-          </button>
-
-          <div className="ptar-info__resumen-wrap">
+          <div className={`ptar-info__media-track ${mostrarResumen ? 'is-summary-open' : ''}`}>
             <button
               type="button"
-              className="ptar-info__resumen-toggle"
-              onClick={() => setMostrarResumen((estadoAnterior) => !estadoAnterior)}
-              aria-expanded={mostrarResumen}
-              aria-controls="ptar-resumen"
+              className="ptar-info__video-preview"
+              onClick={() => setAbrirReproductor(true)}
+              aria-label="Abrir reproductor de video"
             >
-              {mostrarResumen ? '▾' : '▸'}
+              <img src="/images/fondito.png" alt="Vista previa del video de PTAR" />
+              <span className="ptar-info__play-icon" aria-hidden="true">
+                ▶
+              </span>
             </button>
-            <aside
-              id="ptar-resumen"
-              className={`ptar-info__resumen ${mostrarResumen ? 'is-open' : ''}`}
-            >
-              <h3>Resumen del video:</h3>
-              <p>
-                La PTAR trata el agua residual en varias etapas para remover sólidos,
-                reducir la carga orgánica y devolver agua en mejores condiciones al entorno,
-                ayudando al cuidado ambiental del campus.
-              </p>
-            </aside>
+
+            <div className="ptar-info__resumen-wrap">
+              <button
+                type="button"
+                className="ptar-info__resumen-toggle"
+                onClick={() => setMostrarResumen((estadoAnterior) => !estadoAnterior)}
+                aria-expanded={mostrarResumen}
+                aria-controls="ptar-resumen"
+              >
+                {mostrarResumen ? '▾' : '▸'}
+              </button>
+              <aside
+                id="ptar-resumen"
+                className={`ptar-info__resumen ${mostrarResumen ? 'is-open' : ''}`}
+              >
+                <h3>Resumen del video:</h3>
+                <p>
+                  La PTAR trata el agua residual en varias etapas para remover sólidos,
+                  reducir la carga orgánica y devolver agua en mejores condiciones al entorno,
+                  ayudando al cuidado ambiental del campus.
+                </p>
+              </aside>
+            </div>
           </div>
         </div>
 
