@@ -16,6 +16,7 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  transform-origin: center center;
 }
 
 .ptar-info__titulos {
@@ -215,6 +216,7 @@
   align-items: flex-start;
   gap: 10px;
   z-index: 12;
+  pointer-events: none;
 }
 
 .ptar-info__resumen-wrap--recorrido {
@@ -238,6 +240,7 @@
   line-height: 1;
   cursor: pointer;
   z-index: 13;
+  pointer-events: auto;
 }
 
 .ptar-info__resumen {
@@ -357,6 +360,95 @@
   animation: ptar-scroll-hint-soft 2.2s ease-in-out infinite;
 }
 
+.ptar-info__bienvenida.is-transicion-activa {
+  animation: ptar-salida-ubicacion 1380ms cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+}
+
+.ptar-info__transicion-pozo {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ptar-info__transicion-capa {
+  position: absolute;
+  inset: 0;
+  background: rgba(245, 239, 233, 0);
+  animation: ptar-transicion-capa 1320ms ease-out forwards;
+}
+
+.ptar-info__transicion-destello {
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  width: clamp(360px, 55vw, 980px);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 68%);
+  transform: translate(-50%, -50%) scale(0.2);
+  opacity: 0;
+  animation: ptar-transicion-destello 1020ms cubic-bezier(0.2, 0.9, 0.23, 1) 80ms forwards;
+}
+
+.ptar-info__transicion-destello--secundario {
+  width: clamp(420px, 68vw, 1280px);
+  top: 48%;
+  background: radial-gradient(circle, rgba(242, 7, 50, 0.22) 0%, rgba(242, 7, 50, 0) 70%);
+  animation-delay: 200ms;
+}
+
+.ptar-info__transicion-franja {
+  position: absolute;
+  left: -90vw;
+  width: 300vw;
+  height: clamp(180px, 32vh, 420px);
+  transform: translateY(160vh) rotate(-24deg) scaleX(1.12);
+  transform-origin: center;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.2));
+  animation: ptar-transicion-diagonal 1160ms cubic-bezier(0.25, 0.82, 0.22, 1) forwards;
+}
+
+.ptar-info__transicion-franja--roja {
+  top: -42vh;
+  background: #f20732;
+  animation-delay: 0ms;
+}
+
+.ptar-info__transicion-franja--vinotinto {
+  top: -3vh;
+  background: #700014;
+  animation-delay: 90ms;
+}
+
+.ptar-info__transicion-franja--crema {
+  top: 34vh;
+  background: #ece6dd;
+  animation-delay: 180ms;
+}
+
+.ptar-info__transicion-franja--gris {
+  top: 72vh;
+  background: #e8e8e8;
+  animation-delay: 270ms;
+}
+
+.ptar-info__transicion-titulo {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  margin: 0;
+  font-size: clamp(34px, 7vw, 118px);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: rgba(112, 0, 20, 0.92);
+  text-shadow: 0 5px 12px rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%) scale(0.82);
+  opacity: 0;
+  animation: ptar-transicion-titulo 1120ms cubic-bezier(0.2, 0.9, 0.2, 1) 220ms forwards;
+}
+
 @keyframes ptar-scroll-hint-soft {
   0%,
   100% {
@@ -367,6 +459,76 @@
   50% {
     opacity: 1;
     transform: translateX(-50%) translateY(-1px) scale(1.015);
+  }
+}
+
+@keyframes ptar-transicion-diagonal {
+  from {
+    transform: translateY(160vh) rotate(-24deg) scaleX(1.12);
+  }
+
+  to {
+    transform: translateY(-90vh) rotate(-24deg) scaleX(1.12);
+  }
+}
+
+@keyframes ptar-transicion-capa {
+  0% {
+    background: rgba(245, 239, 233, 0);
+  }
+
+  45% {
+    background: rgba(245, 239, 233, 0.28);
+  }
+
+  100% {
+    background: rgba(245, 239, 233, 0.92);
+  }
+}
+
+@keyframes ptar-transicion-destello {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+
+  45% {
+    opacity: 0.8;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.75);
+  }
+}
+
+@keyframes ptar-transicion-titulo {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.82);
+  }
+
+  36% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.16);
+  }
+}
+
+@keyframes ptar-salida-ubicacion {
+  from {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+
+  to {
+    opacity: 0.58;
+    transform: scale(1.08);
+    filter: blur(4px);
   }
 }
 

@@ -1,4 +1,5 @@
 ﻿import { useEffect, useRef, useState } from 'react'
+import { useCallback } from 'react'
 import './informacion.css'
 
 const ETAPA_BIENVENIDA = 0
@@ -12,6 +13,7 @@ const PASO_VIDEO_PREGUNTA = 2
 const PASO_UBICACION_RESPUESTA = 0
 const PASO_UBICACION_PREGUNTA = 1
 const DURACION_TRANSICION_ETAPA = 520
+const DURACION_TRANSICION_POZO = 1480
 
 const CONVERSACIONES = {
   bienvenida:
@@ -27,25 +29,55 @@ const CONVERSACIONES = {
     'La PTAR está ubicada en la parte posterior del campus, cerca de Villa Laurentino. Justo entre la calle 15 y la calle 42.'
 }
 
-function Informacion() {
-  const [etapaActual, setEtapaActual] = useState(ETAPA_BIENVENIDA)
+function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
+  const etapaInicial = iniciarEnUbicacion ? ETAPA_UBICACION : ETAPA_BIENVENIDA
+  const pasoUbicacionInicial = iniciarEnUbicacion
+    ? PASO_UBICACION_PREGUNTA
+    : PASO_UBICACION_RESPUESTA
+
+  const [etapaActual, setEtapaActual] = useState(etapaInicial)
   const [mostrarResumen, setMostrarResumen] = useState(false)
   const [mostrarResumenUbicacion, setMostrarResumenUbicacion] = useState(false)
   const [abrirReproductor, setAbrirReproductor] = useState(false)
   const [abrirReproductorUbicacion, setAbrirReproductorUbicacion] = useState(false)
   const [pasoConversacionVideo, setPasoConversacionVideo] = useState(PASO_VIDEO_INICIAL)
-  const [pasoConversacionUbicacion, setPasoConversacionUbicacion] = useState(
-    PASO_UBICACION_RESPUESTA
-  )
+  const [pasoConversacionUbicacion, setPasoConversacionUbicacion] = useState(pasoUbicacionInicial)
   const [renderBloqueVideo, setRenderBloqueVideo] = useState(false)
   const [renderBloqueUbicacion, setRenderBloqueUbicacion] = useState(false)
   const [animarBloqueVideo, setAnimarBloqueVideo] = useState(false)
   const [animarBloqueUbicacion, setAnimarBloqueUbicacion] = useState(false)
+  const [mostrarTransicionPozo, setMostrarTransicionPozo] = useState(false)
   const bloqueoScrollRef = useRef(false)
+  const transicionPozoRef = useRef(false)
+  const timeoutTransicionPozoRef = useRef(null)
+
+  const iniciarTransicionPozo = useCallback(() => {
+    if (transicionPozoRef.current) {
+      return
+    }
+
+    transicionPozoRef.current = true
+    bloqueoScrollRef.current = true
+    setMostrarTransicionPozo(true)
+
+    timeoutTransicionPozoRef.current = window.setTimeout(() => {
+      if (typeof onCompletarInformacion === 'function') {
+        onCompletarInformacion()
+      }
+    }, DURACION_TRANSICION_POZO)
+  }, [onCompletarInformacion])
+
+  useEffect(() => {
+    return () => {
+      if (timeoutTransicionPozoRef.current) {
+        window.clearTimeout(timeoutTransicionPozoRef.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const manejarRueda = (event) => {
-      if (bloqueoScrollRef.current) {
+      if (bloqueoScrollRef.current || transicionPozoRef.current) {
         return
       }
 
@@ -76,6 +108,8 @@ function Informacion() {
         } else if (etapaActual === ETAPA_UBICACION) {
           if (pasoConversacionUbicacion < PASO_UBICACION_PREGUNTA) {
             setPasoConversacionUbicacion(PASO_UBICACION_PREGUNTA)
+          } else {
+            iniciarTransicionPozo()
           }
         }
       }
@@ -105,7 +139,9 @@ function Informacion() {
       }
 
       window.setTimeout(() => {
-        bloqueoScrollRef.current = false
+        if (!transicionPozoRef.current) {
+          bloqueoScrollRef.current = false
+        }
       }, 320)
     }
 
@@ -114,7 +150,7 @@ function Informacion() {
     return () => {
       window.removeEventListener('wheel', manejarRueda)
     }
-  }, [etapaActual, pasoConversacionVideo, pasoConversacionUbicacion])
+  }, [etapaActual, pasoConversacionVideo, pasoConversacionUbicacion, iniciarTransicionPozo])
 
   useEffect(() => {
     if (etapaActual !== ETAPA_VIDEO) {
@@ -184,7 +220,15 @@ function Informacion() {
   const mostrarPtar = etapaActual >= ETAPA_TITULO
   const mostrarBloqueVideo = etapaActual === ETAPA_VIDEO
   const mostrarBloqueUbicacion = etapaActual === ETAPA_UBICACION
-  const mostrarIndicacionScroll = etapaActual < ETAPA_VIDEO
+  const mostrarIndicacionScroll =
+    etapaActual < ETAPA_VIDEO ||
+    (etapaActual === ETAPA_UBICACION &&
+      pasoConversacionUbicacion === PASO_UBICACION_PREGUNTA)
+  const textoIndicacionScroll =
+    etapaActual === ETAPA_UBICACION &&
+    pasoConversacionUbicacion === PASO_UBICACION_PREGUNTA
+      ? 'Sigue con la rueda para ir a la estacion Pozo 1'
+      : 'Muevete usando la rueda del raton'
 
   const mostrarBurbujaBienvenida = etapaActual === ETAPA_BIENVENIDA
   const mostrarBurbujaTitulo = etapaActual === ETAPA_TITULO
@@ -222,7 +266,9 @@ function Informacion() {
 
   return (
     <main className="ptar-info">
-      <section className="ptar-info__bienvenida">
+      <section
+        className={`ptar-info__bienvenida ${mostrarTransicionPozo ? 'is-transicion-activa' : ''}`}
+      >
         <img
           className="ptar-info__personaje ptar-info__personaje--izquierda"
           src="/images/estudianteNormal.png"
@@ -469,9 +515,21 @@ function Informacion() {
           alt="Guía ambiental"
         />
 
+        {mostrarTransicionPozo ? (
+          <div className="ptar-info__transicion-pozo" aria-hidden="true">
+            <span className="ptar-info__transicion-capa" />
+            <span className="ptar-info__transicion-destello" />
+            <span className="ptar-info__transicion-destello ptar-info__transicion-destello--secundario" />
+            <span className="ptar-info__transicion-franja ptar-info__transicion-franja--roja" />
+            <span className="ptar-info__transicion-franja ptar-info__transicion-franja--vinotinto" />
+            <span className="ptar-info__transicion-franja ptar-info__transicion-franja--crema" />
+            <span className="ptar-info__transicion-franja ptar-info__transicion-franja--gris" />
+          </div>
+        ) : null}
+
         {mostrarIndicacionScroll ? (
           <p className="ptar-info__hint-scroll" aria-live="polite">
-            Muevete usando la rueda del ratón
+            {textoIndicacionScroll}
           </p>
         ) : null}
       </section>
