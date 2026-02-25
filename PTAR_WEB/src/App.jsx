@@ -10,7 +10,7 @@ function App() {
   const [volverAUbicacion, setVolverAUbicacion] = useState(false)
 
   return (
-    <div className="ptar-app">
+    <div className={`ptar-app ${seccionActiva === 'pozo1' ? 'ptar-app--pozo1' : ''}`}>
       <Header
         onLogoClick={() => {
           setVolverAUbicacion(false)
