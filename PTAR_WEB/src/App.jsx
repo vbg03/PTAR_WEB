@@ -8,6 +8,7 @@ import Pozo1 from './components/Estaciones/Pozo1/pozo1.jsx'
 function App() {
   const [seccionActiva, setSeccionActiva] = useState('inicio')
   const [volverAUbicacion, setVolverAUbicacion] = useState(false)
+  const [pozo1RenderKey, setPozo1RenderKey] = useState(0)
 
   return (
     <div className={`ptar-app ${seccionActiva === 'pozo1' ? 'ptar-app--pozo1' : ''}`}>
@@ -15,6 +16,15 @@ function App() {
         onLogoClick={() => {
           setVolverAUbicacion(false)
           setSeccionActiva('inicio')
+        }}
+        onSeleccionarEstacion={(_, indice) => {
+          if (indice !== 0) {
+            return
+          }
+
+          setVolverAUbicacion(false)
+          setSeccionActiva('pozo1')
+          setPozo1RenderKey((valorAnterior) => valorAnterior + 1)
         }}
       />
       <div className="ptar-app__content">
@@ -39,6 +49,7 @@ function App() {
 
         {seccionActiva === 'pozo1' ? (
           <Pozo1
+            key={pozo1RenderKey}
             onVolverAUbicacion={() => {
               setVolverAUbicacion(true)
               setSeccionActiva('informacion')

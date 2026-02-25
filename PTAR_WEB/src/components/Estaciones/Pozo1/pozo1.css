@@ -104,6 +104,192 @@
   animation-delay: var(--res-delay, 0s);
 }
 
+.ptar-pozo1__residuo--pozo.is-draggable {
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  animation: none;
+  transition:
+    left 90ms linear,
+    top 90ms linear,
+    transform 220ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    opacity 220ms ease;
+}
+
+.ptar-pozo1__residuo--pozo.is-dragging {
+  cursor: grabbing;
+  z-index: 9;
+}
+
+.ptar-pozo1__media-final {
+  position: absolute;
+  top: clamp(30px, 7.8vh, 64px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.ptar-pozo1__media-final-track {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: flex-start;
+  transition: transform 280ms ease;
+}
+
+.ptar-pozo1__media-final-track.is-summary-open {
+  transform: translateX(clamp(-110px, -7vw, -64px));
+}
+
+.ptar-pozo1__video-preview-final {
+  width: min(25vw, 900px);
+  border: 3px solid #f14a4a;
+  border-radius: 34px;
+  overflow: hidden;
+  padding: 0;
+  background: transparent;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.24);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.ptar-pozo1__video-preview-final img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  opacity: 0.9;
+}
+
+.ptar-pozo1__play-icon-final {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: clamp(44px, 5.4vw, 72px);
+  line-height: 1;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+}
+
+.ptar-pozo1__play-icon-final::before {
+  content: '';
+  position: absolute;
+  width: clamp(70px, 8vw, 108px);
+  height: clamp(70px, 8vw, 108px);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.42);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+  z-index: -1;
+}
+
+.ptar-pozo1__resumen-wrap-final {
+  position: absolute;
+  top: -10px;
+  right: -14px;
+  left: auto;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  z-index: 12;
+}
+
+.ptar-pozo1__resumen-toggle-final {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: #df2028;
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.ptar-pozo1__resumen-final {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 10px);
+  width: min(32vw, 340px);
+  background: #ece6dd;
+  border-radius: 16px;
+  padding: 16px 20px;
+  color: #151515;
+  opacity: 0;
+  transform: translateX(-12px);
+  pointer-events: none;
+  transition: transform 240ms ease, opacity 240ms ease;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.24);
+}
+
+.ptar-pozo1__resumen-final.is-open {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.ptar-pozo1__resumen-final h3 {
+  margin: 0 0 8px;
+  font-size: clamp(22px, 2vw, 30px);
+}
+
+.ptar-pozo1__resumen-final p {
+  margin: 0;
+  font-size: clamp(15px, 1.2vw, 19px);
+  line-height: 1.35;
+}
+
+.ptar-pozo1__modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+}
+
+.ptar-pozo1__modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  padding: 0;
+}
+
+.ptar-pozo1__modal-content {
+  position: relative;
+  width: min(95vw, 980px);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 4px solid #0f0f0f;
+  background: #000;
+}
+
+.ptar-pozo1__video-player {
+  display: block;
+  width: 100%;
+  max-height: 78vh;
+}
+
+.ptar-pozo1__modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
 .ptar-pozo1__avatar {
   position: absolute;
   bottom: clamp(12px, 2.2vh, 22px);
@@ -464,6 +650,38 @@
 }
 
 @media (max-width: 1100px) {
+  .ptar-pozo1__media-final {
+    left: 50%;
+    transform: translateX(-50%);
+    top: clamp(56px, 9vh, 92px);
+  }
+
+  .ptar-pozo1__video-preview-final {
+    width: min(88vw, 620px);
+  }
+
+  .ptar-pozo1__media-final-track.is-summary-open {
+    transform: none;
+  }
+
+  .ptar-pozo1__resumen-wrap-final {
+    position: static;
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    justify-content: center;
+  }
+
+  .ptar-pozo1__resumen-final {
+    position: static;
+    top: auto;
+    left: auto;
+    width: min(82vw, 420px);
+  }
+
   .ptar-pozo1__burbuja {
     max-width: min(82vw, 470px);
     font-size: clamp(15px, 2.4vw, 18px);
