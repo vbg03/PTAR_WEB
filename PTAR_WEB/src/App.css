@@ -19,6 +19,21 @@
   padding: 8px 0 32px;
 }
 
+.ptar-app.ptar-app--pozo1 {
+  position: relative;
+  background-color: #2f251c;
+  background-image: none;
+  padding: 0;
+}
+
+.ptar-app.ptar-app--pozo1 .ptar-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+}
+
 .ptar-app__content {
   flex: 1;
   min-height: 0;

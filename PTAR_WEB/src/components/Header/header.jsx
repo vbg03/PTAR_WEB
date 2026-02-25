@@ -17,7 +17,8 @@ const estaciones = [
 function Header({
   logoSrc = '/images/logouao.png',
   logoAlt = 'Logo UAO',
-  onLogoClick
+  onLogoClick,
+  onSeleccionarEstacion
 }) {
   const [isHidden, setIsHidden] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -62,8 +63,18 @@ function Header({
             <span className="ptar-header__chevron" aria-hidden="true" />
           </button>
           <div className="ptar-header__menu" role="menu">
-            {estaciones.map((item) => (
-              <button className="ptar-header__menu-item" key={item} type="button">
+            {estaciones.map((item, indice) => (
+              <button
+                className="ptar-header__menu-item"
+                key={item}
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false)
+                  if (typeof onSeleccionarEstacion === 'function') {
+                    onSeleccionarEstacion(item, indice)
+                  }
+                }}
+              >
                 {item}
               </button>
             ))}
