@@ -142,6 +142,15 @@
   transform: translateX(clamp(-110px, -7vw, -64px));
 }
 
+.ptar-pozo1__pin-video-final {
+  position: absolute;
+  left: clamp(-74px, -4.8vw, -42px);
+  top: clamp(136px, 13vw, 184px);
+  width: clamp(42px, 4.1vw, 66px);
+  height: auto;
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.24));
+}
+
 .ptar-pozo1__video-preview-final {
   width: min(25vw, 900px);
   border: 3px solid #f14a4a;
@@ -658,6 +667,12 @@
 
   .ptar-pozo1__video-preview-final {
     width: min(88vw, 620px);
+  }
+
+  .ptar-pozo1__pin-video-final {
+    left: clamp(-54px, -5.2vw, -24px);
+    top: clamp(112px, 18.5vw, 146px);
+    width: clamp(36px, 7vw, 56px);
   }
 
   .ptar-pozo1__media-final-track.is-summary-open {

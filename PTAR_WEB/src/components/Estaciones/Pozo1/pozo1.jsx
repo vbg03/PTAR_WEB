@@ -169,8 +169,10 @@ function obtenerPuntoEnPanel(event, panel) {
   }
 }
 
-function Pozo1({ onVolverAUbicacion }) {
-  const [pasoActual, setPasoActual] = useState(0)
+function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false }) {
+  const [pasoActual, setPasoActual] = useState(() =>
+    iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0
+  )
   const [mostrarTransicionRegreso, setMostrarTransicionRegreso] = useState(false)
   const [mostrarResumenPasoFinal, setMostrarResumenPasoFinal] = useState(false)
   const [abrirReproductorPasoFinal, setAbrirReproductorPasoFinal] = useState(false)
@@ -482,7 +484,13 @@ function Pozo1({ onVolverAUbicacion }) {
       bloqueoScrollRef.current = true
 
       if (event.deltaY > 0) {
-        setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+        if (pasoActual >= PASOS_RECORRIDO.length - 1) {
+          if (typeof onCompletarPozo1 === 'function') {
+            onCompletarPozo1()
+          }
+        } else {
+          setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+        }
       } else if (pasoActual > 0) {
         setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
       } else {
@@ -505,7 +513,7 @@ function Pozo1({ onVolverAUbicacion }) {
     return () => {
       window.removeEventListener('wheel', manejarRueda)
     }
-  }, [pasoActual, iniciarTransicionRegreso, retiroSolidosCompletado])
+  }, [pasoActual, iniciarTransicionRegreso, retiroSolidosCompletado, onCompletarPozo1])
 
   useEffect(() => {
     const manejarTecladoDebug = (event) => {
@@ -661,6 +669,12 @@ function Pozo1({ onVolverAUbicacion }) {
               className={`ptar-pozo1__media-final-track ${mostrarResumenPasoFinal ? 'is-summary-open' : ''
                 }`}
             >
+              <img
+                className="ptar-pozo1__pin-video-final"
+                src="/images/ubicacion.png"
+                alt=""
+                aria-hidden="true"
+              />
               <button
                 type="button"
                 className="ptar-pozo1__video-preview-final"
