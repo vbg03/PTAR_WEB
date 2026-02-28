@@ -5,6 +5,7 @@ import Inicio from './components/Inicio/inicio.jsx'
 import Informacion from './components/Informacion/informacion.jsx'
 import Pozo1 from './components/Estaciones/Pozo1/pozo1.jsx'
 import Pretratamiento from './components/Estaciones/Pretratamiento/pretratamiento.jsx'
+import Areacion from './components/Estaciones/Areación/areacion.jsx'
 
 const DURACION_TRANSICION_ESTACION = 760
 const MITAD_TRANSICION_ESTACION = 340
@@ -14,7 +15,10 @@ function App() {
   const [volverAUbicacion, setVolverAUbicacion] = useState(false)
   const [pozo1RenderKey, setPozo1RenderKey] = useState(0)
   const [pretratamientoRenderKey, setPretratamientoRenderKey] = useState(0)
+  const [areacionRenderKey, setAreacionRenderKey] = useState(0)
   const [pozo1IniciarEnFinal, setPozo1IniciarEnFinal] = useState(false)
+  const [pretratamientoIniciarEnFinal, setPretratamientoIniciarEnFinal] = useState(false)
+  const [areacionEntradaSuave, setAreacionEntradaSuave] = useState(false)
   const [transicionEstacionActiva, setTransicionEstacionActiva] = useState(false)
   const [direccionTransicionEstacion, setDireccionTransicionEstacion] = useState('avance')
   const transicionActivaRef = useRef(false)
@@ -65,6 +69,8 @@ function App() {
       ? 'ptar-app--pozo1'
       : seccionActiva === 'pretratamiento'
         ? 'ptar-app--pretratamiento'
+        : seccionActiva === 'areacion'
+          ? 'ptar-app--areacion'
         : ''
 
   return (
@@ -73,12 +79,16 @@ function App() {
         onLogoClick={() => {
           setVolverAUbicacion(false)
           setPozo1IniciarEnFinal(false)
+          setPretratamientoIniciarEnFinal(false)
+          setAreacionEntradaSuave(false)
           setSeccionActiva('inicio')
         }}
         onSeleccionarEstacion={(_, indice) => {
           if (indice === 0) {
             setVolverAUbicacion(false)
             setPozo1IniciarEnFinal(false)
+            setPretratamientoIniciarEnFinal(false)
+            setAreacionEntradaSuave(false)
             setSeccionActiva('pozo1')
             setPozo1RenderKey((valorAnterior) => valorAnterior + 1)
             return
@@ -87,8 +97,20 @@ function App() {
           if (indice === 1) {
             setVolverAUbicacion(false)
             setPozo1IniciarEnFinal(false)
+            setPretratamientoIniciarEnFinal(false)
+            setAreacionEntradaSuave(false)
             setSeccionActiva('pretratamiento')
             setPretratamientoRenderKey((valorAnterior) => valorAnterior + 1)
+            return
+          }
+
+          if (indice === 2) {
+            setVolverAUbicacion(false)
+            setPozo1IniciarEnFinal(false)
+            setPretratamientoIniciarEnFinal(false)
+            setAreacionEntradaSuave(false)
+            setSeccionActiva('areacion')
+            setAreacionRenderKey((valorAnterior) => valorAnterior + 1)
             return
           }
         }}
@@ -99,6 +121,8 @@ function App() {
             onIniciarRecorrido={() => {
               setVolverAUbicacion(false)
               setPozo1IniciarEnFinal(false)
+              setPretratamientoIniciarEnFinal(false)
+              setAreacionEntradaSuave(false)
               setSeccionActiva('informacion')
             }}
           />
@@ -110,6 +134,8 @@ function App() {
             onCompletarInformacion={() => {
               setVolverAUbicacion(false)
               setPozo1IniciarEnFinal(false)
+              setPretratamientoIniciarEnFinal(false)
+              setAreacionEntradaSuave(false)
               setSeccionActiva('pozo1')
             }}
           />
@@ -122,6 +148,8 @@ function App() {
             onCompletarPozo1={() => {
               ejecutarTransicionEstacion('avance', () => {
                 setPozo1IniciarEnFinal(false)
+                setPretratamientoIniciarEnFinal(false)
+                setAreacionEntradaSuave(false)
                 setSeccionActiva('pretratamiento')
                 setPretratamientoRenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -129,6 +157,8 @@ function App() {
             onVolverAUbicacion={() => {
               setVolverAUbicacion(true)
               setPozo1IniciarEnFinal(false)
+              setPretratamientoIniciarEnFinal(false)
+              setAreacionEntradaSuave(false)
               setSeccionActiva('informacion')
             }}
           />
@@ -137,12 +167,34 @@ function App() {
         {seccionActiva === 'pretratamiento' ? (
           <Pretratamiento
             key={pretratamientoRenderKey}
+            iniciarEnFinal={pretratamientoIniciarEnFinal}
             onVolverAPozo1={() => {
               ejecutarTransicionEstacion('retroceso', () => {
                 setPozo1IniciarEnFinal(true)
+                setPretratamientoIniciarEnFinal(false)
+                setAreacionEntradaSuave(false)
                 setSeccionActiva('pozo1')
                 setPozo1RenderKey((valorAnterior) => valorAnterior + 1)
               })
+            }}
+            onCompletarPretratamiento={() => {
+              setPretratamientoIniciarEnFinal(false)
+              setAreacionEntradaSuave(true)
+              setSeccionActiva('areacion')
+              setAreacionRenderKey((valorAnterior) => valorAnterior + 1)
+            }}
+          />
+        ) : null}
+
+        {seccionActiva === 'areacion' ? (
+          <Areacion
+            key={areacionRenderKey}
+            entradaSuaveDesdePretratamiento={areacionEntradaSuave}
+            onVolverAPretratamiento={() => {
+              setPretratamientoIniciarEnFinal(true)
+              setAreacionEntradaSuave(false)
+              setSeccionActiva('pretratamiento')
+              setPretratamientoRenderKey((valorAnterior) => valorAnterior + 1)
             }}
           />
         ) : null}

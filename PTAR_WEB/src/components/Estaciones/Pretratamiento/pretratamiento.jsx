@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './pretratamiento.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
+const DURACION_ENTRADA_SUAVE = 760
 const DURACION_TRANSICION_VISTA = 940
 const VALOR_MIN_CAMARA = -120
 const VALOR_MAX_CAMARA = 220
@@ -245,7 +246,9 @@ const PASOS_RECORRIDO = [
         zoom: 3.89,
         gota: { x: 29, y: 79, escala: 0.7 },
         grasasSuperficie: { x: 6, y: 65, escala: 1.4 },
+        canastaLimpia: { x: -23.5, y: 53.5, width: 'clamp(180px, 20vw, 380px)', escala: 0.1 },
         mostrarGrasasSuperficie: true,
+        mostrarCanastaLimpia: true,
         burbujaDerecha:
             'Para nada. Hasta aquí solo hemos quitado lo visible: sólidos grandes, arena y grasas. Pero el agua todavía tiene mucha contaminación disuelta y materia orgánica invisible. Por eso viene lo más importante: el tratamiento biológico.'
     }),
@@ -262,6 +265,16 @@ const PASOS_RECORRIDO = [
     }),
 ]
 const PASO_VIDEO_RESUMEN_FINAL = PASOS_RECORRIDO.length - 1
+const CAMARA_ENTRADA_DESDE_AREACION = {
+    camaraX: 95.9,
+    camaraY: 75.9,
+    zoom: 4.11
+}
+const GOTA_ENTRADA_DESDE_AREACION = {
+    x: 51,
+    y: 50,
+    escala: 0.7
+}
 
 function limitar(valor, minimo, maximo) {
     return Math.min(Math.max(valor, minimo), maximo)
@@ -283,8 +296,10 @@ function obtenerPuntoEnPanel(event, panel) {
     }
 }
 
-function Pretratamiento({ onVolverAPozo1 }) {
-    const [pasoActual, setPasoActual] = useState(0)
+function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFinal = false }) {
+    const [pasoActual, setPasoActual] = useState(() =>
+        iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0
+    )
     const [mostrarResumenIntro, setMostrarResumenIntro] = useState(false)
     const [abrirReproductorIntro, setAbrirReproductorIntro] = useState(false)
     const [mostrarResumenFinal, setMostrarResumenFinal] = useState(false)
@@ -299,7 +314,12 @@ function Pretratamiento({ onVolverAPozo1 }) {
     const [canastaArrastrando, setCanastaArrastrando] = useState(false)
     const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
     const [debugCopiado, setDebugCopiado] = useState(false)
-    const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
+    const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState(() =>
+        iniciarEnFinal ? { [PASO_VIDEO_RESUMEN_FINAL]: CAMARA_ENTRADA_DESDE_AREACION } : {}
+    )
+    const [gotaEntradaSuave, setGotaEntradaSuave] = useState(() =>
+        iniciarEnFinal ? GOTA_ENTRADA_DESDE_AREACION : null
+    )
     const bloqueoScrollRef = useRef(false)
     const timeoutBloqueoRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
@@ -308,7 +328,8 @@ function Pretratamiento({ onVolverAPozo1 }) {
     const timeoutCanastaAutoavanceRef = useRef(null)
     const timeoutArenaAutoavanceRef = useRef(null)
     const timeoutGrasasAutoavanceRef = useRef(null)
-    const zonaVistaAnteriorRef = useRef('lateral')
+    const timeoutEntradaSuaveRef = useRef(null)
+    const zonaVistaAnteriorRef = useRef(iniciarEnFinal ? 'superior' : 'lateral')
     const panelEscenaRef = useRef(null)
     const arrastreCanastaRef = useRef(null)
     const canastaSuciaPosicionRef = useRef(null)
@@ -399,6 +420,42 @@ function Pretratamiento({ onVolverAPozo1 }) {
             setDebugCopiado(false)
         }, 1200)
     }, [obtenerCamaraActivaPaso])
+
+    useEffect(() => {
+        if (!iniciarEnFinal || pasoActual !== PASO_VIDEO_RESUMEN_FINAL) {
+            return
+        }
+
+        bloqueoScrollRef.current = true
+
+        timeoutEntradaSuaveRef.current = window.setTimeout(() => {
+            setDebugCamarasPorPaso((estadoAnterior) => {
+                if (!estadoAnterior[PASO_VIDEO_RESUMEN_FINAL]) {
+                    return estadoAnterior
+                }
+                const nuevoEstado = { ...estadoAnterior }
+                delete nuevoEstado[PASO_VIDEO_RESUMEN_FINAL]
+                return nuevoEstado
+            })
+            setGotaEntradaSuave(null)
+            timeoutEntradaSuaveRef.current = null
+        }, 90)
+
+        if (timeoutBloqueoRef.current) {
+            window.clearTimeout(timeoutBloqueoRef.current)
+        }
+        timeoutBloqueoRef.current = window.setTimeout(() => {
+            bloqueoScrollRef.current = false
+            timeoutBloqueoRef.current = null
+        }, DURACION_ENTRADA_SUAVE + 120)
+
+        return () => {
+            if (timeoutEntradaSuaveRef.current) {
+                window.clearTimeout(timeoutEntradaSuaveRef.current)
+                timeoutEntradaSuaveRef.current = null
+            }
+        }
+    }, [iniciarEnFinal, pasoActual])
 
     useEffect(() => {
         const zonaVistaActual = usarVistaSuperior ? 'superior' : 'lateral'
@@ -679,7 +736,13 @@ function Pretratamiento({ onVolverAPozo1 }) {
             bloqueoScrollRef.current = true
 
             if (event.deltaY > 0) {
-                setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+                if (pasoActual >= PASOS_RECORRIDO.length - 1) {
+                    if (typeof onCompletarPretratamiento === 'function') {
+                        onCompletarPretratamiento()
+                    }
+                } else {
+                    setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+                }
             } else if (pasoActual > 0) {
                 setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
             } else if (typeof onVolverAPozo1 === 'function') {
@@ -699,7 +762,7 @@ function Pretratamiento({ onVolverAPozo1 }) {
         return () => {
             window.removeEventListener('wheel', manejarRueda)
         }
-    }, [pasoActual, onVolverAPozo1, pasoRequiereArrastreCanasta, canastaRetornoCompletado, paso.mostrarBotonActivar])
+    }, [pasoActual, onVolverAPozo1, onCompletarPretratamiento, pasoRequiereArrastreCanasta, canastaRetornoCompletado, paso.mostrarBotonActivar])
 
     useEffect(() => {
         const manejarTecladoDebug = (event) => {
@@ -795,6 +858,9 @@ function Pretratamiento({ onVolverAPozo1 }) {
             if (timeoutGrasasAutoavanceRef.current) {
                 window.clearTimeout(timeoutGrasasAutoavanceRef.current)
             }
+            if (timeoutEntradaSuaveRef.current) {
+                window.clearTimeout(timeoutEntradaSuaveRef.current)
+            }
         }
     }, [])
 
@@ -810,10 +876,12 @@ function Pretratamiento({ onVolverAPozo1 }) {
         }),
         [fondoEscena]
     )
+    const gotaActiva =
+        pasoActual === PASO_VIDEO_RESUMEN_FINAL && gotaEntradaSuave ? gotaEntradaSuave : paso.gota
     const estiloGota = {
-        left: `${paso.gota.x}%`,
-        top: `${paso.gota.y}%`,
-        '--gota-escala': `${paso.gota.escala}`
+        left: `${gotaActiva.x}%`,
+        top: `${gotaActiva.y}%`,
+        '--gota-escala': `${gotaActiva.escala}`
     }
     const estiloArena = {
         left: `${paso.arena.x}%`,
