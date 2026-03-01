@@ -235,9 +235,9 @@ const PASOS_RECORRIDO = [
             'Ahora durante quince minutos de reposo es cuando realizamos la recirculacion de lodos.'
     }),
     crearPaso({
-        camaraX: 19.7,
-        camaraY: 79.7,
-        zoom: 2.3,
+        camaraX: 7.7,
+        camaraY: 70.2,
+        zoom: 1.6,
         gota: { x: 65, y: 80, escala: 0.15 },
         burbujas: {
             x: 48,
@@ -285,9 +285,12 @@ function obtenerBurbujasBasePorModo(modo) {
 function Areacion({
     onVolverAPretratamiento,
     onCompletarAreacion,
-    entradaSuaveDesdePretratamiento = false
+    entradaSuaveDesdePretratamiento = false,
+    iniciarEnFinal = false
 }) {
-    const [pasoActual, setPasoActual] = useState(0)
+    const [pasoActual, setPasoActual] = useState(() =>
+        entradaSuaveDesdePretratamiento ? 0 : iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0
+    )
     const [aireacionActiva, setAireacionActiva] = useState(false)
     const [detalleParticulaActivado, setDetalleParticulaActivado] = useState(false)
     const [mostrarResumenFinal, setMostrarResumenFinal] = useState(false)

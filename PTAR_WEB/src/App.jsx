@@ -6,6 +6,7 @@ import Informacion from './components/Informacion/informacion.jsx'
 import Pozo1 from './components/Estaciones/Pozo1/pozo1.jsx'
 import Pretratamiento from './components/Estaciones/Pretratamiento/pretratamiento.jsx'
 import Areacion from './components/Estaciones/Areación/areacion.jsx'
+import Sedimentador from './components/Estaciones/Sedimentador/sedimentador.jsx'
 
 const DURACION_TRANSICION_ESTACION = 760
 const MITAD_TRANSICION_ESTACION = 340
@@ -16,9 +17,11 @@ function App() {
   const [pozo1RenderKey, setPozo1RenderKey] = useState(0)
   const [pretratamientoRenderKey, setPretratamientoRenderKey] = useState(0)
   const [areacionRenderKey, setAreacionRenderKey] = useState(0)
+  const [sedimentadorRenderKey, setSedimentadorRenderKey] = useState(0)
   const [pozo1IniciarEnFinal, setPozo1IniciarEnFinal] = useState(false)
   const [pretratamientoIniciarEnFinal, setPretratamientoIniciarEnFinal] = useState(false)
   const [areacionEntradaSuave, setAreacionEntradaSuave] = useState(false)
+  const [areacionIniciarEnFinal, setAreacionIniciarEnFinal] = useState(false)
   const [transicionEstacionActiva, setTransicionEstacionActiva] = useState(false)
   const [direccionTransicionEstacion, setDireccionTransicionEstacion] = useState('avance')
   const transicionActivaRef = useRef(false)
@@ -71,6 +74,8 @@ function App() {
         ? 'ptar-app--pretratamiento'
         : seccionActiva === 'areacion'
           ? 'ptar-app--areacion'
+          : seccionActiva === 'sedimentador'
+            ? 'ptar-app--sedimentador'
         : ''
 
   return (
@@ -81,6 +86,7 @@ function App() {
           setPozo1IniciarEnFinal(false)
           setPretratamientoIniciarEnFinal(false)
           setAreacionEntradaSuave(false)
+          setAreacionIniciarEnFinal(false)
           setSeccionActiva('inicio')
         }}
         onSeleccionarEstacion={(_, indice) => {
@@ -89,6 +95,7 @@ function App() {
             setPozo1IniciarEnFinal(false)
             setPretratamientoIniciarEnFinal(false)
             setAreacionEntradaSuave(false)
+            setAreacionIniciarEnFinal(false)
             setSeccionActiva('pozo1')
             setPozo1RenderKey((valorAnterior) => valorAnterior + 1)
             return
@@ -99,6 +106,7 @@ function App() {
             setPozo1IniciarEnFinal(false)
             setPretratamientoIniciarEnFinal(false)
             setAreacionEntradaSuave(false)
+            setAreacionIniciarEnFinal(false)
             setSeccionActiva('pretratamiento')
             setPretratamientoRenderKey((valorAnterior) => valorAnterior + 1)
             return
@@ -109,8 +117,20 @@ function App() {
             setPozo1IniciarEnFinal(false)
             setPretratamientoIniciarEnFinal(false)
             setAreacionEntradaSuave(false)
+            setAreacionIniciarEnFinal(false)
             setSeccionActiva('areacion')
             setAreacionRenderKey((valorAnterior) => valorAnterior + 1)
+            return
+          }
+
+          if (indice === 3) {
+            setVolverAUbicacion(false)
+            setPozo1IniciarEnFinal(false)
+            setPretratamientoIniciarEnFinal(false)
+            setAreacionEntradaSuave(false)
+            setAreacionIniciarEnFinal(false)
+            setSeccionActiva('sedimentador')
+            setSedimentadorRenderKey((valorAnterior) => valorAnterior + 1)
             return
           }
         }}
@@ -123,6 +143,7 @@ function App() {
               setPozo1IniciarEnFinal(false)
               setPretratamientoIniciarEnFinal(false)
               setAreacionEntradaSuave(false)
+              setAreacionIniciarEnFinal(false)
               setSeccionActiva('informacion')
             }}
           />
@@ -136,6 +157,7 @@ function App() {
               setPozo1IniciarEnFinal(false)
               setPretratamientoIniciarEnFinal(false)
               setAreacionEntradaSuave(false)
+              setAreacionIniciarEnFinal(false)
               setSeccionActiva('pozo1')
             }}
           />
@@ -150,6 +172,7 @@ function App() {
                 setPozo1IniciarEnFinal(false)
                 setPretratamientoIniciarEnFinal(false)
                 setAreacionEntradaSuave(false)
+                setAreacionIniciarEnFinal(false)
                 setSeccionActiva('pretratamiento')
                 setPretratamientoRenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -159,6 +182,7 @@ function App() {
               setPozo1IniciarEnFinal(false)
               setPretratamientoIniciarEnFinal(false)
               setAreacionEntradaSuave(false)
+              setAreacionIniciarEnFinal(false)
               setSeccionActiva('informacion')
             }}
           />
@@ -173,6 +197,7 @@ function App() {
                 setPozo1IniciarEnFinal(true)
                 setPretratamientoIniciarEnFinal(false)
                 setAreacionEntradaSuave(false)
+                setAreacionIniciarEnFinal(false)
                 setSeccionActiva('pozo1')
                 setPozo1RenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -180,6 +205,7 @@ function App() {
             onCompletarPretratamiento={() => {
               setPretratamientoIniciarEnFinal(false)
               setAreacionEntradaSuave(true)
+              setAreacionIniciarEnFinal(false)
               setSeccionActiva('areacion')
               setAreacionRenderKey((valorAnterior) => valorAnterior + 1)
             }}
@@ -190,11 +216,35 @@ function App() {
           <Areacion
             key={areacionRenderKey}
             entradaSuaveDesdePretratamiento={areacionEntradaSuave}
+            iniciarEnFinal={areacionIniciarEnFinal}
             onVolverAPretratamiento={() => {
               setPretratamientoIniciarEnFinal(true)
               setAreacionEntradaSuave(false)
+              setAreacionIniciarEnFinal(false)
               setSeccionActiva('pretratamiento')
               setPretratamientoRenderKey((valorAnterior) => valorAnterior + 1)
+            }}
+            onCompletarAreacion={() => {
+              ejecutarTransicionEstacion('avance', () => {
+                setAreacionEntradaSuave(false)
+                setAreacionIniciarEnFinal(false)
+                setSeccionActiva('sedimentador')
+                setSedimentadorRenderKey((valorAnterior) => valorAnterior + 1)
+              })
+            }}
+          />
+        ) : null}
+
+        {seccionActiva === 'sedimentador' ? (
+          <Sedimentador
+            key={sedimentadorRenderKey}
+            onVolverAAreacion={() => {
+              ejecutarTransicionEstacion('retroceso', () => {
+                setAreacionEntradaSuave(false)
+                setAreacionIniciarEnFinal(true)
+                setSeccionActiva('areacion')
+                setAreacionRenderKey((valorAnterior) => valorAnterior + 1)
+              })
             }}
           />
         ) : null}
