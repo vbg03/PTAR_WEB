@@ -986,56 +986,6 @@ const PASOS_RECORRIDO = [
         mostrarBotonLechos: true,
         burbujaDerecha: 'Jamas. Ese lodo va a los lechos de secado.'
     }),
-    crearPaso({
-        camaraX: 63.4,
-        camaraY: 82.4,
-        zoom: 1.98,
-        gota: { x: 73, y: 53, escala: 0.23 },
-        particulasFondo: { opacidad: 0.22 },
-        particulasFondoSuave: { opacidad: 0.29 },
-        particulasIndividuales: {
-            fondo: [
-                ...crearParticulasIndividualesPorPaso({
-                    fondo: { x: -30, y: -70, duplicados: 2 }
-                }).fondo,
-                ...crearParticulasIndividualesPorPaso({
-                    fondo: { x: -20, y: -70, duplicados: 2, pasoX: 2, pasoY: 0.8 }
-                }).fondo,
-                ...crearParticulasIndividualesPorPaso({
-                    fondo: { x: 1, y: -70, duplicados: 2 }
-                }).fondo,
-                ...crearParticulasIndividualesPorPaso({
-                    fondo: { x: 20, y: -70, duplicados: 2, pasoX: 2, pasoY: 0.8 }
-                }).fondo,
-                ...crearParticulasIndividualesPorPaso({
-                    fondo: { x: 5, y: -70, duplicados: 2 }
-                }).fondo,
-                ...crearParticulasIndividualesPorPaso({
-                    fondo: { x: -15, y: -70, duplicados: 2, pasoX: 2, pasoY: 0.8 }
-                }).fondo,
-            ],
-            fondoSuave: [
-                ...crearParticulasIndividualesPorPaso({
-                    fondoSuave: { x: -30, y: -70, duplicados: 2 }
-                }).fondoSuave,
-                ...crearParticulasIndividualesPorPaso({
-                    fondoSuave: { x: -20, y: -70, duplicados: 1 }
-                }).fondoSuave,
-                ...crearParticulasIndividualesPorPaso({
-                    fondoSuave: { x: 1, y: -70, duplicados: 2 }
-                }).fondoSuave,
-                ...crearParticulasIndividualesPorPaso({
-                    fondoSuave: { x: 20, y: -70, duplicados: 1 }
-                }).fondoSuave
-            ]
-        },
-        gotaLimpia: true,
-        marcadores: MARCADORES_CANALETA,
-        mostrarMediaFinal: true,
-        mostrarBotonLechos: true,
-        burbujaDerechaCompacta: true,
-        burbujaDerecha: 'Presiona el boton para continuar a lechos de secado.'
-    })
 ]
 
 function limitar(valor, minimo, maximo) {
@@ -1077,8 +1027,10 @@ function obtenerEstiloParticulaIndividual(particula) {
     }
 }
 
-function Sedimentador({ onVolverAAreacion, onCompletarSedimentador }) {
-    const [pasoActual, setPasoActual] = useState(0)
+function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFinal = false }) {
+    const [pasoActual, setPasoActual] = useState(() =>
+        iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0
+    )
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
     const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
     const [debugCopiado, setDebugCopiado] = useState(false)
