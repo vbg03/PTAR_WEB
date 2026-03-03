@@ -1123,6 +1123,7 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
     const [debugCopiado, setDebugCopiado] = useState(false)
     const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
+    const [mostrarResumenFinal, setMostrarResumenFinal] = useState(false)
     const bloqueoScrollRef = useRef(false)
     const timeoutBloqueoRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
@@ -1219,6 +1220,7 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
     useEffect(() => {
         if (!paso.mostrarMediaFinal) {
             setAbrirReproductorFinal(false)
+            setMostrarResumenFinal(false)
         }
     }, [paso])
 
@@ -1425,18 +1427,46 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
 
                 {paso.mostrarMediaFinal ? (
                     <div className="ptar-lec__media-final">
-                        <span className="ptar-lec__pin-video-final" aria-hidden="true" />
-                        <button
-                            type="button"
-                            className="ptar-lec__video-preview-final"
-                            onClick={() => setAbrirReproductorFinal(true)}
-                            aria-label="Abrir video de lechos de secado"
-                        >
-                            <img src="/images/lechos/lechos.png" alt="Vista previa de lechos de secado" />
-                            <span className="ptar-lec__play-icon-final" aria-hidden="true">
-                                <span className="ptar-lec__play-triangle-final" />
-                            </span>
-                        </button>
+                        <div className={`ptar-lec__media-final-track ${mostrarResumenFinal ? 'is-summary-open' : ''}`}>
+                            <span className="ptar-lec__pin-video-final" aria-hidden="true" />
+                            <button
+                                type="button"
+                                className="ptar-lec__video-preview-final"
+                                onClick={() => setAbrirReproductorFinal(true)}
+                                aria-label="Abrir video de lechos de secado"
+                            >
+                                <img src="/images/lechos/lechos.png" alt="Vista previa de lechos de secado" />
+                                <span className="ptar-lec__play-icon-final" aria-hidden="true">
+                                    <span className="ptar-lec__play-triangle-final" />
+                                </span>
+                            </button>
+
+                            <div className="ptar-lec__resumen-wrap-final">
+                                <button
+                                    type="button"
+                                    className="ptar-lec__resumen-toggle-final"
+                                    onClick={() => setMostrarResumenFinal((estadoAnterior) => !estadoAnterior)}
+                                    aria-expanded={mostrarResumenFinal}
+                                    aria-controls="ptar-lec-resumen-final"
+                                    aria-label={mostrarResumenFinal ? 'Ocultar resumen' : 'Mostrar resumen'}
+                                >
+                                    <span
+                                        className={`ptar-lec__resumen-chevron-final ${mostrarResumenFinal ? 'is-open' : ''}`}
+                                        aria-hidden="true"
+                                    />
+                                </button>
+                                <aside
+                                    id="ptar-lec-resumen-final"
+                                    className={`ptar-lec__resumen-final ${mostrarResumenFinal ? 'is-open' : ''}`}
+                                >
+                                    <h3>Resumen de lechos de secado</h3>
+                                    <p>
+                                        El lodo se extiende en camas, pierde agua por drenaje y evaporacion, y se
+                                        transforma en un material mas seco para su manejo y aprovechamiento.
+                                    </p>
+                                </aside>
+                            </div>
+                        </div>
                     </div>
                 ) : null}
 

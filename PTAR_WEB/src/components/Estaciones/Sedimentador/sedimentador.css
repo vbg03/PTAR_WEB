@@ -503,6 +503,18 @@
   pointer-events: none;
 }
 
+.ptar-sed__media-final-track {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: flex-start;
+  transition: transform 280ms ease;
+}
+
+.ptar-sed__media-final-track.is-summary-open {
+  transform: translateX(clamp(-110px, -7vw, -64px));
+}
+
 .ptar-sed__pin-video-final {
   position: absolute;
   left: clamp(-72px, -4.6vw, -40px);
@@ -575,6 +587,74 @@
   border-left: clamp(20px, 1.75vw, 28px) solid #f6f6f6;
   margin-left: clamp(4px, 0.35vw, 7px);
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
+.ptar-sed__resumen-wrap-final {
+  position: absolute;
+  top: -10px;
+  right: -14px;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  z-index: 12;
+}
+
+.ptar-sed__resumen-toggle-final {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: #df2028;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.ptar-sed__resumen-chevron-final {
+  width: 10px;
+  height: 10px;
+  border-right: 3px solid #fff;
+  border-bottom: 3px solid #fff;
+  transform: rotate(-45deg);
+  transition: transform 200ms ease;
+}
+
+.ptar-sed__resumen-chevron-final.is-open {
+  transform: rotate(45deg);
+}
+
+.ptar-sed__resumen-final {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 10px);
+  width: min(32vw, 340px);
+  background: #ece6dd;
+  border-radius: 16px;
+  padding: 16px 20px;
+  color: #151515;
+  opacity: 0;
+  transform: translateX(-12px);
+  pointer-events: none;
+  transition: transform 240ms ease, opacity 240ms ease;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.24);
+}
+
+.ptar-sed__resumen-final.is-open {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.ptar-sed__resumen-final h3 {
+  margin: 0 0 8px;
+  font-size: clamp(22px, 2vw, 30px);
+}
+
+.ptar-sed__resumen-final p {
+  margin: 0;
+  font-size: clamp(15px, 1.2vw, 19px);
+  line-height: 1.35;
 }
 
 .ptar-sed__paso {
@@ -913,11 +993,32 @@
     width: min(78vw, 580px);
   }
 
+  .ptar-sed__media-final-track.is-summary-open {
+    transform: none;
+  }
+
   .ptar-sed__pin-video-final {
     left: clamp(-54px, -5.2vw, -24px);
     top: clamp(112px, 18.5vw, 146px);
     width: clamp(36px, 7vw, 56px);
     height: clamp(36px, 7vw, 56px);
+  }
+
+  .ptar-sed__resumen-wrap-final {
+    top: -8px;
+    right: -8px;
+  }
+
+  .ptar-sed__resumen-final {
+    top: calc(100% + 8px);
+    left: auto;
+    right: 0;
+    width: min(82vw, 340px);
+    transform: translateY(-8px);
+  }
+
+  .ptar-sed__resumen-final.is-open {
+    transform: translateY(0);
   }
 
   .ptar-sed__burbuja {

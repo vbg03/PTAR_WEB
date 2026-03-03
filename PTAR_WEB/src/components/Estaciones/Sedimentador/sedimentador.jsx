@@ -1032,6 +1032,7 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
         iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0
     )
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
+    const [mostrarResumenFinal, setMostrarResumenFinal] = useState(false)
     const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
     const [debugCopiado, setDebugCopiado] = useState(false)
     const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
@@ -1161,6 +1162,7 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
     useEffect(() => {
         if (!paso.mostrarMediaFinal) {
             setAbrirReproductorFinal(false)
+            setMostrarResumenFinal(false)
         }
     }, [paso])
 
@@ -1440,18 +1442,46 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
 
                         {paso.mostrarMediaFinal ? (
                             <div className="ptar-sed__media-final">
-                                <span className="ptar-sed__pin-video-final" aria-hidden="true" />
-                                <button
-                                    type="button"
-                                    className="ptar-sed__video-preview-final"
-                                    onClick={() => setAbrirReproductorFinal(true)}
-                                    aria-label="Abrir video del sedimentador"
-                                >
-                                    <img src="/images/sedimentador/sedimentador.jpg" alt="Vista previa del sedimentador" />
-                                    <span className="ptar-sed__play-icon-final" aria-hidden="true">
-                                        <span className="ptar-sed__play-triangle-final" />
-                                    </span>
-                                </button>
+                                <div className={`ptar-sed__media-final-track ${mostrarResumenFinal ? 'is-summary-open' : ''}`}>
+                                    <span className="ptar-sed__pin-video-final" aria-hidden="true" />
+                                    <button
+                                        type="button"
+                                        className="ptar-sed__video-preview-final"
+                                        onClick={() => setAbrirReproductorFinal(true)}
+                                        aria-label="Abrir video del sedimentador"
+                                    >
+                                        <img src="/images/sedimentador/sedimentador.jpg" alt="Vista previa del sedimentador" />
+                                        <span className="ptar-sed__play-icon-final" aria-hidden="true">
+                                            <span className="ptar-sed__play-triangle-final" />
+                                        </span>
+                                    </button>
+
+                                    <div className="ptar-sed__resumen-wrap-final">
+                                        <button
+                                            type="button"
+                                            className="ptar-sed__resumen-toggle-final"
+                                            onClick={() => setMostrarResumenFinal((estadoAnterior) => !estadoAnterior)}
+                                            aria-expanded={mostrarResumenFinal}
+                                            aria-controls="ptar-sed-resumen-final"
+                                            aria-label={mostrarResumenFinal ? 'Ocultar resumen' : 'Mostrar resumen'}
+                                        >
+                                            <span
+                                                className={`ptar-sed__resumen-chevron-final ${mostrarResumenFinal ? 'is-open' : ''}`}
+                                                aria-hidden="true"
+                                            />
+                                        </button>
+                                        <aside
+                                            id="ptar-sed-resumen-final"
+                                            className={`ptar-sed__resumen-final ${mostrarResumenFinal ? 'is-open' : ''}`}
+                                        >
+                                            <h3>Resumen del sedimentador</h3>
+                                            <p>
+                                                El flujo se desacelera para que los lodos y particulas pesadas sedimenten.
+                                                Arriba queda agua mas clarificada para la siguiente etapa.
+                                            </p>
+                                        </aside>
+                                    </div>
+                                </div>
                             </div>
                         ) : null}
 

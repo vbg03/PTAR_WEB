@@ -215,6 +215,7 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje }) {
     const [debugCopiado, setDebugCopiado] = useState(false)
     const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
+    const [mostrarResumenFinal, setMostrarResumenFinal] = useState(false)
     const bloqueoScrollRef = useRef(false)
     const timeoutBloqueoRef = useRef(null)
     const timeoutAutoavanceTransicionRef = useRef(null)
@@ -341,6 +342,7 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje }) {
     useEffect(() => {
         if (!paso.mostrarMediaFinal) {
             setAbrirReproductorFinal(false)
+            setMostrarResumenFinal(false)
         }
     }, [paso])
 
@@ -564,18 +566,46 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje }) {
 
                         {paso.mostrarMediaFinal ? (
                             <div className="ptar-tam__media-final">
-                                <span className="ptar-tam__pin-video-final" aria-hidden="true" />
-                                <button
-                                    type="button"
-                                    className="ptar-tam__video-preview-final"
-                                    onClick={() => setAbrirReproductorFinal(true)}
-                                    aria-label="Abrir video de tamizaje"
-                                >
-                                    <img src="/images/tamizaje/tamizaje.jpg" alt="Vista previa de tamizaje" />
-                                    <span className="ptar-tam__play-icon-final" aria-hidden="true">
-                                        <span className="ptar-tam__play-triangle-final" />
-                                    </span>
-                                </button>
+                                <div className={`ptar-tam__media-final-track ${mostrarResumenFinal ? 'is-summary-open' : ''}`}>
+                                    <span className="ptar-tam__pin-video-final" aria-hidden="true" />
+                                    <button
+                                        type="button"
+                                        className="ptar-tam__video-preview-final"
+                                        onClick={() => setAbrirReproductorFinal(true)}
+                                        aria-label="Abrir video de tamizaje"
+                                    >
+                                        <img src="/images/tamizaje/tamizaje.jpg" alt="Vista previa de tamizaje" />
+                                        <span className="ptar-tam__play-icon-final" aria-hidden="true">
+                                            <span className="ptar-tam__play-triangle-final" />
+                                        </span>
+                                    </button>
+
+                                    <div className="ptar-tam__resumen-wrap-final">
+                                        <button
+                                            type="button"
+                                            className="ptar-tam__resumen-toggle-final"
+                                            onClick={() => setMostrarResumenFinal((estadoAnterior) => !estadoAnterior)}
+                                            aria-expanded={mostrarResumenFinal}
+                                            aria-controls="ptar-tam-resumen-final"
+                                            aria-label={mostrarResumenFinal ? 'Ocultar resumen' : 'Mostrar resumen'}
+                                        >
+                                            <span
+                                                className={`ptar-tam__resumen-chevron-final ${mostrarResumenFinal ? 'is-open' : ''}`}
+                                                aria-hidden="true"
+                                            />
+                                        </button>
+                                        <aside
+                                            id="ptar-tam-resumen-final"
+                                            className={`ptar-tam__resumen-final ${mostrarResumenFinal ? 'is-open' : ''}`}
+                                        >
+                                            <h3>Resumen de tamizaje</h3>
+                                            <p>
+                                                La malla fina retiene residuos livianos y particulas finales. El agua
+                                                sale mas clara y lista para continuar al filtro rapido.
+                                            </p>
+                                        </aside>
+                                    </div>
+                                </div>
                             </div>
                         ) : null}
 
