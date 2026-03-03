@@ -972,7 +972,7 @@ const PASOS_RECORRIDO = [
         ],
         mostrarMediaFinal: true,
         burbujaIzquierda: 'Interesante... y el agua despues del sedimentador hacia donde va?',
-        mostrarBotonRegresar: true
+        mostrarBotonTamizaje: true
     })
 ]
 
@@ -1117,7 +1117,7 @@ function obtenerCapasCama(cama) {
     }
 }
 
-function Lechos({ onVolverASedimentador }) {
+function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = false }) {
     const [pasoActual, setPasoActual] = useState(0)
     const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
     const [debugCopiado, setDebugCopiado] = useState(false)
@@ -1128,6 +1128,11 @@ function Lechos({ onVolverASedimentador }) {
     const timeoutDebugCopiadoRef = useRef(null)
 
     const paso = PASOS_RECORRIDO[pasoActual]
+
+    useEffect(() => {
+        setPasoActual(iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0)
+        setAbrirReproductorFinal(false)
+    }, [iniciarEnFinal])
 
     const obtenerCamaraActivaPaso = useCallback(
         (pasoIndice = pasoActual) => {
@@ -1463,20 +1468,20 @@ function Lechos({ onVolverASedimentador }) {
                     </aside>
                 ) : null}
 
-                {paso.mostrarBotonRegresar ? (
+                {paso.mostrarBotonTamizaje ? (
                     <button
                         type="button"
                         className="ptar-lec__accion-regresar"
                         onClick={() => {
-                            if (typeof onVolverASedimentador === 'function') {
-                                onVolverASedimentador()
+                            if (typeof onCompletarLechos === 'function') {
+                                onCompletarLechos()
                             }
                         }}
                     >
-                        <span className="ptar-lec__accion-icono" aria-hidden="true">
+                        <span className="ptar-lec__accion-icono ptar-lec__accion-icono--avance" aria-hidden="true">
                             <span />
                         </span>
-                        REGRESAR
+                        IR A CAMARA DE TAMIZ
                     </button>
                 ) : null}
 

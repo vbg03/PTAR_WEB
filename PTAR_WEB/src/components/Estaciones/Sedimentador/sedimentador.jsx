@@ -928,9 +928,9 @@ const PASOS_RECORRIDO = [
         burbujaIzquierda: 'Y que sucede con el lodo que se asienta? Lo tiran?'
     }),
     crearPaso({
-        camaraX: 60.9,
-        camaraY: 84.4,
-        zoom: 2.58,
+        camaraX: 63.1,
+        camaraY: 82.4,
+        zoom: 1.98,
         gotaTema: 'paleta-clara',
         gotaLimpia: true,
         gota: { x: 77, y: 45, escala: 0.15 },
