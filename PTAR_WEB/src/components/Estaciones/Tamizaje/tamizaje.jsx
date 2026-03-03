@@ -209,7 +209,7 @@ function redondear(valor) {
     return Number(valor.toFixed(2))
 }
 
-function Tamizaje({ onVolverALechos, onCompletarTamizaje }) {
+function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false }) {
     const [pasoActual, setPasoActual] = useState(0)
     const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
     const [debugCopiado, setDebugCopiado] = useState(false)
@@ -224,6 +224,12 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje }) {
     const paso = PASOS_RECORRIDO[pasoActual]
     const usarEscenarioPrincipal = pasoActual >= PASO_CAMBIO_ESCENARIO
     const fondoEscena = usarEscenarioPrincipal ? ESCENA_TAMIZAJE : ESCENA_COMPARTIDA
+
+    useEffect(() => {
+        setPasoActual(iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0)
+        setAbrirReproductorFinal(false)
+        setMostrarResumenFinal(false)
+    }, [iniciarEnFinal])
 
     const obtenerCamaraActivaPaso = useCallback(
         (pasoIndice = pasoActual) => {
