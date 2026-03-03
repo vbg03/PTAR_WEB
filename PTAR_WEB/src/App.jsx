@@ -10,6 +10,7 @@ import Sedimentador from './components/Estaciones/Sedimentador/sedimentador.jsx'
 import Lechos from './components/Estaciones/Lechos/lechos.jsx'
 import Tamizaje from './components/Estaciones/Tamizaje/tamizaje.jsx'
 import Filtro from './components/Estaciones/Filtración/filtro.jsx'
+import Desinfeccion from './components/Estaciones/Desinfección/desinfeccion.jsx'
 
 const DURACION_TRANSICION_ESTACION = 760
 const MITAD_TRANSICION_ESTACION = 340
@@ -24,6 +25,7 @@ function App() {
   const [lechosRenderKey, setLechosRenderKey] = useState(0)
   const [tamizajeRenderKey, setTamizajeRenderKey] = useState(0)
   const [filtroRenderKey, setFiltroRenderKey] = useState(0)
+  const [desinfeccionRenderKey, setDesinfeccionRenderKey] = useState(0)
   const [pozo1IniciarEnFinal, setPozo1IniciarEnFinal] = useState(false)
   const [pretratamientoIniciarEnFinal, setPretratamientoIniciarEnFinal] = useState(false)
   const [areacionEntradaSuave, setAreacionEntradaSuave] = useState(false)
@@ -31,6 +33,8 @@ function App() {
   const [sedimentadorIniciarEnFinal, setSedimentadorIniciarEnFinal] = useState(false)
   const [lechosIniciarEnFinal, setLechosIniciarEnFinal] = useState(false)
   const [tamizajeIniciarEnFinal, setTamizajeIniciarEnFinal] = useState(false)
+  const [filtroIniciarEnFinal, setFiltroIniciarEnFinal] = useState(false)
+  const [desinfeccionIniciarEnFinal, setDesinfeccionIniciarEnFinal] = useState(false)
   const [transicionEstacionActiva, setTransicionEstacionActiva] = useState(false)
   const [direccionTransicionEstacion, setDireccionTransicionEstacion] = useState('avance')
   const transicionActivaRef = useRef(false)
@@ -91,7 +95,9 @@ function App() {
                 ? 'ptar-app--tamizaje'
                 : seccionActiva === 'filtro'
                   ? 'ptar-app--filtro'
-               : ''
+                  : seccionActiva === 'desinfeccion'
+                    ? 'ptar-app--desinfeccion'
+                : ''
 
   return (
     <div className={`ptar-app ${claseApp}`}>
@@ -105,6 +111,8 @@ function App() {
           setSedimentadorIniciarEnFinal(false)
           setLechosIniciarEnFinal(false)
           setTamizajeIniciarEnFinal(false)
+          setFiltroIniciarEnFinal(false)
+          setDesinfeccionIniciarEnFinal(false)
           setSeccionActiva('inicio')
         }}
         onSeleccionarEstacion={(_, indice) => {
@@ -117,6 +125,8 @@ function App() {
             setSedimentadorIniciarEnFinal(false)
             setLechosIniciarEnFinal(false)
             setTamizajeIniciarEnFinal(false)
+            setFiltroIniciarEnFinal(false)
+            setDesinfeccionIniciarEnFinal(false)
             setSeccionActiva('pozo1')
             setPozo1RenderKey((valorAnterior) => valorAnterior + 1)
             return
@@ -131,6 +141,8 @@ function App() {
             setSedimentadorIniciarEnFinal(false)
             setLechosIniciarEnFinal(false)
             setTamizajeIniciarEnFinal(false)
+            setFiltroIniciarEnFinal(false)
+            setDesinfeccionIniciarEnFinal(false)
             setSeccionActiva('pretratamiento')
             setPretratamientoRenderKey((valorAnterior) => valorAnterior + 1)
             return
@@ -145,6 +157,8 @@ function App() {
             setSedimentadorIniciarEnFinal(false)
             setLechosIniciarEnFinal(false)
             setTamizajeIniciarEnFinal(false)
+            setFiltroIniciarEnFinal(false)
+            setDesinfeccionIniciarEnFinal(false)
             setSeccionActiva('areacion')
             setAreacionRenderKey((valorAnterior) => valorAnterior + 1)
             return
@@ -159,6 +173,8 @@ function App() {
             setSedimentadorIniciarEnFinal(false)
             setLechosIniciarEnFinal(false)
             setTamizajeIniciarEnFinal(false)
+            setFiltroIniciarEnFinal(false)
+            setDesinfeccionIniciarEnFinal(false)
             setSeccionActiva('sedimentador')
             setSedimentadorRenderKey((valorAnterior) => valorAnterior + 1)
             return
@@ -173,6 +189,8 @@ function App() {
             setSedimentadorIniciarEnFinal(false)
             setLechosIniciarEnFinal(false)
             setTamizajeIniciarEnFinal(false)
+            setFiltroIniciarEnFinal(false)
+            setDesinfeccionIniciarEnFinal(false)
             setSeccionActiva('lechos')
             setLechosRenderKey((valorAnterior) => valorAnterior + 1)
             return
@@ -187,6 +205,8 @@ function App() {
             setSedimentadorIniciarEnFinal(false)
             setLechosIniciarEnFinal(false)
             setTamizajeIniciarEnFinal(false)
+            setFiltroIniciarEnFinal(false)
+            setDesinfeccionIniciarEnFinal(false)
             setSeccionActiva('tamizaje')
             setTamizajeRenderKey((valorAnterior) => valorAnterior + 1)
             return
@@ -201,8 +221,26 @@ function App() {
             setSedimentadorIniciarEnFinal(false)
             setLechosIniciarEnFinal(false)
             setTamizajeIniciarEnFinal(false)
+            setFiltroIniciarEnFinal(false)
+            setDesinfeccionIniciarEnFinal(false)
             setSeccionActiva('filtro')
             setFiltroRenderKey((valorAnterior) => valorAnterior + 1)
+            return
+          }
+
+          if (indice === 7) {
+            setVolverAUbicacion(false)
+            setPozo1IniciarEnFinal(false)
+            setPretratamientoIniciarEnFinal(false)
+            setAreacionEntradaSuave(false)
+            setAreacionIniciarEnFinal(false)
+            setSedimentadorIniciarEnFinal(false)
+            setLechosIniciarEnFinal(false)
+            setTamizajeIniciarEnFinal(false)
+            setFiltroIniciarEnFinal(false)
+            setDesinfeccionIniciarEnFinal(false)
+            setSeccionActiva('desinfeccion')
+            setDesinfeccionRenderKey((valorAnterior) => valorAnterior + 1)
             return
           }
         }}
@@ -219,6 +257,8 @@ function App() {
               setSedimentadorIniciarEnFinal(false)
               setLechosIniciarEnFinal(false)
               setTamizajeIniciarEnFinal(false)
+              setFiltroIniciarEnFinal(false)
+              setDesinfeccionIniciarEnFinal(false)
               setSeccionActiva('informacion')
             }}
           />
@@ -236,6 +276,8 @@ function App() {
               setSedimentadorIniciarEnFinal(false)
               setLechosIniciarEnFinal(false)
               setTamizajeIniciarEnFinal(false)
+              setFiltroIniciarEnFinal(false)
+              setDesinfeccionIniciarEnFinal(false)
               setSeccionActiva('pozo1')
             }}
           />
@@ -254,6 +296,8 @@ function App() {
                 setSedimentadorIniciarEnFinal(false)
                 setLechosIniciarEnFinal(false)
                 setTamizajeIniciarEnFinal(false)
+                setFiltroIniciarEnFinal(false)
+                setDesinfeccionIniciarEnFinal(false)
                 setSeccionActiva('pretratamiento')
                 setPretratamientoRenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -267,6 +311,8 @@ function App() {
               setSedimentadorIniciarEnFinal(false)
               setLechosIniciarEnFinal(false)
               setTamizajeIniciarEnFinal(false)
+              setFiltroIniciarEnFinal(false)
+              setDesinfeccionIniciarEnFinal(false)
               setSeccionActiva('informacion')
             }}
           />
@@ -285,6 +331,8 @@ function App() {
                 setSedimentadorIniciarEnFinal(false)
                 setLechosIniciarEnFinal(false)
                 setTamizajeIniciarEnFinal(false)
+                setFiltroIniciarEnFinal(false)
+                setDesinfeccionIniciarEnFinal(false)
                 setSeccionActiva('pozo1')
                 setPozo1RenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -296,6 +344,8 @@ function App() {
               setSedimentadorIniciarEnFinal(false)
               setLechosIniciarEnFinal(false)
               setTamizajeIniciarEnFinal(false)
+              setFiltroIniciarEnFinal(false)
+              setDesinfeccionIniciarEnFinal(false)
               setSeccionActiva('areacion')
               setAreacionRenderKey((valorAnterior) => valorAnterior + 1)
             }}
@@ -314,6 +364,8 @@ function App() {
               setSedimentadorIniciarEnFinal(false)
               setLechosIniciarEnFinal(false)
               setTamizajeIniciarEnFinal(false)
+              setFiltroIniciarEnFinal(false)
+              setDesinfeccionIniciarEnFinal(false)
               setSeccionActiva('pretratamiento')
               setPretratamientoRenderKey((valorAnterior) => valorAnterior + 1)
             }}
@@ -324,6 +376,8 @@ function App() {
                 setSedimentadorIniciarEnFinal(false)
                 setLechosIniciarEnFinal(false)
                 setTamizajeIniciarEnFinal(false)
+                setFiltroIniciarEnFinal(false)
+                setDesinfeccionIniciarEnFinal(false)
                 setSeccionActiva('sedimentador')
                 setSedimentadorRenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -342,6 +396,8 @@ function App() {
                 setSedimentadorIniciarEnFinal(false)
                 setLechosIniciarEnFinal(false)
                 setTamizajeIniciarEnFinal(false)
+                setFiltroIniciarEnFinal(false)
+                setDesinfeccionIniciarEnFinal(false)
                 setSeccionActiva('areacion')
                 setAreacionRenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -351,6 +407,8 @@ function App() {
                 setSedimentadorIniciarEnFinal(false)
                 setLechosIniciarEnFinal(false)
                 setTamizajeIniciarEnFinal(false)
+                setFiltroIniciarEnFinal(false)
+                setDesinfeccionIniciarEnFinal(false)
                 setSeccionActiva('lechos')
                 setLechosRenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -367,6 +425,8 @@ function App() {
                 setLechosIniciarEnFinal(false)
                 setSedimentadorIniciarEnFinal(true)
                 setTamizajeIniciarEnFinal(false)
+                setFiltroIniciarEnFinal(false)
+                setDesinfeccionIniciarEnFinal(false)
                 setSeccionActiva('sedimentador')
                 setSedimentadorRenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -376,6 +436,8 @@ function App() {
                 setLechosIniciarEnFinal(false)
                 setSedimentadorIniciarEnFinal(false)
                 setTamizajeIniciarEnFinal(false)
+                setFiltroIniciarEnFinal(false)
+                setDesinfeccionIniciarEnFinal(false)
                 setSeccionActiva('tamizaje')
                 setTamizajeRenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -392,6 +454,8 @@ function App() {
                 setLechosIniciarEnFinal(true)
                 setSedimentadorIniciarEnFinal(false)
                 setTamizajeIniciarEnFinal(false)
+                setFiltroIniciarEnFinal(false)
+                setDesinfeccionIniciarEnFinal(false)
                 setSeccionActiva('lechos')
                 setLechosRenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -399,6 +463,8 @@ function App() {
             onCompletarTamizaje={() => {
               ejecutarTransicionEstacion('avance', () => {
                 setTamizajeIniciarEnFinal(false)
+                setFiltroIniciarEnFinal(false)
+                setDesinfeccionIniciarEnFinal(false)
                 setSeccionActiva('filtro')
                 setFiltroRenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -409,11 +475,37 @@ function App() {
         {seccionActiva === 'filtro' ? (
           <Filtro
             key={filtroRenderKey}
+            iniciarEnFinal={filtroIniciarEnFinal}
             onVolverATamizaje={() => {
               ejecutarTransicionEstacion('retroceso', () => {
                 setTamizajeIniciarEnFinal(true)
+                setFiltroIniciarEnFinal(false)
+                setDesinfeccionIniciarEnFinal(false)
                 setSeccionActiva('tamizaje')
                 setTamizajeRenderKey((valorAnterior) => valorAnterior + 1)
+              })
+            }}
+            onCompletarFiltracion={() => {
+              ejecutarTransicionEstacion('avance', () => {
+                setFiltroIniciarEnFinal(false)
+                setDesinfeccionIniciarEnFinal(false)
+                setSeccionActiva('desinfeccion')
+                setDesinfeccionRenderKey((valorAnterior) => valorAnterior + 1)
+              })
+            }}
+          />
+        ) : null}
+
+        {seccionActiva === 'desinfeccion' ? (
+          <Desinfeccion
+            key={desinfeccionRenderKey}
+            iniciarEnFinal={desinfeccionIniciarEnFinal}
+            onVolverAFiltro={() => {
+              ejecutarTransicionEstacion('retroceso', () => {
+                setDesinfeccionIniciarEnFinal(false)
+                setFiltroIniciarEnFinal(true)
+                setSeccionActiva('filtro')
+                setFiltroRenderKey((valorAnterior) => valorAnterior + 1)
               })
             }}
           />
