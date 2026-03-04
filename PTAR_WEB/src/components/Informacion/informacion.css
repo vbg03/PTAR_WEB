@@ -328,17 +328,17 @@
 .ptar-info__personaje {
   position: absolute;
   bottom: 0;
-  height: clamp(145px, 20vw, 320px);
+  height: clamp(200px, 40vw, 340px);
   width: auto;
   pointer-events: none;
 }
 
 .ptar-info__personaje--izquierda {
-  left: clamp(14px, 2.5vw, 34px);
+  left: clamp(2px, 2.5vw, 3px);
 }
 
 .ptar-info__personaje--derecha {
-  right: clamp(14px, 2.5vw, 34px);
+  right: clamp(14px, 2.5vw, 3px);
 }
 
 .ptar-info__hint-scroll {
@@ -557,7 +557,7 @@
   transition: opacity 380ms ease, transform 380ms ease;
   pointer-events: none;
   z-index: 8;
-  animation: ptar-info-burbuja 340ms ease both;
+  animation: none;
 }
 
 .ptar-info__burbuja.is-behind-summary {
@@ -574,6 +574,7 @@
 .ptar-info__burbuja.is-visible {
   opacity: 1;
   transform: translateY(0) scale(1);
+  animation: ptar-info-burbuja 340ms ease both;
 }
 
 .ptar-info__burbuja--roja {

@@ -1,4 +1,4 @@
-ï»¿import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './sedimentador.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -398,9 +398,9 @@ const PASOS_RECORRIDO = [
             'Aqui el agua se mueve de forma lenta para que los lodos y las particulas gruesas se agrupen y se vayan al fondo. Arriba queda el agua mas clara.'
     }),
     crearPaso({
-        camaraX: 61.2,
-        camaraY: 51,
-        zoom: 2.2,
+        camaraX: 78,
+        camaraY: 45.1,
+        zoom: 3.16,
         gota: { x: 44, y: 56, escala: 0.42 },
         ocultarGota: true,
         soloTransicion: true
@@ -506,7 +506,7 @@ const PASOS_RECORRIDO = [
             ]
         },
         burbujaDerecha:
-            'MÃ¡s que piedras, son restos de lodo y bacterias que ya hicieron su trabajo en el tanque anterior. Todo eso pesa mÃ¡s que el agua y, si le damos tiempo, se va hundiendo poco a poco.'
+            'Más que piedras, son restos de lodo y bacterias que ya hicieron su trabajo en el tanque anterior. Todo eso pesa más que el agua y, si le damos tiempo, se va hundiendo poco a poco.'
     }),
     crearPaso({
         camaraX: 60.9,
@@ -1040,6 +1040,7 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
     const timeoutBloqueoRef = useRef(null)
     const timeoutAutoavanceTransicionRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
+    const pasoOrigenTransicionRef = useRef(null)
 
     const paso = PASOS_RECORRIDO[pasoActual]
     const usarEscenarioPrincipal = pasoActual >= PASO_CAMBIO_ESCENARIO
@@ -1139,7 +1140,16 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
         bloqueoScrollRef.current = true
 
         timeoutAutoavanceTransicionRef.current = window.setTimeout(() => {
-            setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+            setPasoActual((pasoAnterior) => {
+                const pasoOrigenTransicion = pasoOrigenTransicionRef.current
+                pasoOrigenTransicionRef.current = null
+
+                if (pasoOrigenTransicion === PASO_CAMBIO_ESCENARIO) {
+                    return PASO_PREVIO_TRANSICION_ESCENARIO
+                }
+
+                return Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1)
+            })
             timeoutAutoavanceTransicionRef.current = null
         }, DURACION_AUTOAVANCE_TRANSICION)
 
@@ -1184,17 +1194,26 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
                         onCompletarSedimentador()
                     }
                 } else {
+                    if (pasoActual === PASO_PREVIO_TRANSICION_ESCENARIO) {
+                        pasoOrigenTransicionRef.current = PASO_PREVIO_TRANSICION_ESCENARIO
+                    } else {
+                        pasoOrigenTransicionRef.current = null
+                    }
                     setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
                 }
             } else if (pasoActual > 0) {
                 if (pasoActual === PASO_POST_CAMBIO_ESCENARIO) {
-                    setPasoActual(PASO_TRANSICION_ESCENARIO)
+                    pasoOrigenTransicionRef.current = null
+                    setPasoActual(PASO_CAMBIO_ESCENARIO)
                 } else if (pasoActual === PASO_CAMBIO_ESCENARIO) {
-                    setPasoActual(PASO_PREVIO_TRANSICION_ESCENARIO)
+                    pasoOrigenTransicionRef.current = PASO_CAMBIO_ESCENARIO
+                    setPasoActual(PASO_TRANSICION_ESCENARIO)
                 } else {
+                    pasoOrigenTransicionRef.current = null
                     setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
                 }
             } else if (typeof onVolverAAreacion === 'function') {
+                pasoOrigenTransicionRef.current = null
                 onVolverAAreacion()
             }
 
@@ -1622,3 +1641,4 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
 }
 
 export default Sedimentador
+

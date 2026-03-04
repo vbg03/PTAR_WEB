@@ -1328,3 +1328,4 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
 }
 
 export default Pretratamiento
+

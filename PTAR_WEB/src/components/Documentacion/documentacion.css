@@ -38,7 +38,7 @@
 .ptar-documentacion__contenido > p {
   margin: 0;
   max-width: 900px;
-  color: #161616;
+  color: #622c2c;
   font-size: clamp(28px, 2.5vw, 56px);
   line-height: 1.06;
 }

@@ -1,4 +1,4 @@
-﻿.ptar-sed {
+.ptar-sed {
   position: relative;
   flex: 1;
   width: 100%;
@@ -50,11 +50,14 @@
   transform: translate(-50%, -50%) scale(var(--particulas-escala, 1));
   pointer-events: none;
   transition:
-    left 560ms cubic-bezier(0.2, 0.9, 0.2, 1),
-    top 560ms cubic-bezier(0.2, 0.9, 0.2, 1),
-    opacity 560ms ease,
-    transform 560ms cubic-bezier(0.2, 0.9, 0.2, 1);
+    left 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    top 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    width 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    height 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    opacity 620ms ease,
+    transform 760ms cubic-bezier(0.22, 0.78, 0.2, 1);
   z-index: 4;
+  will-change: left, top, width, height, opacity, transform;
 }
 
 .ptar-sed__particulas--arriba {
@@ -79,9 +82,11 @@
     var(--particulas-flujo-delay, 0s)
     infinite;
   transition:
-    left 560ms cubic-bezier(0.2, 0.9, 0.2, 1),
-    top 560ms cubic-bezier(0.2, 0.9, 0.2, 1),
-    opacity 560ms ease;
+    left 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    top 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    width 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    height 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    opacity 620ms ease;
   will-change: transform;
 }
 
@@ -93,10 +98,14 @@
   mix-blend-mode: multiply;
   filter: blur(var(--nube-blur, 20px));
   transition:
-    left 560ms cubic-bezier(0.2, 0.9, 0.2, 1),
-    top 560ms cubic-bezier(0.2, 0.9, 0.2, 1),
-    opacity 560ms ease,
-    transform 560ms cubic-bezier(0.2, 0.9, 0.2, 1);
+    left 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    top 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    width 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    height 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    opacity 620ms ease,
+    transform 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    filter 760ms cubic-bezier(0.22, 0.78, 0.2, 1);
+  will-change: left, top, width, height, opacity, transform, filter;
 }
 
 .ptar-sed__nube-lodo::before,
@@ -131,10 +140,13 @@
   pointer-events: none;
   z-index: 4;
   transition:
-    left 560ms cubic-bezier(0.2, 0.9, 0.2, 1),
-    top 560ms cubic-bezier(0.2, 0.9, 0.2, 1),
-    opacity 560ms ease,
-    transform 560ms cubic-bezier(0.2, 0.9, 0.2, 1);
+    left 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    top 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    width 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    height 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    opacity 620ms ease,
+    transform 760ms cubic-bezier(0.22, 0.78, 0.2, 1);
+  will-change: left, top, width, height, opacity, transform;
 }
 
 .ptar-sed__grupo-particulas--fondo {
@@ -149,6 +161,12 @@
   position: absolute;
   border-radius: var(--particula-radio, 56% 44% 58% 42% / 44% 56% 48% 52%);
   transform: translate(-50%, -50%) translate(0, 0) rotate(var(--particula-rotacion, 0deg)) scale(1);
+  transition:
+    left 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    top 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    width 620ms ease,
+    height 620ms ease,
+    opacity 520ms ease;
   animation:
     ptar-sed-particula-deriva var(--particula-duracion, 12s)
     ease-in-out
@@ -217,7 +235,6 @@
 
 .ptar-sed__avatar--izquierda {
   left: clamp(12px, 2.2vw, 28px);
-  width: clamp(76px, 7.2vw, 116px);
 }
 
 .ptar-sed__avatar--derecha {
@@ -1062,11 +1079,6 @@
   .ptar-sed__avatar {
     width: clamp(82px, 16vw, 116px);
   }
-
-  .ptar-sed__avatar--izquierda {
-    width: clamp(66px, 12.8vw, 92px);
-  }
-
   .ptar-sed__debug-camara {
     min-width: 280px;
     max-width: min(92vw, 420px);
@@ -1086,4 +1098,7 @@
     animation: none;
   }
 }
+
+
+
 

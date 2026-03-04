@@ -81,9 +81,9 @@ const PASOS_RECORRIDO = [
         burbujaIzquierda: 'Bacterias limpiando el agua? Eso no la contamina mas?'
     }),
     crearPaso({
-        camaraX: 52,
-        camaraY: 26,
-        zoom: 4.5,
+        camaraX: 86.9,
+        camaraY: 93.4,
+        zoom: 4.11,
         gota: { x: 28, y: 72, escala: 0.9 },
         soloTransicion: true
     }),
@@ -958,3 +958,4 @@ function Areacion({
 }
 
 export default Areacion
+

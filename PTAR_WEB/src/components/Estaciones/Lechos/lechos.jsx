@@ -1584,3 +1584,4 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
 }
 
 export default Lechos
+

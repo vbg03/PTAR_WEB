@@ -271,7 +271,7 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
       >
         <img
           className="ptar-info__personaje ptar-info__personaje--izquierda"
-          src="/images/estudianteNormal.png"
+          src="/images/estudianteNormal.svg"
           alt="Estudiante"
         />
 
@@ -513,7 +513,7 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
 
         <img
           className="ptar-info__personaje ptar-info__personaje--derecha"
-          src="/images/estudianteAmbiental.png"
+          src="/images/estudianteAmbiental.svg"
           alt="Guía ambiental"
         />
 

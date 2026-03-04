@@ -311,7 +311,6 @@
 
 .ptar-pozo1__avatar--izquierda {
   left: clamp(12px, 2.2vw, 28px);
-  width: clamp(76px, 7.2vw, 116px);
 }
 
 .ptar-pozo1__avatar--derecha {
@@ -743,11 +742,6 @@
   .ptar-pozo1__avatar {
     width: clamp(82px, 16vw, 116px);
   }
-
-  .ptar-pozo1__avatar--izquierda {
-    width: clamp(66px, 12.8vw, 92px);
-  }
-
   .ptar-pozo1__debug-camara {
     min-width: 280px;
     max-width: min(92vw, 420px);
@@ -757,3 +751,6 @@
     font-size: 12px;
   }
 }
+
+
+

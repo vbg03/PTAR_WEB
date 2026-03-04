@@ -1,11 +1,50 @@
+import { useEffect, useRef } from 'react'
 import './documentacion.css'
+
+const DURACION_BLOQUEO_SCROLL = 340
 
 const ENLACE_FICHA_TECNICA =
   'https://drive.google.com/file/d/1RDE2gCq1fxK_YbtxVTLuWcFABEjqtaSO/view?usp=sharing'
 const ENLACE_DOCUMENTACION_OFICIAL =
   'https://drive.google.com/file/d/1vG1p81qSbzKHjKwlggZ4C_Rtq5QJ2CTb/view?usp=drive_link'
 
-function Documentacion() {
+function Documentacion({ onVolverAUsos }) {
+  const bloqueoScrollRef = useRef(false)
+  const timeoutBloqueoRef = useRef(null)
+
+  useEffect(() => {
+    const manejarRueda = (event) => {
+      if (bloqueoScrollRef.current || event.deltaY === 0) {
+        return
+      }
+
+      bloqueoScrollRef.current = true
+
+      if (event.deltaY < 0 && typeof onVolverAUsos === 'function') {
+        onVolverAUsos()
+      }
+
+      if (timeoutBloqueoRef.current) {
+        window.clearTimeout(timeoutBloqueoRef.current)
+      }
+
+      timeoutBloqueoRef.current = window.setTimeout(() => {
+        bloqueoScrollRef.current = false
+        timeoutBloqueoRef.current = null
+      }, DURACION_BLOQUEO_SCROLL)
+    }
+
+    window.addEventListener('wheel', manejarRueda, { passive: true })
+
+    return () => {
+      window.removeEventListener('wheel', manejarRueda)
+      if (timeoutBloqueoRef.current) {
+        window.clearTimeout(timeoutBloqueoRef.current)
+        timeoutBloqueoRef.current = null
+      }
+    }
+  }, [onVolverAUsos])
+
   return (
     <main className="ptar-documentacion">
       <section className="ptar-documentacion__panel" aria-label="Documentacion de la PTAR">

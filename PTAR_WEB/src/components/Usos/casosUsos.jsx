@@ -93,8 +93,10 @@ const PASOS_RECORRIDO = [
   }
 ]
 
-function CasosUsos({ onVolverAPozo2, onCompletarUsos }) {
-  const [pasoActual, setPasoActual] = useState(0)
+function CasosUsos({ onVolverAPozo2, onCompletarUsos, iniciarEnFinal = false }) {
+  const [pasoActual, setPasoActual] = useState(() =>
+    iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0
+  )
   const [mostrarResumen, setMostrarResumen] = useState(false)
   const [abrirReproductor, setAbrirReproductor] = useState(false)
   const [tituloVisible, setTituloVisible] = useState(false)
@@ -117,6 +119,11 @@ function CasosUsos({ onVolverAPozo2, onCompletarUsos }) {
 
   const paso = PASOS_RECORRIDO[pasoActual]
   const mediaActiva = paso.mediaId ? MEDIAS[paso.mediaId] : null
+
+  useEffect(() => {
+    setPasoActual(iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0)
+    bloqueoScrollRef.current = false
+  }, [iniciarEnFinal])
 
   useEffect(() => {
     setMostrarResumen(false)
@@ -355,13 +362,13 @@ function CasosUsos({ onVolverAPozo2, onCompletarUsos }) {
       <section className="ptar-usos__panel" aria-label="Casos de uso del agua">
         <img
           className={`ptar-usos__personaje ptar-usos__personaje--izquierda ${pasoActual === 0 ? 'is-grande is-intro' : ''}`}
-          src="/images/estudianteNormal.png"
+          src="/images/estudianteNormal.svg"
           alt=""
           aria-hidden="true"
         />
         <img
           className={`ptar-usos__personaje ptar-usos__personaje--derecha ${pasoActual === 0 ? 'is-grande is-intro' : ''}`}
-          src="/images/estudianteAmbiental.png"
+          src="/images/estudianteAmbiental.svg"
           alt=""
           aria-hidden="true"
         />

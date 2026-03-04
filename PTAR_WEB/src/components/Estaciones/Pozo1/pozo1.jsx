@@ -843,3 +843,4 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
 }
 
 export default Pozo1
+

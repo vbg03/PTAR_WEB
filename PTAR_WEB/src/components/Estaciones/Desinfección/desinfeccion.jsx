@@ -95,7 +95,7 @@ const PASOS_RECORRIDO = [
         esterilizador: {
             estado: 'visible',
             x: 47,
-            y: 47,
+            y: 52,
             ancho: 49.5,
             opacidad: 1
         },
@@ -485,6 +485,7 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
         paso.esterilizador.estado !== 'oculto' && limitarUnidad(paso.esterilizador.opacidad) > 0
     const esterilizadorSoloUv = paso.esterilizador.estado === 'solo-uv'
     const esterilizadorActivo = paso.esterilizador.estado === 'activo' || esterilizadorSoloUv
+    const esterilizadorPasoLamparasUv = pasoActual === 3
 
     return (
         <main className="ptar-des">
@@ -494,9 +495,8 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
 
                 {mostrarEsterilizador ? (
                     <div
-                        key={`ester-${pasoActual}`}
                         className={`ptar-des__esterilizador-wrap ${paso.esterilizador.estado === 'fade-out' ? 'is-fade-out' : ''
-                            } ${esterilizadorActivo ? 'is-uv-active' : ''}`}
+                            } ${esterilizadorActivo ? 'is-uv-active' : ''} ${esterilizadorPasoLamparasUv ? 'is-lamparas-focus' : ''}`}
                         style={estiloEsterilizador}
                         aria-hidden="true"
                     >
@@ -708,3 +708,4 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
 }
 
 export default Desinfeccion
+

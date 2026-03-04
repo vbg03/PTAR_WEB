@@ -724,3 +724,4 @@ function Filtro({ onVolverATamizaje, onCompletarFiltracion, iniciarEnFinal = fal
 }
 
 export default Filtro
+

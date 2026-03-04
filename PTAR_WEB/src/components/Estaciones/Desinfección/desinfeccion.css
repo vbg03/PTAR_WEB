@@ -73,6 +73,15 @@
   animation: ptar-des-esterilizador-out 740ms ease forwards;
 }
 
+.ptar-des__esterilizador-wrap.is-lamparas-focus:not(.is-fade-out) {
+  transition:
+    left 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    top 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    width 760ms cubic-bezier(0.22, 0.78, 0.2, 1),
+    opacity 360ms ease;
+  animation: ptar-des-esterilizador-focus 620ms cubic-bezier(0.22, 0.78, 0.2, 1) both;
+}
+
 .ptar-des__esterilizador-wrap.is-uv-active .ptar-des__esterilizador {
   filter:
     saturate(1.08)
@@ -227,7 +236,6 @@
 
 .ptar-des__avatar--izquierda {
   left: clamp(12px, 2.2vw, 28px);
-  width: clamp(76px, 7.2vw, 116px);
 }
 
 .ptar-des__avatar--derecha {
@@ -735,6 +743,20 @@
   }
 }
 
+@keyframes ptar-des-esterilizador-focus {
+  0% {
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+
+  55% {
+    transform: translate(-50%, -50%) scale(1.03);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 @keyframes ptar-des-uv-glow-pulse {
   0%,
   100% {
@@ -862,11 +884,6 @@
   .ptar-des__avatar {
     width: clamp(82px, 16vw, 116px);
   }
-
-  .ptar-des__avatar--izquierda {
-    width: clamp(66px, 12.8vw, 92px);
-  }
-
   .ptar-des__debug-camara {
     min-width: 280px;
     max-width: min(92vw, 420px);
@@ -887,3 +904,6 @@
     transition: none;
   }
 }
+
+
+

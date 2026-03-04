@@ -33,6 +33,7 @@ function App() {
   const [almacenamientoRenderKey, setAlmacenamientoRenderKey] = useState(0)
   const [pozo2RenderKey, setPozo2RenderKey] = useState(0)
   const [usosRenderKey, setUsosRenderKey] = useState(0)
+  const [usosIniciarEnFinal, setUsosIniciarEnFinal] = useState(false)
   const [pozo1IniciarEnFinal, setPozo1IniciarEnFinal] = useState(false)
   const [pretratamientoIniciarEnFinal, setPretratamientoIniciarEnFinal] = useState(false)
   const [areacionEntradaSuave, setAreacionEntradaSuave] = useState(false)
@@ -313,6 +314,7 @@ function App() {
           setDesinfeccionIniciarEnFinal(false)
           setAlmacenamientoIniciarEnFinal(false)
           setPozo2IniciarEnFinal(false)
+          setUsosIniciarEnFinal(false)
           setSeccionActiva('usos')
           setUsosRenderKey((valorAnterior) => valorAnterior + 1)
         }}
@@ -641,6 +643,7 @@ function App() {
             onCompletarPozo2={() => {
               ejecutarTransicionEstacion('avance', () => {
                 setPozo2IniciarEnFinal(false)
+                setUsosIniciarEnFinal(false)
                 setSeccionActiva('usos')
                 setUsosRenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -651,6 +654,7 @@ function App() {
         {seccionActiva === 'usos' ? (
           <CasosUsos
             key={usosRenderKey}
+            iniciarEnFinal={usosIniciarEnFinal}
             onVolverAPozo2={() => {
               ejecutarTransicionEstacion('retroceso', () => {
                 setPozo2IniciarEnFinal(true)
@@ -661,13 +665,24 @@ function App() {
             onCompletarUsos={() => {
               ejecutarTransicionEstacion('avance', () => {
                 setPozo2IniciarEnFinal(false)
+                setUsosIniciarEnFinal(false)
                 setSeccionActiva('documentacion')
               })
             }}
           />
         ) : null}
 
-        {seccionActiva === 'documentacion' ? <Documentacion /> : null}
+        {seccionActiva === 'documentacion' ? (
+          <Documentacion
+            onVolverAUsos={() => {
+              ejecutarTransicionEstacion('retroceso', () => {
+                setUsosIniciarEnFinal(true)
+                setSeccionActiva('usos')
+                setUsosRenderKey((valorAnterior) => valorAnterior + 1)
+              })
+            }}
+          />
+        ) : null}
 
         {transicionEstacionActiva ? (
           <div

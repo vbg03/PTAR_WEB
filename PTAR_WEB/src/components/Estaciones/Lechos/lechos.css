@@ -703,7 +703,6 @@
 
 .ptar-lec__avatar--izquierda {
   left: clamp(12px, 2.2vw, 28px);
-  width: clamp(76px, 7.2vw, 116px);
 }
 
 .ptar-lec__avatar--derecha {
@@ -1141,11 +1140,6 @@
   .ptar-lec__avatar {
     width: clamp(76px, 22vw, 100px);
   }
-
-  .ptar-lec__avatar--izquierda {
-    width: clamp(66px, 20vw, 92px);
-  }
-
   .ptar-lec__burbuja {
     bottom: 96px;
     max-width: min(72vw, 340px);
@@ -1171,3 +1165,6 @@
     width: clamp(96px, 28vw, 150px);
   }
 }
+
+
+

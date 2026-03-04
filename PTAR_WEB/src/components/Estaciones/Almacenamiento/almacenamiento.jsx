@@ -537,3 +537,4 @@ function Almacenamiento({ onVolverADesinfeccion, onCompletarAlmacenamiento, inic
 }
 
 export default Almacenamiento
+

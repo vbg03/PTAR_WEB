@@ -179,7 +179,7 @@
 .ptar-usos__personaje {
   position: absolute;
   bottom: 0;
-  height: clamp(300px, 31vh, 430px);
+  height: clamp(200px, 40vw, 340px);
   width: auto;
   pointer-events: none;
   will-change: left, right, height;
@@ -202,11 +202,11 @@
 }
 
 .ptar-usos__personaje--izquierda {
-  left: clamp(28px, 3vw, 56px);
+  left: clamp(2px, 2.5vw, 3px);
 }
 
 .ptar-usos__personaje--derecha {
-  right: clamp(26px, 3vw, 52px);
+  right: clamp(14px, 2.5vw, 3px);
 }
 
 .ptar-usos__burbuja {

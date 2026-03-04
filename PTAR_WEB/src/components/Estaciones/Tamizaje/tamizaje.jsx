@@ -733,3 +733,4 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false
 }
 
 export default Tamizaje
+
