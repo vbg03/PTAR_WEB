@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './tamizaje.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -211,7 +212,7 @@ function redondear(valor) {
 
 function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false }) {
     const [pasoActual, setPasoActual] = useState(0)
-    const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
+    const [debugCamaraActiva, setDebugCamaraActiva] = useState(DEBUG_CAMARA_HABILITADO)
     const [debugCopiado, setDebugCopiado] = useState(false)
     const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
@@ -400,13 +401,13 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false
 
     useEffect(() => {
         const manejarTecladoDebug = (event) => {
-            if (event.key === 'F8') {
+            if (DEBUG_CAMARA_HABILITADO && event.key === 'F8') {
                 event.preventDefault()
                 setDebugCamaraActiva((estadoAnterior) => !estadoAnterior)
                 return
             }
 
-            if (!debugCamaraActiva) {
+            if (!DEBUG_CAMARA_HABILITADO || !debugCamaraActiva) {
                 return
             }
 
@@ -655,10 +656,6 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false
                                 {paso.burbujaDerecha}
                             </aside>
                         ) : null}
-
-                        <p className="ptar-tam__paso" aria-hidden="true">
-                            Paso {pasoActual + 1} de {PASOS_RECORRIDO.length}
-                        </p>
 
                         {debugCamaraActiva ? (
                             <aside className="ptar-tam__debug-camara" role="status" aria-live="polite">

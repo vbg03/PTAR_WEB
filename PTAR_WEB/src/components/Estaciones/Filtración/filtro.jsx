@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './filtro.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -253,7 +254,7 @@ function redondear(valor) {
 
 function Filtro({ onVolverATamizaje, onCompletarFiltracion, iniciarEnFinal = false }) {
     const [pasoActual, setPasoActual] = useState(0)
-    const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
+    const [debugCamaraActiva, setDebugCamaraActiva] = useState(DEBUG_CAMARA_HABILITADO)
     const [debugCopiado, setDebugCopiado] = useState(false)
     const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
@@ -399,13 +400,13 @@ function Filtro({ onVolverATamizaje, onCompletarFiltracion, iniciarEnFinal = fal
 
     useEffect(() => {
         const manejarTecladoDebug = (event) => {
-            if (event.key === 'F8') {
+            if (DEBUG_CAMARA_HABILITADO && event.key === 'F8') {
                 event.preventDefault()
                 setDebugCamaraActiva((estadoAnterior) => !estadoAnterior)
                 return
             }
 
-            if (!debugCamaraActiva) {
+            if (!DEBUG_CAMARA_HABILITADO || !debugCamaraActiva) {
                 return
             }
 
@@ -658,10 +659,6 @@ function Filtro({ onVolverATamizaje, onCompletarFiltracion, iniciarEnFinal = fal
                         {paso.burbujaDerecha}
                     </aside>
                 ) : null}
-
-                <p className="ptar-fil__paso" aria-hidden="true">
-                    Paso {pasoActual + 1} de {PASOS_RECORRIDO.length}
-                </p>
 
                 {debugCamaraActiva ? (
                     <aside className="ptar-fil__debug-camara" role="status" aria-live="polite">

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './desinfeccion.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -91,7 +92,7 @@ const PASOS_RECORRIDO = [
         camaraX: 77.9,
         camaraY: 56.3,
         zoom: 5.66,
-        gota: { x: 77.2, y: 69.5, escala: 0.45 },
+        gota: { x: 77.2, y: 74, escala: 0.45 },
         esterilizador: {
             estado: 'visible',
             x: 47,
@@ -233,7 +234,7 @@ function redondear(valor) {
 
 function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal = false }) {
     const [pasoActual, setPasoActual] = useState(0)
-    const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
+    const [debugCamaraActiva, setDebugCamaraActiva] = useState(DEBUG_CAMARA_HABILITADO)
     const [debugCopiado, setDebugCopiado] = useState(false)
     const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
@@ -379,13 +380,13 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
 
     useEffect(() => {
         const manejarTecladoDebug = (event) => {
-            if (event.key === 'F8') {
+            if (DEBUG_CAMARA_HABILITADO && event.key === 'F8') {
                 event.preventDefault()
                 setDebugCamaraActiva((estadoAnterior) => !estadoAnterior)
                 return
             }
 
-            if (!debugCamaraActiva) {
+            if (!DEBUG_CAMARA_HABILITADO || !debugCamaraActiva) {
                 return
             }
 
@@ -642,10 +643,6 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
                         {paso.burbujaDerecha}
                     </aside>
                 ) : null}
-
-                <p className="ptar-des__paso" aria-hidden="true">
-                    Paso {pasoActual + 1} de {PASOS_RECORRIDO.length}
-                </p>
 
                 {debugCamaraActiva ? (
                     <aside className="ptar-des__debug-camara" role="status" aria-live="polite">

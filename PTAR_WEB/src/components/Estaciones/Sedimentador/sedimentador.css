@@ -191,6 +191,9 @@
   top: 50%;
   width: clamp(62px, 8vw, 166px);
   height: auto;
+  border-radius: 50%;
+  box-shadow: 0 0 0 rgba(122, 223, 255, 0);
+  --gota-aura-rgb: 178 144 99;
   transform: translate(-50%, -50%) scale(var(--gota-escala, 1));
   transform-origin: center center;
   transition:
@@ -201,20 +204,26 @@
   z-index: 8;
   pointer-events: none;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.28));
-  will-change: left, top, transform, filter;
+  animation: ptar-gota-balanceo 3.2s ease-in-out infinite, ptar-gota-aura 2.8s ease-in-out infinite;
+  will-change: left, top, transform, filter, translate;
 }
 
 .ptar-sed__gota--limpia {
+  --gota-aura-rgb: 124 224 246;
   filter:
     hue-rotate(1deg)
     saturate(0.72)
     brightness(1.5)
     drop-shadow(0 6px 10px rgba(0, 0, 0, 0.24));
-  animation: ptar-sed-gota-aclarado 820ms cubic-bezier(0.22, 0.9, 0.24, 1) both;
+  animation:
+    ptar-sed-gota-aclarado 820ms cubic-bezier(0.22, 0.9, 0.24, 1) both,
+    ptar-gota-balanceo 3.2s ease-in-out 820ms infinite,
+    ptar-gota-aura 2.8s ease-in-out 820ms infinite;
 }
 
 .ptar-sed__gota.ptar-sed__gota--paleta-clara {
-  animation: none;
+  --gota-aura-rgb: 122 229 252;
+  animation: ptar-gota-balanceo 3.2s ease-in-out infinite, ptar-gota-aura 2.8s ease-in-out infinite;
   filter:
     hue-rotate(6deg)
     saturate(0.34)

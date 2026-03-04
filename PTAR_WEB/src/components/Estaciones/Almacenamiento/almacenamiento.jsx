@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './almacenamiento.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -125,7 +126,7 @@ function redondear(valor) {
 
 function Almacenamiento({ onVolverADesinfeccion, onCompletarAlmacenamiento, iniciarEnFinal = false }) {
     const [pasoActual, setPasoActual] = useState(0)
-    const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
+    const [debugCamaraActiva, setDebugCamaraActiva] = useState(DEBUG_CAMARA_HABILITADO)
     const [debugCopiado, setDebugCopiado] = useState(false)
     const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
@@ -271,13 +272,13 @@ function Almacenamiento({ onVolverADesinfeccion, onCompletarAlmacenamiento, inic
 
     useEffect(() => {
         const manejarTecladoDebug = (event) => {
-            if (event.key === 'F8') {
+            if (DEBUG_CAMARA_HABILITADO && event.key === 'F8') {
                 event.preventDefault()
                 setDebugCamaraActiva((estadoAnterior) => !estadoAnterior)
                 return
             }
 
-            if (!debugCamaraActiva) {
+            if (!DEBUG_CAMARA_HABILITADO || !debugCamaraActiva) {
                 return
             }
 
@@ -471,10 +472,6 @@ function Almacenamiento({ onVolverADesinfeccion, onCompletarAlmacenamiento, inic
                         <span className="ptar-alm__accion-flecha" aria-hidden="true" />
                     </button>
                 ) : null}
-
-                <p className="ptar-alm__paso" aria-hidden="true">
-                    Paso {pasoActual + 1} de {PASOS_RECORRIDO.length}
-                </p>
 
                 {debugCamaraActiva ? (
                     <aside className="ptar-alm__debug-camara" role="status" aria-live="polite">

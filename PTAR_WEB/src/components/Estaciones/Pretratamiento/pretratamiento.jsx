@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './pretratamiento.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -312,7 +313,7 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
     const [canastaSnapActiva, setCanastaSnapActiva] = useState(false)
     const [canastaSuciaPosicion, setCanastaSuciaPosicion] = useState(null)
     const [canastaArrastrando, setCanastaArrastrando] = useState(false)
-    const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
+    const [debugCamaraActiva, setDebugCamaraActiva] = useState(DEBUG_CAMARA_HABILITADO)
     const [debugCopiado, setDebugCopiado] = useState(false)
     const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState(() =>
         iniciarEnFinal ? { [PASO_VIDEO_RESUMEN_FINAL]: CAMARA_ENTRADA_DESDE_AREACION } : {}
@@ -766,13 +767,13 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
 
     useEffect(() => {
         const manejarTecladoDebug = (event) => {
-            if (event.key === 'F8') {
+            if (DEBUG_CAMARA_HABILITADO && event.key === 'F8') {
                 event.preventDefault()
                 setDebugCamaraActiva((estadoAnterior) => !estadoAnterior)
                 return
             }
 
-            if (!debugCamaraActiva) {
+            if (!DEBUG_CAMARA_HABILITADO || !debugCamaraActiva) {
                 return
             }
 
@@ -1222,10 +1223,6 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
                         {burbujaDerechaActiva}
                     </aside>
                 ) : null}
-
-                <p className="ptar-pre__paso" aria-hidden="true">
-                    Paso {pasoActual + 1} de {PASOS_RECORRIDO.length}
-                </p>
 
                 {debugCamaraActiva ? (
                     <aside className="ptar-pre__debug-camara" role="status" aria-live="polite">

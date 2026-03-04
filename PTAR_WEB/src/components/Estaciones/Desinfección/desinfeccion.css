@@ -161,6 +161,9 @@
   top: 50%;
   width: clamp(62px, 8vw, 166px);
   height: auto;
+  border-radius: 50%;
+  box-shadow: 0 0 0 rgba(122, 223, 255, 0);
+  --gota-aura-rgb: 136 216 236;
   transform: translate(-50%, -50%) scale(var(--gota-escala, 1));
   transform-origin: center center;
   transition:
@@ -171,9 +174,12 @@
   z-index: 7;
   pointer-events: none;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.28));
+  animation: ptar-gota-balanceo 3.2s ease-in-out infinite, ptar-gota-aura 2.8s ease-in-out infinite;
+  will-change: left, top, transform, filter, translate;
 }
 
 .ptar-des__gota--limpia {
+  --gota-aura-rgb: 124 226 248;
   filter:
     hue-rotate(6deg)
     saturate(0.42)
@@ -183,7 +189,8 @@
 }
 
 .ptar-des__gota.ptar-des__gota--filtro-agua-muy-clara {
-  animation: none;
+  --gota-aura-rgb: 118 234 255;
+  animation: ptar-gota-balanceo 3.2s ease-in-out infinite, ptar-gota-aura 2.8s ease-in-out infinite;
   filter:
     grayscale(0.36)
     sepia(0.01)
@@ -195,7 +202,8 @@
 }
 
 .ptar-des__gota.ptar-des__gota--desinfeccion-agua-cielo {
-  animation: none;
+  --gota-aura-rgb: 112 216 255;
+  animation: ptar-gota-balanceo 3.2s ease-in-out infinite, ptar-gota-aura 2.8s ease-in-out infinite;
   filter:
     grayscale(0.1)
     sepia(0.5)

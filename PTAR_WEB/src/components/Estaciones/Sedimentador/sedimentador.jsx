@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './sedimentador.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -1033,7 +1034,7 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
     )
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
     const [mostrarResumenFinal, setMostrarResumenFinal] = useState(false)
-    const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
+    const [debugCamaraActiva, setDebugCamaraActiva] = useState(DEBUG_CAMARA_HABILITADO)
     const [debugCopiado, setDebugCopiado] = useState(false)
     const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
     const bloqueoScrollRef = useRef(false)
@@ -1235,13 +1236,13 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
 
     useEffect(() => {
         const manejarTecladoDebug = (event) => {
-            if (event.key === 'F8') {
+            if (DEBUG_CAMARA_HABILITADO && event.key === 'F8') {
                 event.preventDefault()
                 setDebugCamaraActiva((estadoAnterior) => !estadoAnterior)
                 return
             }
 
-            if (!debugCamaraActiva) {
+            if (!DEBUG_CAMARA_HABILITADO || !debugCamaraActiva) {
                 return
             }
 
@@ -1558,10 +1559,6 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
                                 <span className="ptar-sed__accion-flecha" aria-hidden="true" />
                             </button>
                         ) : null}
-
-                        <p className="ptar-sed__paso" aria-hidden="true">
-                            Paso {pasoActual + 1} de {PASOS_RECORRIDO.length}
-                        </p>
 
                         {debugCamaraActiva ? (
                             <aside className="ptar-sed__debug-camara" role="status" aria-live="polite">

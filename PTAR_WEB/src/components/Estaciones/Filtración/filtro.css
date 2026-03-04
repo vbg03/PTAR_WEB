@@ -178,6 +178,9 @@
   top: 50%;
   width: clamp(62px, 8vw, 166px);
   height: auto;
+  border-radius: 50%;
+  box-shadow: 0 0 0 rgba(122, 223, 255, 0);
+  --gota-aura-rgb: 194 162 112;
   transform: translate(-50%, -50%) scale(var(--gota-escala, 1));
   transform-origin: center center;
   transition:
@@ -188,9 +191,12 @@
   z-index: 8;
   pointer-events: none;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.28));
+  animation: ptar-gota-balanceo 3.2s ease-in-out infinite, ptar-gota-aura 2.8s ease-in-out infinite;
+  will-change: left, top, transform, filter, translate;
 }
 
 .ptar-fil__gota--limpia {
+  --gota-aura-rgb: 136 214 232;
   filter:
     hue-rotate(6deg)
     saturate(0.42)
@@ -200,6 +206,7 @@
 }
 
 .ptar-fil__gota.ptar-fil__gota--filtro-1 {
+  --gota-aura-rgb: 196 165 114;
   filter:
     grayscale(0.48)
     sepia(0.2)
@@ -211,6 +218,7 @@
 }
 
 .ptar-fil__gota.ptar-fil__gota--filtro-2 {
+  --gota-aura-rgb: 182 173 128;
   filter:
     grayscale(0.56)
     sepia(0.14)
@@ -222,6 +230,7 @@
 }
 
 .ptar-fil__gota.ptar-fil__gota--filtro-3 {
+  --gota-aura-rgb: 170 185 144;
   filter:
     grayscale(0.62)
     sepia(0.08)
@@ -233,6 +242,7 @@
 }
 
 .ptar-fil__gota.ptar-fil__gota--filtro-4 {
+  --gota-aura-rgb: 149 199 174;
   filter:
     grayscale(0.68)
     sepia(0.05)
@@ -244,6 +254,7 @@
 }
 
 .ptar-fil__gota.ptar-fil__gota--filtro-5 {
+  --gota-aura-rgb: 136 210 198;
   filter:
     grayscale(0.74)
     sepia(0.03)
@@ -255,7 +266,8 @@
 }
 
 .ptar-fil__gota.ptar-fil__gota--paleta-tamiz-3 {
-  animation: none;
+  --gota-aura-rgb: 136 210 198;
+  animation: ptar-gota-balanceo 3.2s ease-in-out infinite, ptar-gota-aura 2.8s ease-in-out infinite;
   filter:
     grayscale(0.68)
     sepia(0.06)
@@ -267,7 +279,8 @@
 }
 
 .ptar-fil__gota.ptar-fil__gota--filtro-arena {
-  animation: none;
+  --gota-aura-rgb: 144 202 186;
+  animation: ptar-gota-balanceo 3.2s ease-in-out infinite, ptar-gota-aura 2.8s ease-in-out infinite;
   filter:
     grayscale(0.62)
     sepia(0.04)
@@ -279,7 +292,8 @@
 }
 
 .ptar-fil__gota.ptar-fil__gota--filtro-observa {
-  animation: none;
+  --gota-aura-rgb: 130 214 214;
+  animation: ptar-gota-balanceo 3.2s ease-in-out infinite, ptar-gota-aura 2.8s ease-in-out infinite;
   filter:
     grayscale(0.56)
     sepia(0.04)
@@ -291,7 +305,8 @@
 }
 
 .ptar-fil__gota.ptar-fil__gota--filtro-observa-clara {
-  animation: none;
+  --gota-aura-rgb: 124 224 236;
+  animation: ptar-gota-balanceo 3.2s ease-in-out infinite, ptar-gota-aura 2.8s ease-in-out infinite;
   filter:
     grayscale(0.46)
     sepia(0.02)
@@ -303,7 +318,8 @@
 }
 
 .ptar-fil__gota.ptar-fil__gota--filtro-agua-muy-clara {
-  animation: none;
+  --gota-aura-rgb: 118 232 255;
+  animation: ptar-gota-balanceo 3.2s ease-in-out infinite, ptar-gota-aura 2.8s ease-in-out infinite;
   filter:
     grayscale(0.36)
     sepia(0.01)

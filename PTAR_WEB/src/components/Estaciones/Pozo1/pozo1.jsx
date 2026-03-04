@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './pozo1.css'
 
 const DURACION_TRANSICION_REGRESO = 1180
@@ -176,7 +177,7 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
   const [mostrarTransicionRegreso, setMostrarTransicionRegreso] = useState(false)
   const [mostrarResumenPasoFinal, setMostrarResumenPasoFinal] = useState(false)
   const [abrirReproductorPasoFinal, setAbrirReproductorPasoFinal] = useState(false)
-  const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
+  const [debugCamaraActiva, setDebugCamaraActiva] = useState(DEBUG_CAMARA_HABILITADO)
   const [debugCopiado, setDebugCopiado] = useState(false)
   const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
   const [posicionesResiduos, setPosicionesResiduos] = useState(POSICIONES_INICIALES_RESIDUOS)
@@ -517,13 +518,13 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
 
   useEffect(() => {
     const manejarTecladoDebug = (event) => {
-      if (event.key === 'F8') {
+      if (DEBUG_CAMARA_HABILITADO && event.key === 'F8') {
         event.preventDefault()
         setDebugCamaraActiva((estadoAnterior) => !estadoAnterior)
         return
       }
 
-      if (!debugCamaraActiva) {
+      if (!DEBUG_CAMARA_HABILITADO || !debugCamaraActiva) {
         return
       }
 
@@ -756,10 +757,6 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
             Mueve la gota de agua con la rueda del raton
           </p>
         ) : null}
-
-        <p className="ptar-pozo1__paso" aria-hidden="true">
-          Paso {pasoActual + 1} de {PASOS_RECORRIDO.length}
-        </p>
 
         {debugCamaraActiva ? (
           <aside className="ptar-pozo1__debug-camara" role="status" aria-live="polite">

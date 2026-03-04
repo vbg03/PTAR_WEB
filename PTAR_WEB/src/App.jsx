@@ -18,6 +18,18 @@ import Documentacion from './components/Documentacion/documentacion.jsx'
 
 const DURACION_TRANSICION_ESTACION = 760
 const MITAD_TRANSICION_ESTACION = 340
+const SECCIONES_ESTACIONES = [
+  'pozo1',
+  'pretratamiento',
+  'areacion',
+  'sedimentador',
+  'lechos',
+  'tamizaje',
+  'filtro',
+  'desinfeccion',
+  'almacenamiento',
+  'pozo2'
+]
 
 function App() {
   const [seccionActiva, setSeccionActiva] = useState('inicio')
@@ -119,6 +131,7 @@ function App() {
       documentacion: 'ptar-app--documentacion',
       inicio: 'ptar-app--inicio'
     }[seccionActiva] || ''
+  const ocultarHeaderHastaZonaSuperior = SECCIONES_ESTACIONES.includes(seccionActiva)
 
   return (
     <div className={`ptar-app ${claseApp}`}>
@@ -333,6 +346,7 @@ function App() {
           setPozo2IniciarEnFinal(false)
           setSeccionActiva('documentacion')
         }}
+        ocultarEnModoEstacion={ocultarHeaderHastaZonaSuperior}
       />
       <div className="ptar-app__content">
         {seccionActiva === 'inicio' ? (

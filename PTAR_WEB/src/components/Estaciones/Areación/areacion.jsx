@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './areacion.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -295,7 +296,7 @@ function Areacion({
     const [detalleParticulaActivado, setDetalleParticulaActivado] = useState(false)
     const [mostrarResumenFinal, setMostrarResumenFinal] = useState(false)
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
-    const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
+    const [debugCamaraActiva, setDebugCamaraActiva] = useState(DEBUG_CAMARA_HABILITADO)
     const [debugCopiado, setDebugCopiado] = useState(false)
     const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState(() =>
         entradaSuaveDesdePretratamiento ? { 0: CAMARA_ENTRADA_DESDE_PRETRATAMIENTO } : {}
@@ -573,13 +574,13 @@ function Areacion({
 
     useEffect(() => {
         const manejarTecladoDebug = (event) => {
-            if (event.key === 'F8') {
+            if (DEBUG_CAMARA_HABILITADO && event.key === 'F8') {
                 event.preventDefault()
                 setDebugCamaraActiva((estadoAnterior) => !estadoAnterior)
                 return
             }
 
-            if (!debugCamaraActiva) {
+            if (!DEBUG_CAMARA_HABILITADO || !debugCamaraActiva) {
                 return
             }
 
@@ -875,10 +876,6 @@ function Areacion({
                                 VER DETALLE DE PARTICULA
                             </button>
                         ) : null}
-
-                        <p className="ptar-are__paso" aria-hidden="true">
-                            Paso {pasoActual + 1} de {PASOS_RECORRIDO.length}
-                        </p>
 
                         {debugCamaraActiva ? (
                             <aside className="ptar-are__debug-camara" role="status" aria-live="polite">
