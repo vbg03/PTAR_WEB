@@ -642,13 +642,17 @@ function Filtro({ onVolverATamizaje, onCompletarFiltracion, iniciarEnFinal = fal
                 />
 
                 {paso.burbujaIzquierda ? (
-                    <aside className="ptar-fil__burbuja ptar-fil__burbuja--izquierda ptar-fil__burbuja--blanca">
+                    <aside
+                        key={`izquierda-${pasoActual}-${paso.burbujaIzquierda}`}
+                        className="ptar-fil__burbuja ptar-fil__burbuja--izquierda ptar-fil__burbuja--blanca"
+                    >
                         {paso.burbujaIzquierda}
                     </aside>
                 ) : null}
 
                 {paso.burbujaDerecha ? (
                     <aside
+                        key={`derecha-${pasoActual}-${paso.burbujaDerecha}`}
                         className={`ptar-fil__burbuja ptar-fil__burbuja--derecha ptar-fil__burbuja--roja ${paso.burbujaDerechaCompacta ? 'is-compacta' : ''}`}
                     >
                         {paso.burbujaDerecha}

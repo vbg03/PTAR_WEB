@@ -638,13 +638,17 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false
                         />
 
                         {paso.burbujaIzquierda ? (
-                            <aside className="ptar-tam__burbuja ptar-tam__burbuja--izquierda ptar-tam__burbuja--blanca">
+                            <aside
+                                key={`izquierda-${pasoActual}-${paso.burbujaIzquierda}`}
+                                className="ptar-tam__burbuja ptar-tam__burbuja--izquierda ptar-tam__burbuja--blanca"
+                            >
                                 {paso.burbujaIzquierda}
                             </aside>
                         ) : null}
 
                         {paso.burbujaDerecha ? (
                             <aside
+                                key={`derecha-${pasoActual}-${paso.burbujaDerecha}`}
                                 className={`ptar-tam__burbuja ptar-tam__burbuja--derecha ptar-tam__burbuja--roja ${paso.burbujaDerechaCompacta ? 'is-compacta' : ''
                                     }`}
                             >

@@ -19,6 +19,13 @@
   padding: 8px 0 32px;
 }
 
+.ptar-app.ptar-app--inicio,
+.ptar-app.ptar-app--informacion,
+.ptar-app.ptar-app--usos,
+.ptar-app.ptar-app--documentacion {
+  padding-top: 0;
+}
+
 .ptar-app.ptar-app--pozo1 {
   position: relative;
   background-color: #2f251c;

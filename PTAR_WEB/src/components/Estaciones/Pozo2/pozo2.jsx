@@ -135,7 +135,12 @@ function redondear(valor) {
     return Number(valor.toFixed(2))
 }
 
-function Pozo2({ onVolverADesinfeccion, onVolverAAlmacenamiento, iniciarEnFinal = false }) {
+function Pozo2({
+    onVolverADesinfeccion,
+    onVolverAAlmacenamiento,
+    onCompletarPozo2,
+    iniciarEnFinal = false
+}) {
     const [pasoActual, setPasoActual] = useState(0)
     const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
     const [debugCopiado, setDebugCopiado] = useState(false)
@@ -242,7 +247,13 @@ function Pozo2({ onVolverADesinfeccion, onVolverAAlmacenamiento, iniciarEnFinal 
             bloqueoScrollRef.current = true
 
             if (event.deltaY > 0) {
-                setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+                if (pasoActual >= PASOS_RECORRIDO.length - 1) {
+                    if (typeof onCompletarPozo2 === 'function') {
+                        onCompletarPozo2()
+                    }
+                } else {
+                    setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+                }
             } else if (pasoActual > 0) {
                 setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
             } else if (typeof onVolver === 'function') {
@@ -263,7 +274,7 @@ function Pozo2({ onVolverADesinfeccion, onVolverAAlmacenamiento, iniciarEnFinal 
         return () => {
             window.removeEventListener('wheel', manejarRueda)
         }
-    }, [pasoActual, onVolver])
+    }, [pasoActual, onVolver, onCompletarPozo2])
 
     useEffect(() => {
         const manejarTecladoDebug = (event) => {
@@ -404,13 +415,17 @@ function Pozo2({ onVolverADesinfeccion, onVolverAAlmacenamiento, iniciarEnFinal 
                 />
 
                 {paso.burbujaIzquierda ? (
-                    <aside className="ptar-pozo2__burbuja ptar-pozo2__burbuja--izquierda ptar-pozo2__burbuja--blanca">
+                    <aside
+                        key={`izquierda-${pasoActual}-${paso.burbujaIzquierda}`}
+                        className="ptar-pozo2__burbuja ptar-pozo2__burbuja--izquierda ptar-pozo2__burbuja--blanca"
+                    >
                         {paso.burbujaIzquierda}
                     </aside>
                 ) : null}
 
                 {paso.burbujaDerecha ? (
                     <aside
+                        key={`derecha-${pasoActual}-${paso.burbujaDerecha}`}
                         className={`ptar-pozo2__burbuja ptar-pozo2__burbuja--derecha ptar-pozo2__burbuja--roja ${paso.burbujaDerechaCompacta ? 'is-compacta' : ''
                             }`}
                     >

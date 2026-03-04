@@ -13,6 +13,8 @@ import Filtro from './components/Estaciones/Filtración/filtro.jsx'
 import Desinfeccion from './components/Estaciones/Desinfección/desinfeccion.jsx'
 import Almacenamiento from './components/Estaciones/Almacenamiento/almacenamiento.jsx'
 import Pozo2 from './components/Estaciones/Pozo2/pozo2.jsx'
+import CasosUsos from './components/Usos/casosUsos.jsx'
+import Documentacion from './components/Documentacion/documentacion.jsx'
 
 const DURACION_TRANSICION_ESTACION = 760
 const MITAD_TRANSICION_ESTACION = 340
@@ -30,6 +32,7 @@ function App() {
   const [desinfeccionRenderKey, setDesinfeccionRenderKey] = useState(0)
   const [almacenamientoRenderKey, setAlmacenamientoRenderKey] = useState(0)
   const [pozo2RenderKey, setPozo2RenderKey] = useState(0)
+  const [usosRenderKey, setUsosRenderKey] = useState(0)
   const [pozo1IniciarEnFinal, setPozo1IniciarEnFinal] = useState(false)
   const [pretratamientoIniciarEnFinal, setPretratamientoIniciarEnFinal] = useState(false)
   const [areacionEntradaSuave, setAreacionEntradaSuave] = useState(false)
@@ -40,6 +43,7 @@ function App() {
   const [filtroIniciarEnFinal, setFiltroIniciarEnFinal] = useState(false)
   const [desinfeccionIniciarEnFinal, setDesinfeccionIniciarEnFinal] = useState(false)
   const [almacenamientoIniciarEnFinal, setAlmacenamientoIniciarEnFinal] = useState(false)
+  const [pozo2IniciarEnFinal, setPozo2IniciarEnFinal] = useState(false)
   const [transicionEstacionActiva, setTransicionEstacionActiva] = useState(false)
   const [direccionTransicionEstacion, setDireccionTransicionEstacion] = useState('avance')
   const transicionActivaRef = useRef(false)
@@ -91,28 +95,29 @@ function App() {
     }
   }, [seccionActiva, almacenamientoIniciarEnFinal])
 
+  useEffect(() => {
+    if (seccionActiva !== 'pozo2' && pozo2IniciarEnFinal) {
+      setPozo2IniciarEnFinal(false)
+    }
+  }, [seccionActiva, pozo2IniciarEnFinal])
+
   const claseApp =
-    seccionActiva === 'pozo1'
-      ? 'ptar-app--pozo1'
-      : seccionActiva === 'pretratamiento'
-        ? 'ptar-app--pretratamiento'
-        : seccionActiva === 'areacion'
-          ? 'ptar-app--areacion'
-          : seccionActiva === 'sedimentador'
-            ? 'ptar-app--sedimentador'
-            : seccionActiva === 'lechos'
-              ? 'ptar-app--lechos'
-              : seccionActiva === 'tamizaje'
-                ? 'ptar-app--tamizaje'
-                : seccionActiva === 'filtro'
-                  ? 'ptar-app--filtro'
-                  : seccionActiva === 'desinfeccion'
-                    ? 'ptar-app--desinfeccion'
-                    : seccionActiva === 'almacenamiento'
-                      ? 'ptar-app--almacenamiento'
-                    : seccionActiva === 'pozo2'
-                      ? 'ptar-app--pozo2'
-                : ''
+    {
+      pozo1: 'ptar-app--pozo1',
+      pretratamiento: 'ptar-app--pretratamiento',
+      areacion: 'ptar-app--areacion',
+      sedimentador: 'ptar-app--sedimentador',
+      lechos: 'ptar-app--lechos',
+      tamizaje: 'ptar-app--tamizaje',
+      filtro: 'ptar-app--filtro',
+      desinfeccion: 'ptar-app--desinfeccion',
+      almacenamiento: 'ptar-app--almacenamiento',
+      pozo2: 'ptar-app--pozo2',
+      informacion: 'ptar-app--informacion',
+      usos: 'ptar-app--usos',
+      documentacion: 'ptar-app--documentacion',
+      inicio: 'ptar-app--inicio'
+    }[seccionActiva] || ''
 
   return (
     <div className={`ptar-app ${claseApp}`}>
@@ -128,6 +133,8 @@ function App() {
           setTamizajeIniciarEnFinal(false)
           setFiltroIniciarEnFinal(false)
           setDesinfeccionIniciarEnFinal(false)
+          setAlmacenamientoIniciarEnFinal(false)
+          setPozo2IniciarEnFinal(false)
           setSeccionActiva('inicio')
         }}
         onSeleccionarEstacion={(_, indice) => {
@@ -287,10 +294,42 @@ function App() {
             setTamizajeIniciarEnFinal(false)
             setFiltroIniciarEnFinal(false)
             setDesinfeccionIniciarEnFinal(false)
+            setPozo2IniciarEnFinal(false)
             setSeccionActiva('pozo2')
             setPozo2RenderKey((valorAnterior) => valorAnterior + 1)
             return
           }
+        }}
+        onIrAUsos={() => {
+          setVolverAUbicacion(false)
+          setPozo1IniciarEnFinal(false)
+          setPretratamientoIniciarEnFinal(false)
+          setAreacionEntradaSuave(false)
+          setAreacionIniciarEnFinal(false)
+          setSedimentadorIniciarEnFinal(false)
+          setLechosIniciarEnFinal(false)
+          setTamizajeIniciarEnFinal(false)
+          setFiltroIniciarEnFinal(false)
+          setDesinfeccionIniciarEnFinal(false)
+          setAlmacenamientoIniciarEnFinal(false)
+          setPozo2IniciarEnFinal(false)
+          setSeccionActiva('usos')
+          setUsosRenderKey((valorAnterior) => valorAnterior + 1)
+        }}
+        onIrADocumentacion={() => {
+          setVolverAUbicacion(false)
+          setPozo1IniciarEnFinal(false)
+          setPretratamientoIniciarEnFinal(false)
+          setAreacionEntradaSuave(false)
+          setAreacionIniciarEnFinal(false)
+          setSedimentadorIniciarEnFinal(false)
+          setLechosIniciarEnFinal(false)
+          setTamizajeIniciarEnFinal(false)
+          setFiltroIniciarEnFinal(false)
+          setDesinfeccionIniciarEnFinal(false)
+          setAlmacenamientoIniciarEnFinal(false)
+          setPozo2IniciarEnFinal(false)
+          setSeccionActiva('documentacion')
         }}
       />
       <div className="ptar-app__content">
@@ -580,6 +619,7 @@ function App() {
             }}
             onCompletarAlmacenamiento={() => {
               ejecutarTransicionEstacion('avance', () => {
+                setPozo2IniciarEnFinal(false)
                 setSeccionActiva('pozo2')
                 setPozo2RenderKey((valorAnterior) => valorAnterior + 1)
               })
@@ -590,6 +630,7 @@ function App() {
         {seccionActiva === 'pozo2' ? (
           <Pozo2
             key={pozo2RenderKey}
+            iniciarEnFinal={pozo2IniciarEnFinal}
             onVolverAAlmacenamiento={() => {
               ejecutarTransicionEstacion('retroceso', () => {
                 setAlmacenamientoIniciarEnFinal(true)
@@ -597,8 +638,36 @@ function App() {
                 setAlmacenamientoRenderKey((valorAnterior) => valorAnterior + 1)
               })
             }}
+            onCompletarPozo2={() => {
+              ejecutarTransicionEstacion('avance', () => {
+                setPozo2IniciarEnFinal(false)
+                setSeccionActiva('usos')
+                setUsosRenderKey((valorAnterior) => valorAnterior + 1)
+              })
+            }}
           />
         ) : null}
+
+        {seccionActiva === 'usos' ? (
+          <CasosUsos
+            key={usosRenderKey}
+            onVolverAPozo2={() => {
+              ejecutarTransicionEstacion('retroceso', () => {
+                setPozo2IniciarEnFinal(true)
+                setSeccionActiva('pozo2')
+                setPozo2RenderKey((valorAnterior) => valorAnterior + 1)
+              })
+            }}
+            onCompletarUsos={() => {
+              ejecutarTransicionEstacion('avance', () => {
+                setPozo2IniciarEnFinal(false)
+                setSeccionActiva('documentacion')
+              })
+            }}
+          />
+        ) : null}
+
+        {seccionActiva === 'documentacion' ? <Documentacion /> : null}
 
         {transicionEstacionActiva ? (
           <div

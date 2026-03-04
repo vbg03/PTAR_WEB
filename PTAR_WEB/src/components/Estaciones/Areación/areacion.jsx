@@ -819,13 +819,17 @@ function Areacion({
                         />
 
                         {paso.burbujaIzquierda ? (
-                            <aside className="ptar-are__burbuja ptar-are__burbuja--izquierda ptar-are__burbuja--blanca">
+                            <aside
+                                key={`izquierda-${pasoActual}-${paso.burbujaIzquierda}`}
+                                className="ptar-are__burbuja ptar-are__burbuja--izquierda ptar-are__burbuja--blanca"
+                            >
                                 {paso.burbujaIzquierda}
                             </aside>
                         ) : null}
 
                         {paso.burbujaDerecha ? (
                             <aside
+                                key={`derecha-${pasoActual}-${paso.burbujaDerecha}`}
                                 className={`ptar-are__burbuja ptar-are__burbuja--derecha ptar-are__burbuja--roja ${paso.burbujaDerechaCompacta ? 'is-compacta' : ''
                                     }`}
                             >

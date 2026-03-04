@@ -1206,13 +1206,19 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
                 />
 
                 {paso.burbujaIzquierda ? (
-                    <aside className="ptar-pre__burbuja ptar-pre__burbuja--izquierda ptar-pre__burbuja--blanca">
+                    <aside
+                        key={`izquierda-${pasoActual}-${paso.burbujaIzquierda}`}
+                        className="ptar-pre__burbuja ptar-pre__burbuja--izquierda ptar-pre__burbuja--blanca"
+                    >
                         {paso.burbujaIzquierda}
                     </aside>
                 ) : null}
 
                 {burbujaDerechaActiva ? (
-                    <aside className="ptar-pre__burbuja ptar-pre__burbuja--derecha ptar-pre__burbuja--roja">
+                    <aside
+                        key={`derecha-${pasoActual}-${burbujaDerechaActiva}`}
+                        className="ptar-pre__burbuja ptar-pre__burbuja--derecha ptar-pre__burbuja--roja"
+                    >
                         {burbujaDerechaActiva}
                     </aside>
                 ) : null}

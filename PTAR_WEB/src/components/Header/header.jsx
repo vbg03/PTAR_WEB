@@ -2,23 +2,25 @@ import { useEffect, useState } from 'react'
 import './header.css'
 
 const estaciones = [
-  'Pozo de Bombeo N°1',
+  'Pozo de Bombeo No. 1',
   'Pretratamiento',
-  'Tanque de Aireación',
+  'Tanque de Aireacion',
   'Sedimentador',
   'Lechos de Secado',
-  'Cámara de Tamiz',
-  'Unidad de Filtración',
-  'Desinfección',
+  'Camara de Tamiz',
+  'Unidad de Filtracion',
+  'Desinfeccion',
   'Almacenamiento',
-  'Pozo de Bombeo N°2'
+  'Pozo de Bombeo No. 2'
 ]
 
 function Header({
   logoSrc = '/images/logouao.png',
   logoAlt = 'Logo UAO',
   onLogoClick,
-  onSeleccionarEstacion
+  onSeleccionarEstacion,
+  onIrAUsos,
+  onIrADocumentacion
 }) {
   const [isHidden, setIsHidden] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -80,11 +82,27 @@ function Header({
             ))}
           </div>
         </div>
-        <button className="ptar-header__button" type="button">
+        <button
+          className="ptar-header__button"
+          type="button"
+          onClick={() => {
+            if (typeof onIrAUsos === 'function') {
+              onIrAUsos()
+            }
+          }}
+        >
           Usos del agua
         </button>
-        <button className="ptar-header__button" type="button">
-          Documentación
+        <button
+          className="ptar-header__button"
+          type="button"
+          onClick={() => {
+            if (typeof onIrADocumentacion === 'function') {
+              onIrADocumentacion()
+            }
+          }}
+        >
+          Documentacion
         </button>
       </nav>
     </header>

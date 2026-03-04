@@ -1484,13 +1484,17 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
                 />
 
                 {paso.burbujaIzquierda ? (
-                    <aside className="ptar-lec__burbuja ptar-lec__burbuja--izquierda ptar-lec__burbuja--blanca">
+                    <aside
+                        key={`izquierda-${pasoActual}-${paso.burbujaIzquierda}`}
+                        className="ptar-lec__burbuja ptar-lec__burbuja--izquierda ptar-lec__burbuja--blanca"
+                    >
                         {paso.burbujaIzquierda}
                     </aside>
                 ) : null}
 
                 {paso.burbujaDerecha ? (
                     <aside
+                        key={`derecha-${pasoActual}-${paso.burbujaDerecha}`}
                         className={`ptar-lec__burbuja ptar-lec__burbuja--derecha ptar-lec__burbuja--roja ${paso.burbujaDerechaCompacta ? 'is-compacta' : ''
                             } ${paso.burbujaDerechaLista ? 'is-lista' : ''}`}
                     >

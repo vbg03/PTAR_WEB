@@ -1508,13 +1508,17 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
                         />
 
                         {paso.burbujaIzquierda ? (
-                            <aside className="ptar-sed__burbuja ptar-sed__burbuja--izquierda ptar-sed__burbuja--blanca">
+                            <aside
+                                key={`izquierda-${pasoActual}-${paso.burbujaIzquierda}`}
+                                className="ptar-sed__burbuja ptar-sed__burbuja--izquierda ptar-sed__burbuja--blanca"
+                            >
                                 {paso.burbujaIzquierda}
                             </aside>
                         ) : null}
 
                         {paso.burbujaDerecha ? (
                             <aside
+                                key={`derecha-${pasoActual}-${paso.burbujaDerecha}`}
                                 className={`ptar-sed__burbuja ptar-sed__burbuja--derecha ptar-sed__burbuja--roja ${paso.burbujaDerechaCompacta ? 'is-compacta' : ''} ${paso.burbujaDerechaLista ? 'is-lista' : ''}`}
                             >
                                 {paso.burbujaDerecha}

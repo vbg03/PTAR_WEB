@@ -626,13 +626,17 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
                 />
 
                 {paso.burbujaIzquierda ? (
-                    <aside className="ptar-des__burbuja ptar-des__burbuja--izquierda ptar-des__burbuja--blanca">
+                    <aside
+                        key={`izquierda-${pasoActual}-${paso.burbujaIzquierda}`}
+                        className="ptar-des__burbuja ptar-des__burbuja--izquierda ptar-des__burbuja--blanca"
+                    >
                         {paso.burbujaIzquierda}
                     </aside>
                 ) : null}
 
                 {paso.burbujaDerecha ? (
                     <aside
+                        key={`derecha-${pasoActual}-${paso.burbujaDerecha}`}
                         className={`ptar-des__burbuja ptar-des__burbuja--derecha ptar-des__burbuja--roja ${paso.burbujaDerechaCompacta ? 'is-compacta' : ''}`}
                     >
                         {paso.burbujaDerecha}

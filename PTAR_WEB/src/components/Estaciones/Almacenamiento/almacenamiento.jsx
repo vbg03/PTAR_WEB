@@ -394,13 +394,17 @@ function Almacenamiento({ onVolverADesinfeccion, onCompletarAlmacenamiento, inic
                 />
 
                 {paso.burbujaIzquierda ? (
-                    <aside className="ptar-alm__burbuja ptar-alm__burbuja--izquierda ptar-alm__burbuja--blanca">
+                    <aside
+                        key={`izquierda-${pasoActual}-${paso.burbujaIzquierda}`}
+                        className="ptar-alm__burbuja ptar-alm__burbuja--izquierda ptar-alm__burbuja--blanca"
+                    >
                         {paso.burbujaIzquierda}
                     </aside>
                 ) : null}
 
                 {paso.burbujaDerecha ? (
                     <aside
+                        key={`derecha-${pasoActual}-${paso.burbujaDerecha}`}
                         className={`ptar-alm__burbuja ptar-alm__burbuja--derecha ptar-alm__burbuja--roja ${paso.burbujaDerechaCompacta ? 'is-compacta' : ''
                             }`}
                     >

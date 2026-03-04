@@ -276,6 +276,7 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
         />
 
         <aside
+          key={`info-izq-${etapaActual}-${pasoConversacionVideo}-${pasoConversacionUbicacion}-${textoBurbujaIzquierda}`}
           className={`ptar-info__burbuja ptar-info__burbuja--izquierda ptar-info__burbuja--blanca ${
             mostrarBurbujaVideoPregunta ? 'is-video-step' : ''
           } ${mostrarBurbujaUbicacionPregunta ? 'is-location-step' : ''} ${
@@ -412,6 +413,7 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
         ) : null}
 
         <aside
+          key={`info-der-${etapaActual}-${pasoConversacionVideo}-${pasoConversacionUbicacion}-${textoBurbujaDerecha}`}
           className={`ptar-info__burbuja ptar-info__burbuja--derecha ptar-info__burbuja--roja ${
             mostrarBurbujaUbicacionRespuesta ? 'is-location-step' : ''
           } ${
