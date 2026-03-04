@@ -1,0 +1,397 @@
+.ptar-pozo2 {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+}
+
+.ptar-pozo2__panel {
+  --cam-x: 50%;
+  --cam-y: 50%;
+  --cam-zoom: 1.8;
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  isolation: isolate;
+  background: #2f251c;
+}
+
+.ptar-pozo2__escena {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: var(--cam-x) var(--cam-y);
+  background-size: auto calc(100% * var(--cam-zoom));
+  transition:
+    background-position 620ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    background-size 620ms cubic-bezier(0.2, 0.9, 0.2, 1);
+  pointer-events: none;
+}
+
+.ptar-pozo2__capa-escena {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(16, 16, 16, 0.02) 0%,
+    rgba(16, 16, 16, 0.06) 68%,
+    rgba(16, 16, 16, 0.12) 100%
+  );
+}
+
+.ptar-pozo2__marcador {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  z-index: 11;
+  pointer-events: none;
+  animation: ptar-pozo2-marcador 340ms ease both;
+}
+
+.ptar-pozo2__marcador-label {
+  background: #f8f8f8;
+  color: #1f1f1f;
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: clamp(13px, 1vw, 18px);
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  white-space: pre-line;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.ptar-pozo2__marcador-pin {
+  width: clamp(28px, 2.2vw, 42px);
+  height: clamp(28px, 2.2vw, 42px);
+  border-radius: 50% 50% 50% 0;
+  background: #ef2b20;
+  transform: rotate(-45deg);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.22);
+  position: relative;
+}
+
+.ptar-pozo2__marcador-pin::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(8px, 0.6vw, 12px);
+  height: clamp(8px, 0.6vw, 12px);
+  border-radius: 50%;
+  background: #c4f1ff;
+  transform: translate(-50%, -50%);
+}
+
+.ptar-pozo2__gota {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(62px, 8vw, 166px);
+  height: auto;
+  transform: translate(-50%, -50%) scale(var(--gota-escala, 1));
+  transform-origin: center center;
+  transition:
+    left 560ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    top 560ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    transform 560ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    filter 820ms cubic-bezier(0.22, 0.9, 0.24, 1);
+  z-index: 8;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.28));
+}
+
+.ptar-pozo2__gota--limpia {
+  filter:
+    hue-rotate(6deg)
+    saturate(0.42)
+    brightness(1.68)
+    contrast(0.95)
+    drop-shadow(0 6px 10px rgba(0, 0, 0, 0.24));
+}
+
+.ptar-pozo2__gota.ptar-pozo2__gota--pozo2-agua-cielo {
+  animation: none;
+  filter:
+    grayscale(0.08)
+    sepia(0.04)
+    hue-rotate(166deg)
+    saturate(1.28)
+    brightness(2.08)
+    contrast(0.95)
+    drop-shadow(0 6px 10px rgba(0, 0, 0, 0.22));
+}
+
+.ptar-pozo2__avatar {
+  position: absolute;
+  bottom: clamp(12px, 2.2vh, 22px);
+  width: clamp(94px, 8.8vw, 142px);
+  height: auto;
+  pointer-events: none;
+  z-index: 12;
+  filter: drop-shadow(0 5px 9px rgba(0, 0, 0, 0.25));
+}
+
+.ptar-pozo2__avatar--izquierda {
+  left: clamp(12px, 2.2vw, 28px);
+  width: clamp(76px, 7.2vw, 116px);
+}
+
+.ptar-pozo2__avatar--derecha {
+  right: clamp(12px, 2.2vw, 28px);
+}
+
+.ptar-pozo2__burbuja {
+  position: absolute;
+  bottom: clamp(86px, 10vh, 132px);
+  max-width: min(37vw, 465px);
+  border-radius: 999px;
+  padding: 14px 22px;
+  font-size: clamp(18px, 1.2vw, 24px);
+  font-weight: 500;
+  line-height: 1.18;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  z-index: 13;
+  animation: ptar-pozo2-burbuja 340ms ease both;
+}
+
+.ptar-pozo2__burbuja::before,
+.ptar-pozo2__burbuja::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+}
+
+.ptar-pozo2__burbuja--izquierda {
+  left: clamp(108px, 9vw, 220px);
+}
+
+.ptar-pozo2__burbuja--izquierda::after {
+  left: 24px;
+  bottom: -10px;
+  width: 16px;
+  height: 16px;
+}
+
+.ptar-pozo2__burbuja--izquierda::before {
+  left: 14px;
+  bottom: -17px;
+  width: 10px;
+  height: 10px;
+}
+
+.ptar-pozo2__burbuja--derecha {
+  right: clamp(108px, 9vw, 220px);
+}
+
+.ptar-pozo2__burbuja--derecha.is-compacta {
+  max-width: min(28vw, 400px);
+}
+
+.ptar-pozo2__burbuja--derecha::after {
+  right: 24px;
+  bottom: -10px;
+  width: 16px;
+  height: 16px;
+}
+
+.ptar-pozo2__burbuja--derecha::before {
+  right: 14px;
+  bottom: -17px;
+  width: 10px;
+  height: 10px;
+}
+
+.ptar-pozo2__burbuja--blanca {
+  background: #fff;
+  color: #161616;
+  border: 2px solid #cfcfcf;
+}
+
+.ptar-pozo2__burbuja--blanca::before {
+  background: #cfcfcf;
+}
+
+.ptar-pozo2__burbuja--blanca::after {
+  background: #fff;
+}
+
+.ptar-pozo2__burbuja--roja {
+  background: #f14a4a;
+  color: #fff;
+}
+
+.ptar-pozo2__burbuja--roja::before,
+.ptar-pozo2__burbuja--roja::after {
+  background: #f14a4a;
+}
+
+.ptar-pozo2__paso {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.42);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.ptar-pozo2__debug-camara {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(18, 18, 18, 0.72);
+  color: #f5f5f5;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+  z-index: 15;
+  pointer-events: auto;
+  min-width: 360px;
+  max-width: min(42vw, 600px);
+}
+
+.ptar-pozo2__debug-titulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.ptar-pozo2__debug-linea {
+  margin: 2px 0 0;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.ptar-pozo2__debug-botones {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ptar-pozo2__debug-boton {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ptar-pozo2__debug-boton--secundario {
+  background: #4b5563;
+}
+
+@keyframes ptar-pozo2-burbuja {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ptar-pozo2-marcador {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateY(8px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 1100px) {
+  .ptar-pozo2__burbuja {
+    max-width: min(82vw, 470px);
+    font-size: clamp(15px, 2.4vw, 18px);
+  }
+
+  .ptar-pozo2__burbuja--izquierda,
+  .ptar-pozo2__burbuja--derecha {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+
+  .ptar-pozo2__burbuja--izquierda::before,
+  .ptar-pozo2__burbuja--izquierda::after,
+  .ptar-pozo2__burbuja--derecha::before,
+  .ptar-pozo2__burbuja--derecha::after {
+    right: 22px;
+    left: auto;
+  }
+
+  .ptar-pozo2__burbuja--izquierda::before,
+  .ptar-pozo2__burbuja--derecha::before {
+    bottom: -14px;
+    width: 9px;
+    height: 9px;
+  }
+
+  .ptar-pozo2__burbuja--izquierda::after,
+  .ptar-pozo2__burbuja--derecha::after {
+    bottom: -8px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .ptar-pozo2__marcador-label {
+    font-size: clamp(12px, 2.2vw, 15px);
+    padding: 4px 10px;
+  }
+
+  .ptar-pozo2__paso {
+    font-size: 12px;
+  }
+
+  .ptar-pozo2__avatar {
+    width: clamp(82px, 16vw, 116px);
+  }
+
+  .ptar-pozo2__avatar--izquierda {
+    width: clamp(66px, 12.8vw, 92px);
+  }
+
+  .ptar-pozo2__debug-camara {
+    min-width: 280px;
+    max-width: min(92vw, 420px);
+  }
+
+  .ptar-pozo2__debug-linea {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ptar-pozo2__escena,
+  .ptar-pozo2__gota,
+  .ptar-pozo2__burbuja {
+    transition: none !important;
+    animation: none !important;
+  }
+}

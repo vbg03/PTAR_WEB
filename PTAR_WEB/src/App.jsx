@@ -11,6 +11,8 @@ import Lechos from './components/Estaciones/Lechos/lechos.jsx'
 import Tamizaje from './components/Estaciones/Tamizaje/tamizaje.jsx'
 import Filtro from './components/Estaciones/Filtración/filtro.jsx'
 import Desinfeccion from './components/Estaciones/Desinfección/desinfeccion.jsx'
+import Almacenamiento from './components/Estaciones/Almacenamiento/almacenamiento.jsx'
+import Pozo2 from './components/Estaciones/Pozo2/pozo2.jsx'
 
 const DURACION_TRANSICION_ESTACION = 760
 const MITAD_TRANSICION_ESTACION = 340
@@ -26,6 +28,8 @@ function App() {
   const [tamizajeRenderKey, setTamizajeRenderKey] = useState(0)
   const [filtroRenderKey, setFiltroRenderKey] = useState(0)
   const [desinfeccionRenderKey, setDesinfeccionRenderKey] = useState(0)
+  const [almacenamientoRenderKey, setAlmacenamientoRenderKey] = useState(0)
+  const [pozo2RenderKey, setPozo2RenderKey] = useState(0)
   const [pozo1IniciarEnFinal, setPozo1IniciarEnFinal] = useState(false)
   const [pretratamientoIniciarEnFinal, setPretratamientoIniciarEnFinal] = useState(false)
   const [areacionEntradaSuave, setAreacionEntradaSuave] = useState(false)
@@ -35,6 +39,7 @@ function App() {
   const [tamizajeIniciarEnFinal, setTamizajeIniciarEnFinal] = useState(false)
   const [filtroIniciarEnFinal, setFiltroIniciarEnFinal] = useState(false)
   const [desinfeccionIniciarEnFinal, setDesinfeccionIniciarEnFinal] = useState(false)
+  const [almacenamientoIniciarEnFinal, setAlmacenamientoIniciarEnFinal] = useState(false)
   const [transicionEstacionActiva, setTransicionEstacionActiva] = useState(false)
   const [direccionTransicionEstacion, setDireccionTransicionEstacion] = useState('avance')
   const transicionActivaRef = useRef(false)
@@ -80,6 +85,12 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    if (seccionActiva !== 'almacenamiento' && almacenamientoIniciarEnFinal) {
+      setAlmacenamientoIniciarEnFinal(false)
+    }
+  }, [seccionActiva, almacenamientoIniciarEnFinal])
+
   const claseApp =
     seccionActiva === 'pozo1'
       ? 'ptar-app--pozo1'
@@ -97,6 +108,10 @@ function App() {
                   ? 'ptar-app--filtro'
                   : seccionActiva === 'desinfeccion'
                     ? 'ptar-app--desinfeccion'
+                    : seccionActiva === 'almacenamiento'
+                      ? 'ptar-app--almacenamiento'
+                    : seccionActiva === 'pozo2'
+                      ? 'ptar-app--pozo2'
                 : ''
 
   return (
@@ -241,6 +256,39 @@ function App() {
             setDesinfeccionIniciarEnFinal(false)
             setSeccionActiva('desinfeccion')
             setDesinfeccionRenderKey((valorAnterior) => valorAnterior + 1)
+            return
+          }
+
+          if (indice === 8) {
+            setVolverAUbicacion(false)
+            setPozo1IniciarEnFinal(false)
+            setPretratamientoIniciarEnFinal(false)
+            setAreacionEntradaSuave(false)
+            setAreacionIniciarEnFinal(false)
+            setSedimentadorIniciarEnFinal(false)
+            setLechosIniciarEnFinal(false)
+            setTamizajeIniciarEnFinal(false)
+            setFiltroIniciarEnFinal(false)
+            setDesinfeccionIniciarEnFinal(false)
+            setAlmacenamientoIniciarEnFinal(false)
+            setSeccionActiva('almacenamiento')
+            setAlmacenamientoRenderKey((valorAnterior) => valorAnterior + 1)
+            return
+          }
+
+          if (indice === 9) {
+            setVolverAUbicacion(false)
+            setPozo1IniciarEnFinal(false)
+            setPretratamientoIniciarEnFinal(false)
+            setAreacionEntradaSuave(false)
+            setAreacionIniciarEnFinal(false)
+            setSedimentadorIniciarEnFinal(false)
+            setLechosIniciarEnFinal(false)
+            setTamizajeIniciarEnFinal(false)
+            setFiltroIniciarEnFinal(false)
+            setDesinfeccionIniciarEnFinal(false)
+            setSeccionActiva('pozo2')
+            setPozo2RenderKey((valorAnterior) => valorAnterior + 1)
             return
           }
         }}
@@ -500,12 +548,53 @@ function App() {
           <Desinfeccion
             key={desinfeccionRenderKey}
             iniciarEnFinal={desinfeccionIniciarEnFinal}
+            onCompletarDesinfeccion={() => {
+              ejecutarTransicionEstacion('avance', () => {
+                setDesinfeccionIniciarEnFinal(false)
+                setAlmacenamientoIniciarEnFinal(false)
+                setSeccionActiva('almacenamiento')
+                setAlmacenamientoRenderKey((valorAnterior) => valorAnterior + 1)
+              })
+            }}
             onVolverAFiltro={() => {
               ejecutarTransicionEstacion('retroceso', () => {
                 setDesinfeccionIniciarEnFinal(false)
                 setFiltroIniciarEnFinal(true)
                 setSeccionActiva('filtro')
                 setFiltroRenderKey((valorAnterior) => valorAnterior + 1)
+              })
+            }}
+          />
+        ) : null}
+
+        {seccionActiva === 'almacenamiento' ? (
+          <Almacenamiento
+            key={almacenamientoRenderKey}
+            iniciarEnFinal={almacenamientoIniciarEnFinal}
+            onVolverADesinfeccion={() => {
+              ejecutarTransicionEstacion('retroceso', () => {
+                setDesinfeccionIniciarEnFinal(true)
+                setSeccionActiva('desinfeccion')
+                setDesinfeccionRenderKey((valorAnterior) => valorAnterior + 1)
+              })
+            }}
+            onCompletarAlmacenamiento={() => {
+              ejecutarTransicionEstacion('avance', () => {
+                setSeccionActiva('pozo2')
+                setPozo2RenderKey((valorAnterior) => valorAnterior + 1)
+              })
+            }}
+          />
+        ) : null}
+
+        {seccionActiva === 'pozo2' ? (
+          <Pozo2
+            key={pozo2RenderKey}
+            onVolverAAlmacenamiento={() => {
+              ejecutarTransicionEstacion('retroceso', () => {
+                setAlmacenamientoIniciarEnFinal(true)
+                setSeccionActiva('almacenamiento')
+                setAlmacenamientoRenderKey((valorAnterior) => valorAnterior + 1)
               })
             }}
           />

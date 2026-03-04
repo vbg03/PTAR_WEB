@@ -75,6 +75,20 @@
   padding: 0;
 }
 
+.ptar-app.ptar-app--almacenamiento {
+  position: relative;
+  background-color: #2f251c;
+  background-image: none;
+  padding: 0;
+}
+
+.ptar-app.ptar-app--pozo2 {
+  position: relative;
+  background-color: #2f251c;
+  background-image: none;
+  padding: 0;
+}
+
 .ptar-app.ptar-app--pozo1 .ptar-header {
   position: absolute;
   top: 0;
@@ -132,6 +146,22 @@
 }
 
 .ptar-app.ptar-app--desinfeccion .ptar-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+}
+
+.ptar-app.ptar-app--almacenamiento .ptar-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+}
+
+.ptar-app.ptar-app--pozo2 .ptar-header {
   position: absolute;
   top: 0;
   left: 0;
