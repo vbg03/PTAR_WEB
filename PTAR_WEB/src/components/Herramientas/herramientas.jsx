@@ -162,9 +162,6 @@ function Herramientas() {
               onChange={(event) => setVolumenMusica(Number(event.target.value))}
             />
 
-            <p>
-              Controles listos para cuando agreguemos narración y música ambiental.
-            </p>
           </section>
         ) : null}
       </aside>
