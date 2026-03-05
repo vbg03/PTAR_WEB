@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import './App.css'
 import Header from './components/Header/header.jsx'
 import Inicio from './components/Inicio/inicio.jsx'
@@ -16,9 +16,25 @@ import Pozo2 from './components/Estaciones/Pozo2/pozo2.jsx'
 import CasosUsos from './components/Usos/casosUsos.jsx'
 import Documentacion from './components/Documentacion/documentacion.jsx'
 import Herramientas from './components/Herramientas/herramientas.jsx'
+import {
+  EVENTO_CAMBIO_CONFIG_AUDIO,
+  obtenerVolumenMusica
+} from './utils/audioSettings'
 
 const DURACION_TRANSICION_ESTACION = 760
 const MITAD_TRANSICION_ESTACION = 340
+const AUDIO_AMBIENTE_POZO1 = '/audio/sonido-agua.mp3'
+const AUDIO_AMBIENTE_SEDIMENTADOR = '/audio/agua-estaciones.mp3'
+const DURACION_FADE_AUDIO_MS = 720
+const INTERVALO_FADE_AUDIO_MS = 32
+const SECCIONES_AUDIO_AMBIENTE_AGUA = [
+  'pozo1',
+  'pretratamiento',
+  'filtro',
+  'almacenamiento',
+  'pozo2'
+]
+const SECCIONES_AUDIO_AMBIENTE_ESTACIONES = ['sedimentador', 'tamizaje']
 const SECCIONES_ESTACIONES = [
   'pozo1',
   'pretratamiento',
@@ -63,6 +79,148 @@ function App() {
   const transicionActivaRef = useRef(false)
   const timeoutCambioSeccionRef = useRef(null)
   const timeoutFinTransicionRef = useRef(null)
+  const audioAmbientePozo1Ref = useRef(null)
+  const audioAmbienteSedimentadorRef = useRef(null)
+  const fadeAudioRef = useRef(null)
+  const fadeAudioSedimentadorRef = useRef(null)
+  const volumenMusicaRef = useRef(obtenerVolumenMusica())
+
+  const limpiarFadeAudio = useCallback(() => {
+    if (!fadeAudioRef.current) {
+      return
+    }
+    window.clearInterval(fadeAudioRef.current)
+    fadeAudioRef.current = null
+  }, [])
+
+  const limpiarFadeAudioSedimentador = useCallback(() => {
+    if (!fadeAudioSedimentadorRef.current) {
+      return
+    }
+    window.clearInterval(fadeAudioSedimentadorRef.current)
+    fadeAudioSedimentadorRef.current = null
+  }, [])
+
+  const limitarVolumen = useCallback((volumen) => {
+    if (!Number.isFinite(volumen)) {
+      return 0
+    }
+    return Math.max(0, Math.min(1, volumen))
+  }, [])
+
+  const obtenerAudioAmbientePozo1 = useCallback(() => {
+    if (audioAmbientePozo1Ref.current) {
+      return audioAmbientePozo1Ref.current
+    }
+
+    const audio = new Audio(AUDIO_AMBIENTE_POZO1)
+    audio.preload = 'auto'
+    audio.loop = true
+    audio.volume = 0
+    audioAmbientePozo1Ref.current = audio
+    return audio
+  }, [])
+
+  const obtenerAudioAmbienteSedimentador = useCallback(() => {
+    if (audioAmbienteSedimentadorRef.current) {
+      return audioAmbienteSedimentadorRef.current
+    }
+
+    const audio = new Audio(AUDIO_AMBIENTE_SEDIMENTADOR)
+    audio.preload = 'auto'
+    audio.loop = true
+    audio.volume = 0
+    audioAmbienteSedimentadorRef.current = audio
+    return audio
+  }, [])
+
+  const ejecutarFadeAudio = useCallback(
+    (
+      audio,
+      volumenDestino,
+      { duracionMs = DURACION_FADE_AUDIO_MS, alFinal = null } = {}
+    ) => {
+      if (!audio) {
+        return
+      }
+
+      const inicio = limitarVolumen(audio.volume)
+      const destino = limitarVolumen(volumenDestino)
+      const diferencia = destino - inicio
+
+      if (Math.abs(diferencia) < 0.001) {
+        audio.volume = destino
+        if (typeof alFinal === 'function') {
+          alFinal()
+        }
+        return
+      }
+
+      limpiarFadeAudio()
+
+      const pasos = Math.max(1, Math.round(duracionMs / INTERVALO_FADE_AUDIO_MS))
+      let pasoActual = 0
+
+      fadeAudioRef.current = window.setInterval(() => {
+        pasoActual += 1
+        const progreso = pasoActual / pasos
+        audio.volume = limitarVolumen(inicio + diferencia * progreso)
+
+        if (pasoActual >= pasos) {
+          limpiarFadeAudio()
+          audio.volume = destino
+          if (typeof alFinal === 'function') {
+            alFinal()
+          }
+        }
+      }, INTERVALO_FADE_AUDIO_MS)
+    },
+    [limitarVolumen, limpiarFadeAudio]
+  )
+
+  const ejecutarFadeAudioSedimentador = useCallback(
+    (
+      audio,
+      volumenDestino,
+      { duracionMs = DURACION_FADE_AUDIO_MS, alFinal = null } = {}
+    ) => {
+      if (!audio) {
+        return
+      }
+
+      const inicio = limitarVolumen(audio.volume)
+      const destino = limitarVolumen(volumenDestino)
+      const diferencia = destino - inicio
+
+      if (Math.abs(diferencia) < 0.001) {
+        audio.volume = destino
+        if (typeof alFinal === 'function') {
+          alFinal()
+        }
+        return
+      }
+
+      limpiarFadeAudioSedimentador()
+
+      const pasos = Math.max(1, Math.round(duracionMs / INTERVALO_FADE_AUDIO_MS))
+      let pasoActual = 0
+
+      fadeAudioSedimentadorRef.current = window.setInterval(() => {
+        pasoActual += 1
+        const progreso = pasoActual / pasos
+        audio.volume = limitarVolumen(inicio + diferencia * progreso)
+
+        if (pasoActual >= pasos) {
+          limpiarFadeAudioSedimentador()
+          audio.volume = destino
+          if (typeof alFinal === 'function') {
+            alFinal()
+          }
+        }
+      }, INTERVALO_FADE_AUDIO_MS)
+    },
+    [limitarVolumen, limpiarFadeAudioSedimentador]
+  )
 
   const limpiarTimeout = (timeoutRef) => {
     if (!timeoutRef.current) {
@@ -100,8 +258,130 @@ function App() {
     return () => {
       limpiarTimeout(timeoutCambioSeccionRef)
       limpiarTimeout(timeoutFinTransicionRef)
+      limpiarFadeAudio()
+      limpiarFadeAudioSedimentador()
+
+      if (audioAmbientePozo1Ref.current) {
+        audioAmbientePozo1Ref.current.pause()
+        audioAmbientePozo1Ref.current = null
+      }
+
+      if (audioAmbienteSedimentadorRef.current) {
+        audioAmbienteSedimentadorRef.current.pause()
+        audioAmbienteSedimentadorRef.current = null
+      }
     }
-  }, [])
+  }, [limpiarFadeAudio, limpiarFadeAudioSedimentador])
+
+  useEffect(() => {
+    const actualizarVolumenMusica = (event) => {
+      const volumenEvento = Number(event?.detail?.volumenMusica)
+      const volumenNormalizado = Number.isFinite(volumenEvento)
+        ? Math.max(0, Math.min(100, volumenEvento)) / 100
+        : obtenerVolumenMusica()
+
+      volumenMusicaRef.current = volumenNormalizado
+
+      const audio = audioAmbientePozo1Ref.current
+      if (audio && SECCIONES_AUDIO_AMBIENTE_AGUA.includes(seccionActiva)) {
+        ejecutarFadeAudio(audio, volumenMusicaRef.current, { duracionMs: 260 })
+      }
+
+      const audioSedimentador = audioAmbienteSedimentadorRef.current
+      if (
+        audioSedimentador &&
+        SECCIONES_AUDIO_AMBIENTE_ESTACIONES.includes(seccionActiva)
+      ) {
+        ejecutarFadeAudioSedimentador(audioSedimentador, volumenMusicaRef.current, {
+          duracionMs: 260
+        })
+      }
+    }
+
+    window.addEventListener(EVENTO_CAMBIO_CONFIG_AUDIO, actualizarVolumenMusica)
+    return () =>
+      window.removeEventListener(
+        EVENTO_CAMBIO_CONFIG_AUDIO,
+        actualizarVolumenMusica
+      )
+  }, [ejecutarFadeAudio, ejecutarFadeAudioSedimentador, seccionActiva])
+
+  useEffect(() => {
+    const debeSonarAudioAmbienteAgua =
+      SECCIONES_AUDIO_AMBIENTE_AGUA.includes(seccionActiva)
+
+    if (debeSonarAudioAmbienteAgua) {
+      const audio = obtenerAudioAmbientePozo1()
+      if (!audio.paused) {
+        ejecutarFadeAudio(audio, volumenMusicaRef.current)
+        return
+      }
+
+      audio.currentTime = 0
+      audio.volume = 0
+
+      const promesaReproduccion = audio.play()
+      if (promesaReproduccion && typeof promesaReproduccion.then === 'function') {
+        promesaReproduccion
+          .then(() => ejecutarFadeAudio(audio, volumenMusicaRef.current))
+          .catch(() => {})
+        return
+      }
+
+      ejecutarFadeAudio(audio, volumenMusicaRef.current)
+      return
+    }
+
+    if (!audioAmbientePozo1Ref.current) {
+      return
+    }
+
+    const audio = audioAmbientePozo1Ref.current
+    ejecutarFadeAudio(audio, 0, {
+      alFinal: () => {
+        audio.pause()
+        audio.currentTime = 0
+      }
+    })
+  }, [ejecutarFadeAudio, obtenerAudioAmbientePozo1, seccionActiva])
+
+  useEffect(() => {
+    if (SECCIONES_AUDIO_AMBIENTE_ESTACIONES.includes(seccionActiva)) {
+      const audio = obtenerAudioAmbienteSedimentador()
+      if (!audio.paused) {
+        ejecutarFadeAudioSedimentador(audio, volumenMusicaRef.current)
+        return
+      }
+
+      audio.currentTime = 0
+      audio.volume = 0
+
+      const promesaReproduccion = audio.play()
+      if (promesaReproduccion && typeof promesaReproduccion.then === 'function') {
+        promesaReproduccion
+          .then(() =>
+            ejecutarFadeAudioSedimentador(audio, volumenMusicaRef.current)
+          )
+          .catch(() => {})
+        return
+      }
+
+      ejecutarFadeAudioSedimentador(audio, volumenMusicaRef.current)
+      return
+    }
+
+    if (!audioAmbienteSedimentadorRef.current) {
+      return
+    }
+
+    const audio = audioAmbienteSedimentadorRef.current
+    ejecutarFadeAudioSedimentador(audio, 0, {
+      alFinal: () => {
+        audio.pause()
+        audio.currentTime = 0
+      }
+    })
+  }, [ejecutarFadeAudioSedimentador, obtenerAudioAmbienteSedimentador, seccionActiva])
 
   useEffect(() => {
     if (seccionActiva !== 'almacenamiento' && almacenamientoIniciarEnFinal) {

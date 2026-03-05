@@ -3,6 +3,10 @@ import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigati
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
+import {
+    EVENTO_CAMBIO_CONFIG_AUDIO,
+    obtenerVolumenMusica
+} from '../../../utils/audioSettings'
 import './desinfeccion.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -10,6 +14,11 @@ const VALOR_MIN_CAMARA = -120
 const VALOR_MAX_CAMARA = 220
 const ZOOM_MIN_CAMARA = 0.2
 const ZOOM_MAX_CAMARA = 12
+const AUDIO_DESINFECCION_AMBIENTE_AGUA = '/audio/sonido-agua.mp3'
+const AUDIO_DESINFECCION_AMBIENTE_ESTERILIZADOR = '/audio/esterilizador-activado.mp3'
+const DURACION_FADE_AUDIO_DESINFECCION_MS = 640
+const INTERVALO_FADE_AUDIO_DESINFECCION_MS = 32
+const DURACION_FADE_SALIDA_AUDIO_DESINFECCION_MS = 420
 
 const ESCENA_DESINFECCION = '/svg/desinfeccion-almacenamiento.svg'
 const ESTERILIZADOR_UV = '/images/desinfeccion/esterilizadorUV.svg'
@@ -231,6 +240,9 @@ const INDICES_AUDIO_ROJO = construirIndicesAudioPorPaso(
     PASOS_RECORRIDO,
     'burbujaDerecha'
 )
+const PASO_ACTIVAR_ESTERILIZADOR = PASOS_RECORRIDO.findIndex(
+    (paso) => paso.mostrarBotonActivar
+)
 
 function limitar(valor, minimo, maximo) {
     return Math.min(Math.max(valor, minimo), maximo)
@@ -257,6 +269,175 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
   const ultimaActivacionScrollRef = useRef(0)
     const timeoutBloqueoRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
+    const audiosAmbienteRef = useRef({})
+    const fuenteAudioAmbienteActivaRef = useRef(null)
+    const fadeAudioAmbienteRef = useRef(null)
+    const tokenCambioAudioAmbienteRef = useRef(0)
+    const volumenMusicaRef = useRef(obtenerVolumenMusica())
+
+    const limpiarFadeAudioAmbiente = useCallback(() => {
+        if (!fadeAudioAmbienteRef.current) {
+            return
+        }
+        window.clearInterval(fadeAudioAmbienteRef.current)
+        fadeAudioAmbienteRef.current = null
+    }, [])
+
+    const obtenerAudioAmbiente = useCallback((fuente) => {
+        if (!fuente) {
+            return null
+        }
+
+        if (audiosAmbienteRef.current[fuente]) {
+            return audiosAmbienteRef.current[fuente]
+        }
+
+        const audio = new Audio(fuente)
+        audio.preload = 'auto'
+        audio.loop = true
+        audio.volume = 0
+        audiosAmbienteRef.current[fuente] = audio
+        return audio
+    }, [])
+
+    const obtenerVolumenObjetivoAmbiente = useCallback(() => {
+        return limitar(volumenMusicaRef.current, 0, 1)
+    }, [])
+
+    const ejecutarFadeAudioAmbiente = useCallback(
+        (
+            audio,
+            volumenDestino,
+            { duracionMs = DURACION_FADE_AUDIO_DESINFECCION_MS, alFinal = null } = {}
+        ) => {
+            if (!audio) {
+                return
+            }
+
+            const volumenInicio = limitar(audio.volume, 0, 1)
+            const volumenFinal = limitar(volumenDestino, 0, 1)
+            const diferencia = volumenFinal - volumenInicio
+
+            if (Math.abs(diferencia) < 0.001) {
+                audio.volume = volumenFinal
+                if (typeof alFinal === 'function') {
+                    alFinal()
+                }
+                return
+            }
+
+            limpiarFadeAudioAmbiente()
+
+            const pasos = Math.max(
+                1,
+                Math.round(duracionMs / INTERVALO_FADE_AUDIO_DESINFECCION_MS)
+            )
+            let paso = 0
+
+            fadeAudioAmbienteRef.current = window.setInterval(() => {
+                paso += 1
+                const progreso = paso / pasos
+                audio.volume = limitar(
+                    volumenInicio + diferencia * progreso,
+                    0,
+                    1
+                )
+
+                if (paso >= pasos) {
+                    limpiarFadeAudioAmbiente()
+                    audio.volume = volumenFinal
+                    if (typeof alFinal === 'function') {
+                        alFinal()
+                    }
+                }
+            }, INTERVALO_FADE_AUDIO_DESINFECCION_MS)
+        },
+        [limpiarFadeAudioAmbiente]
+    )
+
+    const obtenerFuenteAudioAmbientePorPaso = useCallback((pasoIndice) => {
+        if (PASO_ACTIVAR_ESTERILIZADOR < 0) {
+            return null
+        }
+
+        return pasoIndice <= PASO_ACTIVAR_ESTERILIZADOR
+            ? AUDIO_DESINFECCION_AMBIENTE_AGUA
+            : AUDIO_DESINFECCION_AMBIENTE_ESTERILIZADOR
+    }, [])
+
+    const reproducirAudioConFade = useCallback(
+        (audio, volumenObjetivo) => {
+            if (!audio) {
+                return
+            }
+
+            if (!audio.paused) {
+                ejecutarFadeAudioAmbiente(audio, volumenObjetivo)
+                return
+            }
+
+            audio.currentTime = 0
+            audio.volume = 0
+            const promesaReproduccion = audio.play()
+            if (promesaReproduccion && typeof promesaReproduccion.then === 'function') {
+                promesaReproduccion
+                    .then(() => {
+                        ejecutarFadeAudioAmbiente(audio, volumenObjetivo)
+                    })
+                    .catch(() => { })
+                return
+            }
+
+            ejecutarFadeAudioAmbiente(audio, volumenObjetivo)
+        },
+        [ejecutarFadeAudioAmbiente]
+    )
+
+    const sincronizarAudioAmbientePorPaso = useCallback(
+        (pasoIndice) => {
+            const fuenteObjetivo = obtenerFuenteAudioAmbientePorPaso(pasoIndice)
+            const fuenteActual = fuenteAudioAmbienteActivaRef.current
+            const tokenCambio = tokenCambioAudioAmbienteRef.current + 1
+            tokenCambioAudioAmbienteRef.current = tokenCambio
+
+            const iniciarFuenteObjetivo = () => {
+                if (tokenCambioAudioAmbienteRef.current !== tokenCambio) {
+                    return
+                }
+
+                if (!fuenteObjetivo) {
+                    fuenteAudioAmbienteActivaRef.current = null
+                    return
+                }
+
+                const audioObjetivo = obtenerAudioAmbiente(fuenteObjetivo)
+                fuenteAudioAmbienteActivaRef.current = fuenteObjetivo
+                reproducirAudioConFade(audioObjetivo, obtenerVolumenObjetivoAmbiente())
+            }
+
+            if (!fuenteActual || fuenteActual === fuenteObjetivo) {
+                iniciarFuenteObjetivo()
+                return
+            }
+
+            const audioActual = obtenerAudioAmbiente(fuenteActual)
+            ejecutarFadeAudioAmbiente(audioActual, 0, {
+                duracionMs: DURACION_FADE_SALIDA_AUDIO_DESINFECCION_MS,
+                alFinal: () => {
+                    audioActual.pause()
+                    audioActual.currentTime = 0
+                    iniciarFuenteObjetivo()
+                }
+            })
+        },
+        [
+            ejecutarFadeAudioAmbiente,
+            obtenerAudioAmbiente,
+            obtenerFuenteAudioAmbientePorPaso,
+            obtenerVolumenObjetivoAmbiente,
+            reproducirAudioConFade
+        ]
+    )
 
     const paso = PASOS_RECORRIDO[pasoActual]
     const indiceAudioIzquierda = paso.burbujaIzquierda
@@ -372,6 +553,39 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
             setMostrarResumenFinal(false)
         }
     }, [paso])
+
+    useEffect(() => {
+        const actualizarVolumenMusica = (event) => {
+            const volumenEvento = Number(event?.detail?.volumenMusica)
+            volumenMusicaRef.current = Number.isFinite(volumenEvento)
+                ? limitar(volumenEvento, 0, 100) / 100
+                : obtenerVolumenMusica()
+
+            const fuenteActiva = fuenteAudioAmbienteActivaRef.current
+            if (!fuenteActiva) {
+                return
+            }
+
+            const audio = audiosAmbienteRef.current[fuenteActiva]
+            if (audio) {
+                ejecutarFadeAudioAmbiente(audio, obtenerVolumenObjetivoAmbiente(), {
+                    duracionMs: 180
+                })
+            }
+        }
+
+        window.addEventListener(EVENTO_CAMBIO_CONFIG_AUDIO, actualizarVolumenMusica)
+        return () => {
+            window.removeEventListener(
+                EVENTO_CAMBIO_CONFIG_AUDIO,
+                actualizarVolumenMusica
+            )
+        }
+    }, [ejecutarFadeAudioAmbiente, obtenerVolumenObjetivoAmbiente])
+
+    useEffect(() => {
+        sincronizarAudioAmbientePorPaso(pasoActual)
+    }, [pasoActual, sincronizarAudioAmbientePorPaso])
 
     useEffect(() => {
         const manejarRueda = (event) => {
@@ -492,8 +706,16 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
             if (timeoutDebugCopiadoRef.current) {
                 window.clearTimeout(timeoutDebugCopiadoRef.current)
             }
+            tokenCambioAudioAmbienteRef.current += 1
+            limpiarFadeAudioAmbiente()
+            Object.values(audiosAmbienteRef.current).forEach((audio) => {
+                audio.pause()
+                audio.currentTime = 0
+            })
+            audiosAmbienteRef.current = {}
+            fuenteAudioAmbienteActivaRef.current = null
         }
-    }, [])
+    }, [limpiarFadeAudioAmbiente])
 
     const camaraActiva = obtenerCamaraActivaPaso()
     const estiloPanel = {

@@ -3,6 +3,10 @@ import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigati
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
+import {
+    EVENTO_CAMBIO_CONFIG_AUDIO,
+    obtenerVolumenMusica
+} from '../../../utils/audioSettings'
 import './pozo2.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -10,6 +14,12 @@ const VALOR_MIN_CAMARA = -120
 const VALOR_MAX_CAMARA = 220
 const ZOOM_MIN_CAMARA = 0.2
 const ZOOM_MAX_CAMARA = 12
+const AUDIO_PARTE_FINAL_POZO2 = '/audio/partefinal-pozo2.mp3'
+const VOLUMEN_MAXIMO_PARTE_FINAL_POZO2 = 0.2
+const PASO_AUDIO_PARTE_FINAL_POZO2_INICIO = 6
+const DURACION_FADE_AUDIO_PARTE_FINAL_POZO2_MS = 520
+const DURACION_FADE_SALIDA_AUDIO_PARTE_FINAL_POZO2_MS = 360
+const INTERVALO_FADE_AUDIO_PARTE_FINAL_POZO2_MS = 32
 
 const ESCENA_POZO2 = '/images/pozo2/pozo2.svg'
 
@@ -164,6 +174,86 @@ function Pozo2({
   const ultimaActivacionScrollRef = useRef(0)
     const timeoutBloqueoRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
+    const audioParteFinalPozo2Ref = useRef(null)
+    const fadeAudioParteFinalPozo2Ref = useRef(null)
+    const volumenMusicaRef = useRef(obtenerVolumenMusica())
+
+    const obtenerAudioParteFinalPozo2 = useCallback(() => {
+        if (audioParteFinalPozo2Ref.current) {
+            return audioParteFinalPozo2Ref.current
+        }
+
+        const audio = new Audio(AUDIO_PARTE_FINAL_POZO2)
+        audio.preload = 'auto'
+        audio.loop = true
+        audio.volume = 0
+        audioParteFinalPozo2Ref.current = audio
+        return audio
+    }, [])
+
+    const obtenerVolumenObjetivoParteFinalPozo2 = useCallback(() => {
+        const volumenMusica = limitar(volumenMusicaRef.current, 0, 1)
+        return Math.min(volumenMusica, VOLUMEN_MAXIMO_PARTE_FINAL_POZO2)
+    }, [])
+
+    const limpiarFadeAudioParteFinalPozo2 = useCallback(() => {
+        if (!fadeAudioParteFinalPozo2Ref.current) {
+            return
+        }
+        window.clearInterval(fadeAudioParteFinalPozo2Ref.current)
+        fadeAudioParteFinalPozo2Ref.current = null
+    }, [])
+
+    const ejecutarFadeAudioParteFinalPozo2 = useCallback(
+        (
+            audio,
+            volumenDestino,
+            { duracionMs = DURACION_FADE_AUDIO_PARTE_FINAL_POZO2_MS, alFinal = null } = {}
+        ) => {
+            if (!audio) {
+                return
+            }
+
+            const volumenInicio = limitar(audio.volume, 0, 1)
+            const volumenFinal = limitar(volumenDestino, 0, 1)
+            const diferencia = volumenFinal - volumenInicio
+
+            if (Math.abs(diferencia) < 0.001) {
+                audio.volume = volumenFinal
+                if (typeof alFinal === 'function') {
+                    alFinal()
+                }
+                return
+            }
+
+            limpiarFadeAudioParteFinalPozo2()
+
+            const pasos = Math.max(
+                1,
+                Math.round(duracionMs / INTERVALO_FADE_AUDIO_PARTE_FINAL_POZO2_MS)
+            )
+            let paso = 0
+
+            fadeAudioParteFinalPozo2Ref.current = window.setInterval(() => {
+                paso += 1
+                const progreso = paso / pasos
+                audio.volume = limitar(
+                    volumenInicio + diferencia * progreso,
+                    0,
+                    1
+                )
+
+                if (paso >= pasos) {
+                    limpiarFadeAudioParteFinalPozo2()
+                    audio.volume = volumenFinal
+                    if (typeof alFinal === 'function') {
+                        alFinal()
+                    }
+                }
+            }, INTERVALO_FADE_AUDIO_PARTE_FINAL_POZO2_MS)
+        },
+        [limpiarFadeAudioParteFinalPozo2]
+    )
 
     const paso = PASOS_RECORRIDO[pasoActual]
     const indiceAudioIzquierda = paso.burbujaIzquierda
@@ -190,6 +280,86 @@ function Pozo2({
     useEffect(() => {
         setPasoActual(iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0)
     }, [iniciarEnFinal])
+
+    useEffect(() => {
+        const actualizarVolumenMusica = (event) => {
+            const volumenEvento = Number(event?.detail?.volumenMusica)
+            volumenMusicaRef.current = Number.isFinite(volumenEvento)
+                ? limitar(volumenEvento, 0, 100) / 100
+                : obtenerVolumenMusica()
+
+            const audio = audioParteFinalPozo2Ref.current
+            const debeSonarEnPasoActual =
+                pasoActual >= PASO_AUDIO_PARTE_FINAL_POZO2_INICIO
+
+            if (audio && debeSonarEnPasoActual) {
+                ejecutarFadeAudioParteFinalPozo2(
+                    audio,
+                    obtenerVolumenObjetivoParteFinalPozo2(),
+                    { duracionMs: 180 }
+                )
+            }
+        }
+
+        window.addEventListener(EVENTO_CAMBIO_CONFIG_AUDIO, actualizarVolumenMusica)
+        return () => {
+            window.removeEventListener(
+                EVENTO_CAMBIO_CONFIG_AUDIO,
+                actualizarVolumenMusica
+            )
+        }
+    }, [
+        ejecutarFadeAudioParteFinalPozo2,
+        obtenerVolumenObjetivoParteFinalPozo2,
+        pasoActual
+    ])
+
+    useEffect(() => {
+        const debeSonarEnPasoActual =
+            pasoActual >= PASO_AUDIO_PARTE_FINAL_POZO2_INICIO
+
+        if (debeSonarEnPasoActual) {
+            const audio = obtenerAudioParteFinalPozo2()
+            const volumenObjetivo = obtenerVolumenObjetivoParteFinalPozo2()
+
+            if (!audio.paused) {
+                ejecutarFadeAudioParteFinalPozo2(audio, volumenObjetivo)
+                return
+            }
+
+            audio.currentTime = 0
+            audio.volume = 0
+            const promesaReproduccion = audio.play()
+            if (promesaReproduccion && typeof promesaReproduccion.then === 'function') {
+                promesaReproduccion
+                    .then(() => {
+                        ejecutarFadeAudioParteFinalPozo2(audio, volumenObjetivo)
+                    })
+                    .catch(() => { })
+            } else {
+                ejecutarFadeAudioParteFinalPozo2(audio, volumenObjetivo)
+            }
+            return
+        }
+
+        if (!audioParteFinalPozo2Ref.current) {
+            return
+        }
+
+        const audio = audioParteFinalPozo2Ref.current
+        ejecutarFadeAudioParteFinalPozo2(audio, 0, {
+            duracionMs: DURACION_FADE_SALIDA_AUDIO_PARTE_FINAL_POZO2_MS,
+            alFinal: () => {
+                audio.pause()
+                audio.currentTime = 0
+            }
+        })
+    }, [
+        ejecutarFadeAudioParteFinalPozo2,
+        obtenerAudioParteFinalPozo2,
+        obtenerVolumenObjetivoParteFinalPozo2,
+        pasoActual
+    ])
 
     const obtenerCamaraActivaPaso = useCallback(
         (pasoIndice = pasoActual) => {
@@ -392,8 +562,14 @@ function Pozo2({
             if (timeoutDebugCopiadoRef.current) {
                 window.clearTimeout(timeoutDebugCopiadoRef.current)
             }
+            limpiarFadeAudioParteFinalPozo2()
+            if (audioParteFinalPozo2Ref.current) {
+                audioParteFinalPozo2Ref.current.pause()
+                audioParteFinalPozo2Ref.current.currentTime = 0
+                audioParteFinalPozo2Ref.current = null
+            }
         }
-    }, [])
+    }, [limpiarFadeAudioParteFinalPozo2])
 
     const camaraActiva = obtenerCamaraActivaPaso()
     const estiloPanel = {

@@ -3,6 +3,10 @@ import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigati
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
+import {
+  EVENTO_CAMBIO_CONFIG_AUDIO,
+  obtenerVolumenMusica
+} from '../../../utils/audioSettings'
 import './pozo1.css'
 
 const DURACION_TRANSICION_REGRESO = 1180
@@ -11,6 +15,7 @@ const VALOR_MIN_CAMARA = -120
 const VALOR_MAX_CAMARA = 220
 const ZOOM_MIN_CAMARA = 0.2
 const ZOOM_MAX_CAMARA = 12
+const AUDIO_OBJETOS_POZO1 = '/audio/objetos.mp3'
 const PASO_RETIRO_SOLIDOS = 9
 const PASO_SIGUIENTE_RETIRO_SOLIDOS = PASO_RETIRO_SOLIDOS + 1
 const LIMITES_POZO_INTERACTIVO = {
@@ -207,6 +212,43 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
   const arrastreResiduoRef = useRef(null)
   const posicionesResiduosRef = useRef(POSICIONES_INICIALES_RESIDUOS)
   const residuosRetiradosRef = useRef({})
+  const audioObjetosRef = useRef(null)
+  const volumenMusicaRef = useRef(obtenerVolumenMusica())
+
+  const detenerAudioObjetos = useCallback((reiniciar = false) => {
+    const audio = audioObjetosRef.current
+    if (!audio) {
+      return
+    }
+
+    audio.pause()
+    if (reiniciar) {
+      audio.currentTime = 0
+    }
+  }, [])
+
+  const iniciarAudioObjetos = useCallback(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const audio =
+      audioObjetosRef.current ??
+      (() => {
+        const nuevoAudio = new Audio(AUDIO_OBJETOS_POZO1)
+        nuevoAudio.preload = 'auto'
+        nuevoAudio.loop = true
+        audioObjetosRef.current = nuevoAudio
+        return nuevoAudio
+      })()
+
+    audio.volume = volumenMusicaRef.current
+    if (!audio.paused) {
+      return
+    }
+
+    void audio.play().catch(() => {})
+  }, [])
 
   const obtenerCamaraActivaPaso = useCallback(
     (pasoIndice = pasoActual) => {
@@ -317,6 +359,26 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
     residuosRetiradosRef.current = residuosRetirados
   }, [residuosRetirados])
 
+  useEffect(() => {
+    const actualizarVolumenMusica = (event) => {
+      const volumenEvento = Number(event?.detail?.volumenMusica)
+      volumenMusicaRef.current = Number.isFinite(volumenEvento)
+        ? limitar(volumenEvento, 0, 100) / 100
+        : obtenerVolumenMusica()
+
+      if (audioObjetosRef.current) {
+        audioObjetosRef.current.volume = volumenMusicaRef.current
+      }
+    }
+
+    window.addEventListener(EVENTO_CAMBIO_CONFIG_AUDIO, actualizarVolumenMusica)
+    return () =>
+      window.removeEventListener(
+        EVENTO_CAMBIO_CONFIG_AUDIO,
+        actualizarVolumenMusica
+      )
+  }, [])
+
   const retiroSolidosCompletado = Object.keys(residuosRetirados).length === RESIDUOS_POZO.length
 
   const manejarInicioArrastreResiduo = useCallback(
@@ -351,8 +413,9 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
         offsetY
       }
       setResiduoArrastrandoId(idResiduo)
+      iniciarAudioObjetos()
     },
-    [pasoActual]
+    [iniciarAudioObjetos, pasoActual]
   )
 
   const reiniciarInteraccionResiduos = useCallback(() => {
@@ -362,7 +425,8 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
     posicionesResiduosRef.current = POSICIONES_INICIALES_RESIDUOS
     setResiduosRetirados({})
     residuosRetiradosRef.current = {}
-  }, [])
+    detenerAudioObjetos(true)
+  }, [detenerAudioObjetos])
 
   useEffect(() => {
     const manejarMovimientoArrastre = (event) => {
@@ -401,6 +465,7 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
 
       arrastreResiduoRef.current = null
       setResiduoArrastrandoId(null)
+      detenerAudioObjetos(true)
 
       const posicion = posicionesResiduosRef.current[estadoArrastre.id]
       if (!posicion) {
@@ -444,7 +509,7 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
       window.removeEventListener('pointerup', finalizarArrastre)
       window.removeEventListener('pointercancel', finalizarArrastre)
     }
-  }, [])
+  }, [detenerAudioObjetos])
 
   useEffect(() => {
     if (pasoActual !== PASO_VIDEO_RESUMEN) {
@@ -474,6 +539,12 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
   }, [pasoActual, reiniciarInteraccionResiduos])
 
   useEffect(() => {
+    if (pasoActual !== PASO_RETIRO_SOLIDOS) {
+      detenerAudioObjetos(true)
+    }
+  }, [detenerAudioObjetos, pasoActual])
+
+  useEffect(() => {
     return () => {
       if (timeoutRegresoRef.current) {
         window.clearTimeout(timeoutRegresoRef.current)
@@ -484,8 +555,9 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
       if (timeoutDebugCopiadoRef.current) {
         window.clearTimeout(timeoutDebugCopiadoRef.current)
       }
+      detenerAudioObjetos(true)
     }
-  }, [])
+  }, [detenerAudioObjetos])
 
   useEffect(() => {
     const manejarRueda = (event) => {

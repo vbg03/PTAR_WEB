@@ -3,6 +3,10 @@ import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigati
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
+import {
+    EVENTO_CAMBIO_CONFIG_AUDIO,
+    obtenerVolumenMusica
+} from '../../../utils/audioSettings'
 import './areacion.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -19,6 +23,16 @@ const PASO_TRANSICION_ESCENARIO = PASO_CAMBIO_ESCENARIO - 1
 const PASO_PREVIO_TRANSICION_ESCENARIO = PASO_TRANSICION_ESCENARIO - 1
 const PASO_ACTIVAR = 8
 const PASO_DETALLE = 9
+const AUDIO_AREACION_INICIAL = '/audio/sonido-agua.mp3'
+const AUDIO_AREACION_POST_TRANSICION = '/audio/agua-estaciones.mp3'
+const AUDIO_AREACION_BURBUJAS = '/audio/burbujas.mp3'
+const FACTOR_VOLUMEN_AGUA_ESTACIONES = 0.74
+const FACTOR_VOLUMEN_BURBUJAS = 0.20
+const DURACION_FADE_AUDIO_AREACION_MS = 520
+const INTERVALO_FADE_AUDIO_AREACION_MS = 32
+const DURACION_FADE_ENTRADA_BURBUJAS_MS = 780
+const DURACION_FADE_SALIDA_BURBUJAS_MS = 580
+const DURACION_FADE_SALIDA_POR_DEFECTO_MS = 260
 
 const ESCENA_PRETRATAMIENTO = '/svg/pretratamiento.svg'
 const ESCENA_AIREACION = '/svg/aireacion-sedimentador-tamizaje.svg'
@@ -326,6 +340,195 @@ function Areacion({
     const timeoutAutoavanceDetalleRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
     const timeoutEntradaSuaveRef = useRef(null)
+    const audiosAmbienteRef = useRef({})
+    const fuenteAudioAmbienteActivaRef = useRef(null)
+    const fadeAudioAmbienteRef = useRef(null)
+    const tokenCambioAudioAmbienteRef = useRef(0)
+    const volumenMusicaRef = useRef(obtenerVolumenMusica())
+
+    const detenerFadeAudioAmbiente = useCallback(() => {
+        if (!fadeAudioAmbienteRef.current) {
+            return
+        }
+        window.clearInterval(fadeAudioAmbienteRef.current)
+        fadeAudioAmbienteRef.current = null
+    }, [])
+
+    const limitarVolumenAudioAmbiente = useCallback((valor) => {
+        if (!Number.isFinite(valor)) {
+            return 0
+        }
+        return limitar(valor, 0, 1)
+    }, [])
+
+    const obtenerAudioAmbiente = useCallback((fuente) => {
+        if (audiosAmbienteRef.current[fuente]) {
+            return audiosAmbienteRef.current[fuente]
+        }
+
+        const audio = new Audio(fuente)
+        audio.preload = 'auto'
+        audio.loop = true
+        audio.volume = 0
+        audiosAmbienteRef.current[fuente] = audio
+        return audio
+    }, [])
+
+    const obtenerVolumenObjetivoAmbiente = useCallback(
+        (fuente) => {
+            let factor = 1
+            if (fuente === AUDIO_AREACION_POST_TRANSICION) {
+                factor = FACTOR_VOLUMEN_AGUA_ESTACIONES
+            } else if (fuente === AUDIO_AREACION_BURBUJAS) {
+                factor = FACTOR_VOLUMEN_BURBUJAS
+            }
+            return limitarVolumenAudioAmbiente(volumenMusicaRef.current * factor)
+        },
+        [limitarVolumenAudioAmbiente]
+    )
+
+    const ejecutarFadeAudioAmbiente = useCallback(
+        (
+            audio,
+            volumenDestino,
+            { duracionMs = DURACION_FADE_AUDIO_AREACION_MS, alFinal = null } = {}
+        ) => {
+            if (!audio) {
+                return
+            }
+
+            const volumenInicio = limitarVolumenAudioAmbiente(audio.volume)
+            const volumenFinal = limitarVolumenAudioAmbiente(volumenDestino)
+            const diferencia = volumenFinal - volumenInicio
+
+            if (Math.abs(diferencia) < 0.001) {
+                audio.volume = volumenFinal
+                if (typeof alFinal === 'function') {
+                    alFinal()
+                }
+                return
+            }
+
+            detenerFadeAudioAmbiente()
+
+            const totalPasos = Math.max(
+                1,
+                Math.round(duracionMs / INTERVALO_FADE_AUDIO_AREACION_MS)
+            )
+            let pasoFade = 0
+
+            fadeAudioAmbienteRef.current = window.setInterval(() => {
+                pasoFade += 1
+                const progreso = pasoFade / totalPasos
+                audio.volume = limitarVolumenAudioAmbiente(
+                    volumenInicio + diferencia * progreso
+                )
+
+                if (pasoFade >= totalPasos) {
+                    detenerFadeAudioAmbiente()
+                    audio.volume = volumenFinal
+                    if (typeof alFinal === 'function') {
+                        alFinal()
+                    }
+                }
+            }, INTERVALO_FADE_AUDIO_AREACION_MS)
+        },
+        [detenerFadeAudioAmbiente, limitarVolumenAudioAmbiente]
+    )
+
+    const obtenerDuracionFadeEntradaPorFuente = useCallback((fuente) => {
+        return fuente === AUDIO_AREACION_BURBUJAS
+            ? DURACION_FADE_ENTRADA_BURBUJAS_MS
+            : DURACION_FADE_AUDIO_AREACION_MS
+    }, [])
+
+    const obtenerDuracionFadeSalidaPorFuente = useCallback((fuente) => {
+        return fuente === AUDIO_AREACION_BURBUJAS
+            ? DURACION_FADE_SALIDA_BURBUJAS_MS
+            : DURACION_FADE_SALIDA_POR_DEFECTO_MS
+    }, [])
+
+    const reproducirAudioAmbiente = useCallback(
+        (audio, volumenDestino, duracionFadeMs = DURACION_FADE_AUDIO_AREACION_MS) => {
+            if (!audio.paused) {
+                ejecutarFadeAudioAmbiente(audio, volumenDestino, {
+                    duracionMs: duracionFadeMs
+                })
+                return
+            }
+
+            audio.currentTime = 0
+            audio.volume = 0
+
+            const promesaReproduccion = audio.play()
+            if (promesaReproduccion && typeof promesaReproduccion.then === 'function') {
+                promesaReproduccion
+                    .then(() => {
+                        ejecutarFadeAudioAmbiente(audio, volumenDestino, {
+                            duracionMs: duracionFadeMs
+                        })
+                    })
+                    .catch(() => { })
+                return
+            }
+
+            ejecutarFadeAudioAmbiente(audio, volumenDestino, {
+                duracionMs: duracionFadeMs
+            })
+        },
+        [ejecutarFadeAudioAmbiente]
+    )
+
+    const establecerAudioAmbientePorPaso = useCallback(
+        (pasoIndice, estaAireacionActiva) => {
+            let fuenteObjetivo = AUDIO_AREACION_INICIAL
+            if (pasoIndice >= PASO_ACTIVAR && estaAireacionActiva) {
+                fuenteObjetivo = AUDIO_AREACION_BURBUJAS
+            } else if (pasoIndice >= PASO_CAMBIO_ESCENARIO) {
+                fuenteObjetivo = AUDIO_AREACION_POST_TRANSICION
+            }
+            const fuenteActual = fuenteAudioAmbienteActivaRef.current
+            const tokenCambio = tokenCambioAudioAmbienteRef.current + 1
+            tokenCambioAudioAmbienteRef.current = tokenCambio
+
+            const iniciarFuenteObjetivo = () => {
+                if (tokenCambioAudioAmbienteRef.current !== tokenCambio) {
+                    return
+                }
+
+                const audioObjetivo = obtenerAudioAmbiente(fuenteObjetivo)
+                fuenteAudioAmbienteActivaRef.current = fuenteObjetivo
+                reproducirAudioAmbiente(
+                    audioObjetivo,
+                    obtenerVolumenObjetivoAmbiente(fuenteObjetivo),
+                    obtenerDuracionFadeEntradaPorFuente(fuenteObjetivo)
+                )
+            }
+
+            if (!fuenteActual || fuenteActual === fuenteObjetivo) {
+                iniciarFuenteObjetivo()
+                return
+            }
+
+            const audioActual = obtenerAudioAmbiente(fuenteActual)
+            ejecutarFadeAudioAmbiente(audioActual, 0, {
+                duracionMs: obtenerDuracionFadeSalidaPorFuente(fuenteActual),
+                alFinal: () => {
+                    audioActual.pause()
+                    audioActual.currentTime = 0
+                    iniciarFuenteObjetivo()
+                }
+            })
+        },
+        [
+            ejecutarFadeAudioAmbiente,
+            obtenerAudioAmbiente,
+            obtenerDuracionFadeEntradaPorFuente,
+            obtenerDuracionFadeSalidaPorFuente,
+            obtenerVolumenObjetivoAmbiente,
+            reproducirAudioAmbiente
+        ]
+    )
 
     const paso = PASOS_RECORRIDO[pasoActual]
     const indiceAudioIzquierda = paso.burbujaIzquierda
@@ -467,6 +670,43 @@ function Areacion({
             }
         }
     }, [entradaSuaveDesdePretratamiento, pasoActual])
+
+    useEffect(() => {
+        const actualizarVolumenMusica = (event) => {
+            const volumenEvento = Number(event?.detail?.volumenMusica)
+            volumenMusicaRef.current = Number.isFinite(volumenEvento)
+                ? limitar(volumenEvento, 0, 100) / 100
+                : obtenerVolumenMusica()
+
+            const fuenteActiva = fuenteAudioAmbienteActivaRef.current
+            if (!fuenteActiva) {
+                return
+            }
+
+            const audioActivo = audiosAmbienteRef.current[fuenteActiva]
+            if (!audioActivo) {
+                return
+            }
+
+            ejecutarFadeAudioAmbiente(
+                audioActivo,
+                obtenerVolumenObjetivoAmbiente(fuenteActiva),
+                { duracionMs: 220 }
+            )
+        }
+
+        window.addEventListener(EVENTO_CAMBIO_CONFIG_AUDIO, actualizarVolumenMusica)
+        return () => {
+            window.removeEventListener(
+                EVENTO_CAMBIO_CONFIG_AUDIO,
+                actualizarVolumenMusica
+            )
+        }
+    }, [ejecutarFadeAudioAmbiente, obtenerVolumenObjetivoAmbiente])
+
+    useEffect(() => {
+        establecerAudioAmbientePorPaso(pasoActual, aireacionActiva)
+    }, [establecerAudioAmbientePorPaso, pasoActual, aireacionActiva])
 
     useEffect(() => {
         if (pasoActual !== PASOS_RECORRIDO.length - 1) {
@@ -699,8 +939,18 @@ function Areacion({
             if (timeoutEntradaSuaveRef.current) {
                 window.clearTimeout(timeoutEntradaSuaveRef.current)
             }
+
+            tokenCambioAudioAmbienteRef.current += 1
+            detenerFadeAudioAmbiente()
+
+            Object.values(audiosAmbienteRef.current).forEach((audio) => {
+                audio.pause()
+                audio.currentTime = 0
+            })
+            audiosAmbienteRef.current = {}
+            fuenteAudioAmbienteActivaRef.current = null
         }
-    }, [])
+    }, [detenerFadeAudioAmbiente])
 
     const camaraActiva = obtenerCamaraActivaPaso()
     const estiloPanel = {

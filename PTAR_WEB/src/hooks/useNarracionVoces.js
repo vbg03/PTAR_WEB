@@ -17,7 +17,6 @@ export function useNarracionVoces({
   const claveObjetivoRef = useRef('')
   const clavePendienteRef = useRef('')
   const volumenVocesRef = useRef(obtenerVolumenVoces())
-  const clavesFallidasRef = useRef(new Set())
 
   useEffect(() => {
     const actualizarVolumen = () => {
@@ -105,9 +104,6 @@ export function useNarracionVoces({
     if (claveAudio === claveReproducidaRef.current) {
       return
     }
-    if (clavesFallidasRef.current.has(claveAudio)) {
-      return
-    }
 
     const rutaVoz = tieneRutaPersonalizada
       ? rutaPersonalizada
@@ -126,7 +122,6 @@ export function useNarracionVoces({
     audio.volume = volumenVocesRef.current
 
     const manejarError = () => {
-      clavesFallidasRef.current.add(claveAudio)
       if (clavePendienteRef.current === claveAudio) {
         clavePendienteRef.current = ''
       }
@@ -135,6 +130,7 @@ export function useNarracionVoces({
     audio.pause()
     audio.currentTime = 0
     audio.src = rutaVoz
+    audio.load()
     audio.addEventListener('error', manejarError, { once: true })
 
     const intento = audio.play()
@@ -154,8 +150,6 @@ export function useNarracionVoces({
             clavePendienteRef.current = claveAudio
             return
           }
-
-          clavesFallidasRef.current.add(claveAudio)
         })
       return
     }

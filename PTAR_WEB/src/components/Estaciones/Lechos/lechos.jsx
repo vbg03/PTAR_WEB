@@ -3,6 +3,10 @@ import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigati
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
+import {
+    EVENTO_CAMBIO_CONFIG_AUDIO,
+    obtenerVolumenMusica
+} from '../../../utils/audioSettings'
 import './lechos.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -988,6 +992,13 @@ const INDICES_AUDIO_ROJO = construirIndicesAudioPorPaso(
     PASOS_RECORRIDO,
     'burbujaDerecha'
 )
+const AUDIO_SONIDO_LECHOS = '/audio/sonido-lechos.mp3'
+const VOLUMEN_MAXIMO_SONIDO_LECHOS = 0.2
+const PASO_AUDIO_LECHOS_INICIO = 1
+const PASO_AUDIO_LECHOS_FIN = 3
+const DURACION_FADE_AUDIO_LECHOS_MS = 520
+const DURACION_FADE_SALIDA_AUDIO_LECHOS_MS = 360
+const INTERVALO_FADE_AUDIO_LECHOS_MS = 32
 
 function limitar(valor, minimo, maximo) {
     return Math.min(Math.max(valor, minimo), maximo)
@@ -1143,6 +1154,86 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
   const ultimaActivacionScrollRef = useRef(0)
     const timeoutBloqueoRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
+    const audioLechosRef = useRef(null)
+    const fadeAudioLechosRef = useRef(null)
+    const volumenMusicaRef = useRef(obtenerVolumenMusica())
+
+    const obtenerAudioLechos = useCallback(() => {
+        if (audioLechosRef.current) {
+            return audioLechosRef.current
+        }
+
+        const audio = new Audio(AUDIO_SONIDO_LECHOS)
+        audio.preload = 'auto'
+        audio.loop = true
+        audio.volume = 0
+        audioLechosRef.current = audio
+        return audio
+    }, [])
+
+    const obtenerVolumenObjetivoLechos = useCallback(() => {
+        const volumenMusica = limitar(volumenMusicaRef.current, 0, 1)
+        return Math.min(volumenMusica, VOLUMEN_MAXIMO_SONIDO_LECHOS)
+    }, [])
+
+    const limpiarFadeAudioLechos = useCallback(() => {
+        if (!fadeAudioLechosRef.current) {
+            return
+        }
+        window.clearInterval(fadeAudioLechosRef.current)
+        fadeAudioLechosRef.current = null
+    }, [])
+
+    const ejecutarFadeAudioLechos = useCallback(
+        (
+            audio,
+            volumenDestino,
+            { duracionMs = DURACION_FADE_AUDIO_LECHOS_MS, alFinal = null } = {}
+        ) => {
+            if (!audio) {
+                return
+            }
+
+            const volumenInicio = limitar(audio.volume, 0, 1)
+            const volumenFinal = limitar(volumenDestino, 0, 1)
+            const diferencia = volumenFinal - volumenInicio
+
+            if (Math.abs(diferencia) < 0.001) {
+                audio.volume = volumenFinal
+                if (typeof alFinal === 'function') {
+                    alFinal()
+                }
+                return
+            }
+
+            limpiarFadeAudioLechos()
+
+            const pasos = Math.max(
+                1,
+                Math.round(duracionMs / INTERVALO_FADE_AUDIO_LECHOS_MS)
+            )
+            let paso = 0
+
+            fadeAudioLechosRef.current = window.setInterval(() => {
+                paso += 1
+                const progreso = paso / pasos
+                audio.volume = limitar(
+                    volumenInicio + diferencia * progreso,
+                    0,
+                    1
+                )
+
+                if (paso >= pasos) {
+                    limpiarFadeAudioLechos()
+                    audio.volume = volumenFinal
+                    if (typeof alFinal === 'function') {
+                        alFinal()
+                    }
+                }
+            }, INTERVALO_FADE_AUDIO_LECHOS_MS)
+        },
+        [limpiarFadeAudioLechos]
+    )
 
     const paso = PASOS_RECORRIDO[pasoActual]
     const indiceAudioIzquierda = paso.burbujaIzquierda
@@ -1259,6 +1350,77 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
     }, [paso])
 
     useEffect(() => {
+        const actualizarVolumenMusica = (event) => {
+            const volumenEvento = Number(event?.detail?.volumenMusica)
+            volumenMusicaRef.current = Number.isFinite(volumenEvento)
+                ? limitar(volumenEvento, 0, 100) / 100
+                : obtenerVolumenMusica()
+
+            const audio = audioLechosRef.current
+            const debeSonarEnPasoActual =
+                pasoActual >= PASO_AUDIO_LECHOS_INICIO &&
+                pasoActual <= PASO_AUDIO_LECHOS_FIN
+
+            if (audio && debeSonarEnPasoActual) {
+                ejecutarFadeAudioLechos(audio, obtenerVolumenObjetivoLechos(), {
+                    duracionMs: 180
+                })
+            }
+        }
+
+        window.addEventListener(EVENTO_CAMBIO_CONFIG_AUDIO, actualizarVolumenMusica)
+        return () => {
+            window.removeEventListener(
+                EVENTO_CAMBIO_CONFIG_AUDIO,
+                actualizarVolumenMusica
+            )
+        }
+    }, [ejecutarFadeAudioLechos, obtenerVolumenObjetivoLechos, pasoActual])
+
+    useEffect(() => {
+        const debeSonarEnPasoActual =
+            pasoActual >= PASO_AUDIO_LECHOS_INICIO &&
+            pasoActual <= PASO_AUDIO_LECHOS_FIN
+
+        if (debeSonarEnPasoActual) {
+            const audio = obtenerAudioLechos()
+            const volumenObjetivo = obtenerVolumenObjetivoLechos()
+
+            if (!audio.paused) {
+                ejecutarFadeAudioLechos(audio, volumenObjetivo)
+                return
+            }
+
+            audio.currentTime = 0
+            audio.volume = 0
+            const promesaReproduccion = audio.play()
+            if (promesaReproduccion && typeof promesaReproduccion.then === 'function') {
+                promesaReproduccion
+                    .then(() => {
+                        ejecutarFadeAudioLechos(audio, volumenObjetivo)
+                    })
+                    .catch(() => { })
+            } else {
+                ejecutarFadeAudioLechos(audio, volumenObjetivo)
+            }
+            return
+        }
+
+        if (!audioLechosRef.current) {
+            return
+        }
+
+        const audio = audioLechosRef.current
+        ejecutarFadeAudioLechos(audio, 0, {
+            duracionMs: DURACION_FADE_SALIDA_AUDIO_LECHOS_MS,
+            alFinal: () => {
+                audio.pause()
+                audio.currentTime = 0
+            }
+        })
+    }, [ejecutarFadeAudioLechos, obtenerAudioLechos, obtenerVolumenObjetivoLechos, pasoActual])
+
+    useEffect(() => {
         const manejarRueda = (event) => {
             const direccionScroll = obtenerDireccionScrollPorGesto(
             event,
@@ -1371,8 +1533,14 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
             if (timeoutDebugCopiadoRef.current) {
                 window.clearTimeout(timeoutDebugCopiadoRef.current)
             }
+            limpiarFadeAudioLechos()
+            if (audioLechosRef.current) {
+                audioLechosRef.current.pause()
+                audioLechosRef.current.currentTime = 0
+                audioLechosRef.current = null
+            }
         }
-    }, [])
+    }, [limpiarFadeAudioLechos])
 
     const camaraActiva = obtenerCamaraActivaPaso()
     const estiloPanel = {
