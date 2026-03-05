@@ -3,7 +3,7 @@
 .ptar-header {
   position: sticky;
   top: 0px;
-  z-index: 10;
+  z-index: 120;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -67,6 +67,7 @@
 
 .ptar-header__dropdown {
   position: relative;
+  z-index: 121;
 }
 
 .ptar-header__dropdown.is-open .ptar-header__menu {
@@ -92,6 +93,7 @@
   position: absolute;
   top: 52px;
   left: 0;
+  z-index: 122;
   background: #ffffff;
   border-radius: 9px;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);

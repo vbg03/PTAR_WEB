@@ -1,4 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
+import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
+import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
+import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
+import {
+  EVENTO_CAMBIO_CONFIG_AUDIO,
+  obtenerVolumenMusica
+} from '../../../utils/audioSettings'
 import './pozo1.css'
 
 const DURACION_TRANSICION_REGRESO = 1180
@@ -7,6 +15,7 @@ const VALOR_MIN_CAMARA = -120
 const VALOR_MAX_CAMARA = 220
 const ZOOM_MIN_CAMARA = 0.2
 const ZOOM_MAX_CAMARA = 12
+const AUDIO_OBJETOS_POZO1 = '/audio/objetos.mp3'
 const PASO_RETIRO_SOLIDOS = 9
 const PASO_SIGUIENTE_RETIRO_SOLIDOS = PASO_RETIRO_SOLIDOS + 1
 const LIMITES_POZO_INTERACTIVO = {
@@ -138,6 +147,15 @@ const PASOS_RECORRIDO = [
     mostrarBasurasPozo: false,
   }
 ]
+
+const INDICES_AUDIO_BLANCO = construirIndicesAudioPorPaso(
+  PASOS_RECORRIDO,
+  'burbujaIzquierda'
+)
+const INDICES_AUDIO_ROJO = construirIndicesAudioPorPaso(
+  PASOS_RECORRIDO,
+  'burbujaDerecha'
+)
 const PASO_VIDEO_RESUMEN = PASOS_RECORRIDO.length - 1
 
 function construirEstiloPosicion(posicion) {
@@ -169,18 +187,23 @@ function obtenerPuntoEnPanel(event, panel) {
   }
 }
 
-function Pozo1({ onVolverAUbicacion }) {
-  const [pasoActual, setPasoActual] = useState(0)
+function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false }) {
+  const [pasoActual, setPasoActual] = useState(() =>
+    iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0
+  )
   const [mostrarTransicionRegreso, setMostrarTransicionRegreso] = useState(false)
   const [mostrarResumenPasoFinal, setMostrarResumenPasoFinal] = useState(false)
   const [abrirReproductorPasoFinal, setAbrirReproductorPasoFinal] = useState(false)
-  const [debugCamaraActiva, setDebugCamaraActiva] = useState(import.meta.env.DEV)
+  const [debugCamaraActiva, setDebugCamaraActiva] = useState(DEBUG_CAMARA_HABILITADO)
   const [debugCopiado, setDebugCopiado] = useState(false)
   const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
   const [posicionesResiduos, setPosicionesResiduos] = useState(POSICIONES_INICIALES_RESIDUOS)
   const [residuosRetirados, setResiduosRetirados] = useState({})
   const [residuoArrastrandoId, setResiduoArrastrandoId] = useState(null)
   const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
   const transicionRegresoRef = useRef(false)
   const timeoutRegresoRef = useRef(null)
   const timeoutBloqueoRef = useRef(null)
@@ -189,6 +212,43 @@ function Pozo1({ onVolverAUbicacion }) {
   const arrastreResiduoRef = useRef(null)
   const posicionesResiduosRef = useRef(POSICIONES_INICIALES_RESIDUOS)
   const residuosRetiradosRef = useRef({})
+  const audioObjetosRef = useRef(null)
+  const volumenMusicaRef = useRef(obtenerVolumenMusica())
+
+  const detenerAudioObjetos = useCallback((reiniciar = false) => {
+    const audio = audioObjetosRef.current
+    if (!audio) {
+      return
+    }
+
+    audio.pause()
+    if (reiniciar) {
+      audio.currentTime = 0
+    }
+  }, [])
+
+  const iniciarAudioObjetos = useCallback(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const audio =
+      audioObjetosRef.current ??
+      (() => {
+        const nuevoAudio = new Audio(AUDIO_OBJETOS_POZO1)
+        nuevoAudio.preload = 'auto'
+        nuevoAudio.loop = true
+        audioObjetosRef.current = nuevoAudio
+        return nuevoAudio
+      })()
+
+    audio.volume = volumenMusicaRef.current
+    if (!audio.paused) {
+      return
+    }
+
+    void audio.play().catch(() => {})
+  }, [])
 
   const obtenerCamaraActivaPaso = useCallback(
     (pasoIndice = pasoActual) => {
@@ -299,6 +359,26 @@ function Pozo1({ onVolverAUbicacion }) {
     residuosRetiradosRef.current = residuosRetirados
   }, [residuosRetirados])
 
+  useEffect(() => {
+    const actualizarVolumenMusica = (event) => {
+      const volumenEvento = Number(event?.detail?.volumenMusica)
+      volumenMusicaRef.current = Number.isFinite(volumenEvento)
+        ? limitar(volumenEvento, 0, 100) / 100
+        : obtenerVolumenMusica()
+
+      if (audioObjetosRef.current) {
+        audioObjetosRef.current.volume = volumenMusicaRef.current
+      }
+    }
+
+    window.addEventListener(EVENTO_CAMBIO_CONFIG_AUDIO, actualizarVolumenMusica)
+    return () =>
+      window.removeEventListener(
+        EVENTO_CAMBIO_CONFIG_AUDIO,
+        actualizarVolumenMusica
+      )
+  }, [])
+
   const retiroSolidosCompletado = Object.keys(residuosRetirados).length === RESIDUOS_POZO.length
 
   const manejarInicioArrastreResiduo = useCallback(
@@ -333,8 +413,9 @@ function Pozo1({ onVolverAUbicacion }) {
         offsetY
       }
       setResiduoArrastrandoId(idResiduo)
+      iniciarAudioObjetos()
     },
-    [pasoActual]
+    [iniciarAudioObjetos, pasoActual]
   )
 
   const reiniciarInteraccionResiduos = useCallback(() => {
@@ -344,7 +425,8 @@ function Pozo1({ onVolverAUbicacion }) {
     posicionesResiduosRef.current = POSICIONES_INICIALES_RESIDUOS
     setResiduosRetirados({})
     residuosRetiradosRef.current = {}
-  }, [])
+    detenerAudioObjetos(true)
+  }, [detenerAudioObjetos])
 
   useEffect(() => {
     const manejarMovimientoArrastre = (event) => {
@@ -383,6 +465,7 @@ function Pozo1({ onVolverAUbicacion }) {
 
       arrastreResiduoRef.current = null
       setResiduoArrastrandoId(null)
+      detenerAudioObjetos(true)
 
       const posicion = posicionesResiduosRef.current[estadoArrastre.id]
       if (!posicion) {
@@ -426,7 +509,7 @@ function Pozo1({ onVolverAUbicacion }) {
       window.removeEventListener('pointerup', finalizarArrastre)
       window.removeEventListener('pointercancel', finalizarArrastre)
     }
-  }, [])
+  }, [detenerAudioObjetos])
 
   useEffect(() => {
     if (pasoActual !== PASO_VIDEO_RESUMEN) {
@@ -456,6 +539,12 @@ function Pozo1({ onVolverAUbicacion }) {
   }, [pasoActual, reiniciarInteraccionResiduos])
 
   useEffect(() => {
+    if (pasoActual !== PASO_RETIRO_SOLIDOS) {
+      detenerAudioObjetos(true)
+    }
+  }, [detenerAudioObjetos, pasoActual])
+
+  useEffect(() => {
     return () => {
       if (timeoutRegresoRef.current) {
         window.clearTimeout(timeoutRegresoRef.current)
@@ -466,23 +555,37 @@ function Pozo1({ onVolverAUbicacion }) {
       if (timeoutDebugCopiadoRef.current) {
         window.clearTimeout(timeoutDebugCopiadoRef.current)
       }
+      detenerAudioObjetos(true)
     }
-  }, [])
+  }, [detenerAudioObjetos])
 
   useEffect(() => {
     const manejarRueda = (event) => {
-      if (bloqueoScrollRef.current || transicionRegresoRef.current || event.deltaY === 0) {
+      const direccionScroll = obtenerDireccionScrollPorGesto(
+      event,
+      acumulacionScrollRef,
+      ultimaMarcaScrollRef,
+      ultimaActivacionScrollRef
+    )
+
+    if (bloqueoScrollRef.current || transicionRegresoRef.current || direccionScroll === 0) {
         return
       }
 
-      if (event.deltaY > 0 && pasoActual === PASO_RETIRO_SOLIDOS && !retiroSolidosCompletado) {
+      if (direccionScroll > 0 && pasoActual === PASO_RETIRO_SOLIDOS && !retiroSolidosCompletado) {
         return
       }
 
       bloqueoScrollRef.current = true
 
-      if (event.deltaY > 0) {
-        setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+      if (direccionScroll > 0) {
+        if (pasoActual >= PASOS_RECORRIDO.length - 1) {
+          if (typeof onCompletarPozo1 === 'function') {
+            onCompletarPozo1()
+          }
+        } else {
+          setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+        }
       } else if (pasoActual > 0) {
         setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
       } else {
@@ -505,17 +608,17 @@ function Pozo1({ onVolverAUbicacion }) {
     return () => {
       window.removeEventListener('wheel', manejarRueda)
     }
-  }, [pasoActual, iniciarTransicionRegreso, retiroSolidosCompletado])
+  }, [pasoActual, iniciarTransicionRegreso, retiroSolidosCompletado, onCompletarPozo1])
 
   useEffect(() => {
     const manejarTecladoDebug = (event) => {
-      if (event.key === 'F8') {
+      if (DEBUG_CAMARA_HABILITADO && event.key === 'F8') {
         event.preventDefault()
         setDebugCamaraActiva((estadoAnterior) => !estadoAnterior)
         return
       }
 
-      if (!debugCamaraActiva) {
+      if (!DEBUG_CAMARA_HABILITADO || !debugCamaraActiva) {
         return
       }
 
@@ -579,6 +682,25 @@ function Pozo1({ onVolverAUbicacion }) {
   ])
 
   const paso = PASOS_RECORRIDO[pasoActual]
+  const indiceAudioIzquierda = paso.burbujaIzquierda
+    ? INDICES_AUDIO_BLANCO[pasoActual]
+    : null
+  const indiceAudioDerecha = paso.burbujaDerecha
+    ? INDICES_AUDIO_ROJO[pasoActual]
+    : null
+  const colorAudioActivo = indiceAudioDerecha
+    ? 'rojo'
+    : indiceAudioIzquierda
+      ? 'blanco'
+      : null
+  const indiceAudioActivo = indiceAudioDerecha ?? indiceAudioIzquierda ?? null
+
+  useNarracionVoces({
+    seccion: 'pozo1',
+    colorActivo: colorAudioActivo,
+    indiceActivo: indiceAudioActivo
+  })
+
   const esPasoRetiroSolidos = pasoActual === PASO_RETIRO_SOLIDOS
   const camaraActiva = obtenerCamaraActivaPaso()
   const estiloPanel = {
@@ -661,6 +783,12 @@ function Pozo1({ onVolverAUbicacion }) {
               className={`ptar-pozo1__media-final-track ${mostrarResumenPasoFinal ? 'is-summary-open' : ''
                 }`}
             >
+              <img
+                className="ptar-pozo1__pin-video-final"
+                src="/images/ubicacion.png"
+                alt=""
+                aria-hidden="true"
+              />
               <button
                 type="button"
                 className="ptar-pozo1__video-preview-final"
@@ -742,10 +870,6 @@ function Pozo1({ onVolverAUbicacion }) {
             Mueve la gota de agua con la rueda del raton
           </p>
         ) : null}
-
-        <p className="ptar-pozo1__paso" aria-hidden="true">
-          Paso {pasoActual + 1} de {PASOS_RECORRIDO.length}
-        </p>
 
         {debugCamaraActiva ? (
           <aside className="ptar-pozo1__debug-camara" role="status" aria-live="polite">
@@ -829,3 +953,4 @@ function Pozo1({ onVolverAUbicacion }) {
 }
 
 export default Pozo1
+

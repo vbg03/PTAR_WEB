@@ -68,6 +68,9 @@
   top: 50%;
   width: clamp(62px, 8vw, 168px);
   height: auto;
+  border-radius: 50%;
+  box-shadow: 0 0 0 rgba(122, 223, 255, 0);
+  --gota-aura-rgb: 196 152 101;
   transform: translate(-50%, -50%) scale(var(--gota-escala, 1));
   transform-origin: center center;
   transition:
@@ -78,6 +81,8 @@
   z-index: 8;
   pointer-events: none;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.28));
+  animation: ptar-gota-balanceo 3.2s ease-in-out infinite, ptar-gota-aura 2.8s ease-in-out infinite;
+  will-change: left, top, transform, filter, translate;
 }
 
 .ptar-pozo1__residuo {
@@ -140,6 +145,15 @@
 
 .ptar-pozo1__media-final-track.is-summary-open {
   transform: translateX(clamp(-110px, -7vw, -64px));
+}
+
+.ptar-pozo1__pin-video-final {
+  position: absolute;
+  left: clamp(-74px, -4.8vw, -42px);
+  top: clamp(136px, 13vw, 184px);
+  width: clamp(42px, 4.1vw, 66px);
+  height: auto;
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.24));
 }
 
 .ptar-pozo1__video-preview-final {
@@ -302,7 +316,6 @@
 
 .ptar-pozo1__avatar--izquierda {
   left: clamp(12px, 2.2vw, 28px);
-  width: clamp(76px, 7.2vw, 116px);
 }
 
 .ptar-pozo1__avatar--derecha {
@@ -660,6 +673,12 @@
     width: min(88vw, 620px);
   }
 
+  .ptar-pozo1__pin-video-final {
+    left: clamp(-54px, -5.2vw, -24px);
+    top: clamp(112px, 18.5vw, 146px);
+    width: clamp(36px, 7vw, 56px);
+  }
+
   .ptar-pozo1__media-final-track.is-summary-open {
     transform: none;
   }
@@ -728,11 +747,6 @@
   .ptar-pozo1__avatar {
     width: clamp(82px, 16vw, 116px);
   }
-
-  .ptar-pozo1__avatar--izquierda {
-    width: clamp(66px, 12.8vw, 92px);
-  }
-
   .ptar-pozo1__debug-camara {
     min-width: 280px;
     max-width: min(92vw, 420px);
@@ -742,3 +756,6 @@
     font-size: 12px;
   }
 }
+
+
+

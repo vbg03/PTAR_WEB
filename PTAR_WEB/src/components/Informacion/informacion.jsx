@@ -1,5 +1,7 @@
 ﻿import { useEffect, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../utils/wheelStepNavigation'
 import { useCallback } from 'react'
+import { useNarracionVoces } from '../../hooks/useNarracionVoces'
 import './informacion.css'
 
 const ETAPA_BIENVENIDA = 0
@@ -26,7 +28,7 @@ const CONVERSACIONES = {
   ubicacionPregunta:
     'Ah sí, creo que la he visto de lejos. ¿Pero cuéntame, cómo funciona todo? ¿Por dónde empieza el proceso?',
   ubicacionRespuesta:
-    'La PTAR está ubicada en la parte posterior del campus, cerca de Villa Laurentino. Justo entre la calle 15 y la calle 42.'
+    'La PTAR está ubicada en la parte posterior del campus, cerca de Villa Laurentino. Justo entre la calle 115 y la calle 42.'
 }
 
 function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
@@ -48,6 +50,9 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
   const [animarBloqueUbicacion, setAnimarBloqueUbicacion] = useState(false)
   const [mostrarTransicionPozo, setMostrarTransicionPozo] = useState(false)
   const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
   const transicionPozoRef = useRef(false)
   const timeoutTransicionPozoRef = useRef(null)
 
@@ -77,17 +82,20 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
 
   useEffect(() => {
     const manejarRueda = (event) => {
-      if (bloqueoScrollRef.current || transicionPozoRef.current) {
-        return
-      }
+      const direccionScroll = obtenerDireccionScrollPorGesto(
+        event,
+        acumulacionScrollRef,
+        ultimaMarcaScrollRef,
+        ultimaActivacionScrollRef
+      )
 
-      if (event.deltaY === 0) {
+      if (bloqueoScrollRef.current || transicionPozoRef.current || direccionScroll === 0) {
         return
       }
 
       bloqueoScrollRef.current = true
 
-      if (event.deltaY > 0) {
+      if (direccionScroll > 0) {
         if (etapaActual < ETAPA_VIDEO) {
           setEtapaActual((estadoAnterior) => {
             const nuevaEtapa = Math.min(estadoAnterior + 1, ETAPA_VIDEO)
@@ -114,7 +122,7 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
         }
       }
 
-      if (event.deltaY < 0) {
+      if (direccionScroll < 0) {
         if (etapaActual === ETAPA_UBICACION) {
           if (pasoConversacionUbicacion > PASO_UBICACION_RESPUESTA) {
             setPasoConversacionUbicacion(PASO_UBICACION_RESPUESTA)
@@ -247,6 +255,38 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
     etapaActual === ETAPA_UBICACION &&
     pasoConversacionUbicacion === PASO_UBICACION_RESPUESTA
 
+  let colorAudioActivo = null
+  let indiceAudioActivo = null
+
+  if (mostrarBurbujaBienvenida) {
+    colorAudioActivo = 'rojo'
+    indiceAudioActivo = 1
+  } else if (mostrarBurbujaTitulo) {
+    colorAudioActivo = 'blanco'
+    indiceAudioActivo = 1
+  } else if (mostrarBurbujaVideoSiglas) {
+    colorAudioActivo = 'rojo'
+    indiceAudioActivo = 2
+  } else if (mostrarBurbujaVideoExplicacion) {
+    colorAudioActivo = 'rojo'
+    indiceAudioActivo = 3
+  } else if (mostrarBurbujaVideoPregunta) {
+    colorAudioActivo = 'blanco'
+    indiceAudioActivo = 2
+  } else if (mostrarBurbujaUbicacionRespuesta) {
+    colorAudioActivo = 'rojo'
+    indiceAudioActivo = 4
+  } else if (mostrarBurbujaUbicacionPregunta) {
+    colorAudioActivo = 'blanco'
+    indiceAudioActivo = 3
+  }
+
+  useNarracionVoces({
+    seccion: 'informacion',
+    colorActivo: colorAudioActivo,
+    indiceActivo: indiceAudioActivo
+  })
+
   let textoBurbujaIzquierda = CONVERSACIONES.titulo
   if (mostrarBurbujaVideoPregunta) {
     textoBurbujaIzquierda = CONVERSACIONES.videoPregunta
@@ -271,11 +311,12 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
       >
         <img
           className="ptar-info__personaje ptar-info__personaje--izquierda"
-          src="/images/estudianteNormal.png"
+          src="/images/estudianteNormal.svg"
           alt="Estudiante"
         />
 
         <aside
+          key={`info-izq-${etapaActual}-${pasoConversacionVideo}-${pasoConversacionUbicacion}-${textoBurbujaIzquierda}`}
           className={`ptar-info__burbuja ptar-info__burbuja--izquierda ptar-info__burbuja--blanca ${
             mostrarBurbujaVideoPregunta ? 'is-video-step' : ''
           } ${mostrarBurbujaUbicacionPregunta ? 'is-location-step' : ''} ${
@@ -412,6 +453,7 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
         ) : null}
 
         <aside
+          key={`info-der-${etapaActual}-${pasoConversacionVideo}-${pasoConversacionUbicacion}-${textoBurbujaDerecha}`}
           className={`ptar-info__burbuja ptar-info__burbuja--derecha ptar-info__burbuja--roja ${
             mostrarBurbujaUbicacionRespuesta ? 'is-location-step' : ''
           } ${
@@ -511,7 +553,7 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
 
         <img
           className="ptar-info__personaje ptar-info__personaje--derecha"
-          src="/images/estudianteAmbiental.png"
+          src="/images/estudianteAmbiental.svg"
           alt="Guía ambiental"
         />
 
