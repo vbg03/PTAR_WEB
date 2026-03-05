@@ -1,22 +1,5 @@
 ﻿const PIXELES_POR_LINEA_SCROLL = 16
 
-function esGestoTouchpad(event) {
-  if (!event || event.deltaMode !== 0) {
-    return false
-  }
-
-  const deltaX = Math.abs(event.deltaX || 0)
-  const deltaY = Math.abs(event.deltaY || 0)
-  const deltaFraccional =
-    !Number.isInteger(event.deltaX || 0) || !Number.isInteger(event.deltaY || 0)
-
-  if (deltaFraccional) {
-    return true
-  }
-
-  return deltaY > 0 && deltaY < 40 && deltaX < 40
-}
-
 export function obtenerDireccionScrollPorGesto(
   event,
   acumulacionScrollRef,
@@ -27,8 +10,7 @@ export function obtenerDireccionScrollPorGesto(
   const {
     umbralPixeles = 72,
     reinicioGestoMs = 140,
-    intervaloMinimoActivacionMs = 460,
-    invertirTouchpad = true
+    intervaloMinimoActivacionMs = 460
   } = opciones
 
   if (!event || event.ctrlKey || event.metaKey) {
@@ -48,10 +30,6 @@ export function obtenerDireccionScrollPorGesto(
     deltaNormalizado *= PIXELES_POR_LINEA_SCROLL
   } else if (event.deltaMode === 2) {
     deltaNormalizado *= window.innerHeight
-  }
-
-  if (invertirTouchpad && esGestoTouchpad(event)) {
-    deltaNormalizado *= -1
   }
 
   const ahora = typeof performance !== 'undefined' ? performance.now() : Date.now()

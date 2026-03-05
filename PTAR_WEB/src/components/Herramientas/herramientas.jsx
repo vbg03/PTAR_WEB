@@ -1,28 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import {
+  LLAVE_VOLUMEN_MUSICA,
+  LLAVE_VOLUMEN_VOCES,
+  VOLUMEN_DEFECTO_MUSICA,
+  VOLUMEN_DEFECTO_VOCES,
+  emitirEventoConfiguracionAudio,
+  leerVolumenDesdeStorage
+} from '../../utils/audioSettings'
 import './herramientas.css'
-
-const LLAVE_VOLUMEN_VOCES = 'ptar-volumen-voces'
-const LLAVE_VOLUMEN_MUSICA = 'ptar-volumen-musica'
-const VOLUMEN_DEFECTO_VOCES = 72
-const VOLUMEN_DEFECTO_MUSICA = 48
-
-function leerVolumenGuardado(llave, valorDefecto) {
-  if (typeof window === 'undefined') {
-    return valorDefecto
-  }
-
-  const valorCrudo = window.localStorage.getItem(llave)
-  if (valorCrudo === null) {
-    return valorDefecto
-  }
-
-  const valor = Number(valorCrudo)
-  if (!Number.isFinite(valor)) {
-    return valorDefecto
-  }
-
-  return Math.max(0, Math.min(100, Math.round(valor)))
-}
 
 function IconoPregunta() {
   return (
@@ -47,13 +32,14 @@ function IconoAudio() {
 }
 
 function Herramientas() {
+  const herramientasRef = useRef(null)
   const [mostrarInstrucciones, setMostrarInstrucciones] = useState(false)
   const [mostrarPanelAudio, setMostrarPanelAudio] = useState(false)
   const [volumenVoces, setVolumenVoces] = useState(() =>
-    leerVolumenGuardado(LLAVE_VOLUMEN_VOCES, VOLUMEN_DEFECTO_VOCES)
+    leerVolumenDesdeStorage(LLAVE_VOLUMEN_VOCES, VOLUMEN_DEFECTO_VOCES)
   )
   const [volumenMusica, setVolumenMusica] = useState(() =>
-    leerVolumenGuardado(LLAVE_VOLUMEN_MUSICA, VOLUMEN_DEFECTO_MUSICA)
+    leerVolumenDesdeStorage(LLAVE_VOLUMEN_MUSICA, VOLUMEN_DEFECTO_MUSICA)
   )
 
   useEffect(() => {
@@ -73,6 +59,10 @@ function Herramientas() {
   }, [volumenMusica])
 
   useEffect(() => {
+    emitirEventoConfiguracionAudio({ volumenVoces, volumenMusica })
+  }, [volumenVoces, volumenMusica])
+
+  useEffect(() => {
     if (!mostrarInstrucciones) {
       return
     }
@@ -87,6 +77,26 @@ function Herramientas() {
     return () => window.removeEventListener('keydown', cerrarConEscape)
   }, [mostrarInstrucciones])
 
+  useEffect(() => {
+    if (!mostrarPanelAudio) {
+      return
+    }
+
+    const cerrarPanelAudioPorClickExterno = (event) => {
+      if (!herramientasRef.current) {
+        return
+      }
+
+      if (!herramientasRef.current.contains(event.target)) {
+        setMostrarPanelAudio(false)
+      }
+    }
+
+    window.addEventListener('mousedown', cerrarPanelAudioPorClickExterno)
+    return () =>
+      window.removeEventListener('mousedown', cerrarPanelAudioPorClickExterno)
+  }, [mostrarPanelAudio])
+
   const alternarInstrucciones = () => {
     setMostrarInstrucciones((valorAnterior) => !valorAnterior)
     setMostrarPanelAudio(false)
@@ -99,7 +109,7 @@ function Herramientas() {
 
   return (
     <>
-      <aside className="ptar-tools" aria-label="Herramientas de navegación">
+      <aside className="ptar-tools" aria-label="Herramientas de navegación" ref={herramientasRef}>
         <button
           type="button"
           className={`ptar-tools__button${mostrarInstrucciones ? ' ptar-tools__button--activa' : ''}`}

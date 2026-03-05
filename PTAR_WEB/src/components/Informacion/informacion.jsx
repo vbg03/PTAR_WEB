@@ -1,6 +1,7 @@
 ﻿import { useEffect, useRef, useState } from 'react'
 import { obtenerDireccionScrollPorGesto } from '../../utils/wheelStepNavigation'
 import { useCallback } from 'react'
+import { useNarracionVoces } from '../../hooks/useNarracionVoces'
 import './informacion.css'
 
 const ETAPA_BIENVENIDA = 0
@@ -27,7 +28,7 @@ const CONVERSACIONES = {
   ubicacionPregunta:
     'Ah sí, creo que la he visto de lejos. ¿Pero cuéntame, cómo funciona todo? ¿Por dónde empieza el proceso?',
   ubicacionRespuesta:
-    'La PTAR está ubicada en la parte posterior del campus, cerca de Villa Laurentino. Justo entre la calle 15 y la calle 42.'
+    'La PTAR está ubicada en la parte posterior del campus, cerca de Villa Laurentino. Justo entre la calle 115 y la calle 42.'
 }
 
 function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
@@ -253,6 +254,38 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
   const mostrarBurbujaUbicacionRespuesta =
     etapaActual === ETAPA_UBICACION &&
     pasoConversacionUbicacion === PASO_UBICACION_RESPUESTA
+
+  let colorAudioActivo = null
+  let indiceAudioActivo = null
+
+  if (mostrarBurbujaBienvenida) {
+    colorAudioActivo = 'rojo'
+    indiceAudioActivo = 1
+  } else if (mostrarBurbujaTitulo) {
+    colorAudioActivo = 'blanco'
+    indiceAudioActivo = 1
+  } else if (mostrarBurbujaVideoSiglas) {
+    colorAudioActivo = 'rojo'
+    indiceAudioActivo = 2
+  } else if (mostrarBurbujaVideoExplicacion) {
+    colorAudioActivo = 'rojo'
+    indiceAudioActivo = 3
+  } else if (mostrarBurbujaVideoPregunta) {
+    colorAudioActivo = 'blanco'
+    indiceAudioActivo = 2
+  } else if (mostrarBurbujaUbicacionRespuesta) {
+    colorAudioActivo = 'rojo'
+    indiceAudioActivo = 4
+  } else if (mostrarBurbujaUbicacionPregunta) {
+    colorAudioActivo = 'blanco'
+    indiceAudioActivo = 3
+  }
+
+  useNarracionVoces({
+    seccion: 'informacion',
+    colorActivo: colorAudioActivo,
+    indiceActivo: indiceAudioActivo
+  })
 
   let textoBurbujaIzquierda = CONVERSACIONES.titulo
   if (mostrarBurbujaVideoPregunta) {

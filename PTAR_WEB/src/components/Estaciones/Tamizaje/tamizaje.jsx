@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
+import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
+import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './tamizaje.css'
 
@@ -199,6 +201,15 @@ const PASOS_RECORRIDO = [
     })
 ]
 
+const INDICES_AUDIO_BLANCO = construirIndicesAudioPorPaso(
+    PASOS_RECORRIDO,
+    'burbujaIzquierda'
+)
+const INDICES_AUDIO_ROJO = construirIndicesAudioPorPaso(
+    PASOS_RECORRIDO,
+    'burbujaDerecha'
+)
+
 function limitar(valor, minimo, maximo) {
     return Math.min(Math.max(valor, minimo), maximo)
 }
@@ -227,6 +238,25 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false
     const timeoutDebugCopiadoRef = useRef(null)
 
     const paso = PASOS_RECORRIDO[pasoActual]
+    const indiceAudioIzquierda = paso.burbujaIzquierda
+        ? INDICES_AUDIO_BLANCO[pasoActual]
+        : null
+    const indiceAudioDerecha = paso.burbujaDerecha
+        ? INDICES_AUDIO_ROJO[pasoActual]
+        : null
+    const colorAudioActivo = indiceAudioDerecha
+        ? 'rojo'
+        : indiceAudioIzquierda
+            ? 'blanco'
+            : null
+    const indiceAudioActivo = indiceAudioDerecha ?? indiceAudioIzquierda ?? null
+
+    useNarracionVoces({
+        seccion: 'tamizaje',
+        colorActivo: colorAudioActivo,
+        indiceActivo: indiceAudioActivo
+    })
+
     const usarEscenarioPrincipal = pasoActual >= PASO_CAMBIO_ESCENARIO
     const fondoEscena = usarEscenarioPrincipal ? ESCENA_TAMIZAJE : ESCENA_COMPARTIDA
 
@@ -741,4 +771,3 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false
 }
 
 export default Tamizaje
-

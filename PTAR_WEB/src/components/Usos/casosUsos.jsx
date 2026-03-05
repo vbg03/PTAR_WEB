@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { obtenerDireccionScrollPorGesto } from '../../utils/wheelStepNavigation'
+import { useNarracionVoces } from '../../hooks/useNarracionVoces'
+import { construirIndicesAudioPorPaso } from '../../utils/voiceLibrary'
 import './casosUsos.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -8,6 +10,9 @@ const RETRASO_ENTRADA_MEDIA = 22
 const RETRASO_ENTRADA_TITULO = 120
 const DURACION_TRANSICION_BURBUJA = 320
 const RETRASO_ENTRADA_BURBUJA = 22
+const TEXTO_BURBUJA_JARDINES =
+  'Y segundo, zonas verdes del campus, como los jardines externos. Es una forma de hacer mas sostenible el uso de los recursos.'
+const RUTA_AUDIO_BURBUJA_JARDINES = '/voces/rojo/Usos/Jessica_Usos_003.mp3'
 
 const MEDIAS = {
   canchas: {
@@ -50,8 +55,7 @@ const PASOS_RECORRIDO = [
   {
     titulo: 'RIEGO DE JARDINES',
     mediaId: 'jardines',
-    burbujaDerecha:
-      'Y segundo, zonas verdes del campus, como los jardines externos. Es una forma de hacer mas sostenible el uso de los recursos.'
+    burbujaDerecha: TEXTO_BURBUJA_JARDINES
   },
   {
     titulo: 'RIEGO DE JARDINES',
@@ -94,6 +98,15 @@ const PASOS_RECORRIDO = [
   }
 ]
 
+const INDICES_AUDIO_BLANCO = construirIndicesAudioPorPaso(
+  PASOS_RECORRIDO,
+  'burbujaIzquierda'
+)
+const INDICES_AUDIO_ROJO = construirIndicesAudioPorPaso(
+  PASOS_RECORRIDO,
+  'burbujaDerecha'
+)
+
 function CasosUsos({ onVolverAPozo2, onCompletarUsos, iniciarEnFinal = false }) {
   const [pasoActual, setPasoActual] = useState(() =>
     iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0
@@ -123,6 +136,31 @@ function CasosUsos({ onVolverAPozo2, onCompletarUsos, iniciarEnFinal = false }) 
 
   const paso = PASOS_RECORRIDO[pasoActual]
   const mediaActiva = paso.mediaId ? MEDIAS[paso.mediaId] : null
+  const indiceAudioIzquierda =
+    burbujaIzquierdaVisible && paso.burbujaIzquierda
+      ? INDICES_AUDIO_BLANCO[pasoActual]
+      : null
+  const indiceAudioDerecha =
+    burbujaDerechaVisible && paso.burbujaDerecha
+      ? INDICES_AUDIO_ROJO[pasoActual]
+      : null
+  const colorAudioActivo = indiceAudioDerecha
+    ? 'rojo'
+    : indiceAudioIzquierda
+      ? 'blanco'
+      : null
+  const indiceAudioActivo = indiceAudioDerecha ?? indiceAudioIzquierda ?? null
+  const rutaAudioPersonalizada =
+    burbujaDerechaVisible && paso.burbujaDerecha === TEXTO_BURBUJA_JARDINES
+      ? RUTA_AUDIO_BURBUJA_JARDINES
+      : null
+
+  useNarracionVoces({
+    seccion: 'usos',
+    colorActivo: colorAudioActivo,
+    indiceActivo: indiceAudioActivo,
+    rutaPersonalizada: rutaAudioPersonalizada
+  })
 
   useEffect(() => {
     setPasoActual(iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0)

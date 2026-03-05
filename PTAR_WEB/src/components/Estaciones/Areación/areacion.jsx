@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
+import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
+import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './areacion.css'
 
@@ -256,6 +258,15 @@ const PASOS_RECORRIDO = [
     })
 ]
 
+const INDICES_AUDIO_BLANCO = construirIndicesAudioPorPaso(
+    PASOS_RECORRIDO,
+    'burbujaIzquierda'
+)
+const INDICES_AUDIO_ROJO = construirIndicesAudioPorPaso(
+    PASOS_RECORRIDO,
+    'burbujaDerecha'
+)
+
 function limitar(valor, minimo, maximo) {
     return Math.min(Math.max(valor, minimo), maximo)
 }
@@ -317,6 +328,25 @@ function Areacion({
     const timeoutEntradaSuaveRef = useRef(null)
 
     const paso = PASOS_RECORRIDO[pasoActual]
+    const indiceAudioIzquierda = paso.burbujaIzquierda
+        ? INDICES_AUDIO_BLANCO[pasoActual]
+        : null
+    const indiceAudioDerecha = paso.burbujaDerecha
+        ? INDICES_AUDIO_ROJO[pasoActual]
+        : null
+    const colorAudioActivo = indiceAudioDerecha
+        ? 'rojo'
+        : indiceAudioIzquierda
+            ? 'blanco'
+            : null
+    const indiceAudioActivo = indiceAudioDerecha ?? indiceAudioIzquierda ?? null
+
+    useNarracionVoces({
+        seccion: 'areacion',
+        colorActivo: colorAudioActivo,
+        indiceActivo: indiceAudioActivo
+    })
+
     const usarEscenarioAireacion = pasoActual >= PASO_CAMBIO_ESCENARIO
     const fondoEscena = usarEscenarioAireacion ? ESCENA_AIREACION : ESCENA_PRETRATAMIENTO
 
@@ -966,4 +996,3 @@ function Areacion({
 }
 
 export default Areacion
-

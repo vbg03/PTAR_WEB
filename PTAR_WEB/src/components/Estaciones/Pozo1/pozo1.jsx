@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
+import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
+import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './pozo1.css'
 
@@ -140,6 +142,15 @@ const PASOS_RECORRIDO = [
     mostrarBasurasPozo: false,
   }
 ]
+
+const INDICES_AUDIO_BLANCO = construirIndicesAudioPorPaso(
+  PASOS_RECORRIDO,
+  'burbujaIzquierda'
+)
+const INDICES_AUDIO_ROJO = construirIndicesAudioPorPaso(
+  PASOS_RECORRIDO,
+  'burbujaDerecha'
+)
 const PASO_VIDEO_RESUMEN = PASOS_RECORRIDO.length - 1
 
 function construirEstiloPosicion(posicion) {
@@ -599,6 +610,25 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
   ])
 
   const paso = PASOS_RECORRIDO[pasoActual]
+  const indiceAudioIzquierda = paso.burbujaIzquierda
+    ? INDICES_AUDIO_BLANCO[pasoActual]
+    : null
+  const indiceAudioDerecha = paso.burbujaDerecha
+    ? INDICES_AUDIO_ROJO[pasoActual]
+    : null
+  const colorAudioActivo = indiceAudioDerecha
+    ? 'rojo'
+    : indiceAudioIzquierda
+      ? 'blanco'
+      : null
+  const indiceAudioActivo = indiceAudioDerecha ?? indiceAudioIzquierda ?? null
+
+  useNarracionVoces({
+    seccion: 'pozo1',
+    colorActivo: colorAudioActivo,
+    indiceActivo: indiceAudioActivo
+  })
+
   const esPasoRetiroSolidos = pasoActual === PASO_RETIRO_SOLIDOS
   const camaraActiva = obtenerCamaraActivaPaso()
   const estiloPanel = {

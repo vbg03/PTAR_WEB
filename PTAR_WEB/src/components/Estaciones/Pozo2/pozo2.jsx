@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
+import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
+import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './pozo2.css'
 
@@ -129,6 +131,15 @@ const PASOS_RECORRIDO = [
     })
 ]
 
+const INDICES_AUDIO_BLANCO = construirIndicesAudioPorPaso(
+    PASOS_RECORRIDO,
+    'burbujaIzquierda'
+)
+const INDICES_AUDIO_ROJO = construirIndicesAudioPorPaso(
+    PASOS_RECORRIDO,
+    'burbujaDerecha'
+)
+
 function limitar(valor, minimo, maximo) {
     return Math.min(Math.max(valor, minimo), maximo)
 }
@@ -155,6 +166,25 @@ function Pozo2({
     const timeoutDebugCopiadoRef = useRef(null)
 
     const paso = PASOS_RECORRIDO[pasoActual]
+    const indiceAudioIzquierda = paso.burbujaIzquierda
+        ? INDICES_AUDIO_BLANCO[pasoActual]
+        : null
+    const indiceAudioDerecha = paso.burbujaDerecha
+        ? INDICES_AUDIO_ROJO[pasoActual]
+        : null
+    const colorAudioActivo = indiceAudioDerecha
+        ? 'rojo'
+        : indiceAudioIzquierda
+            ? 'blanco'
+            : null
+    const indiceAudioActivo = indiceAudioDerecha ?? indiceAudioIzquierda ?? null
+
+    useNarracionVoces({
+        seccion: 'pozo2',
+        colorActivo: colorAudioActivo,
+        indiceActivo: indiceAudioActivo
+    })
+
     const onVolver = onVolverAAlmacenamiento ?? onVolverADesinfeccion
 
     useEffect(() => {
@@ -481,4 +511,3 @@ function Pozo2({
 }
 
 export default Pozo2
-

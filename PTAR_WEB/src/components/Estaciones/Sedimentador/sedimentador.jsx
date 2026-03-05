@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
+import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
+import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './sedimentador.css'
 
@@ -377,7 +379,7 @@ const PASOS_RECORRIDO = [
             { x: 70, y: 59, escala: 0.5 }
         ],
         marcadores: MARCADORES_PANORAMICA,
-        burbujaIzquierda: 'Y que pasa aqui, por que el agua esta tan quieta?'
+        burbujaIzquierda: '¿Y que pasa aquí, por qué el agua esta tan quieta?'
     }),
     crearPaso({
         camaraX: 78,
@@ -461,7 +463,7 @@ const PASOS_RECORRIDO = [
             desenfoque: '24px',
             grano: 10
         },
-        burbujaIzquierda: 'Lo pesado como que? Piedras?'
+        burbujaIzquierda: '¿Lo pesado como qué? ¿Piedras?'
     }),
     crearPaso({
         camaraX: 48.9,
@@ -990,6 +992,15 @@ const PASOS_RECORRIDO = [
     }),
 ]
 
+const INDICES_AUDIO_BLANCO = construirIndicesAudioPorPaso(
+    PASOS_RECORRIDO,
+    'burbujaIzquierda'
+)
+const INDICES_AUDIO_ROJO = construirIndicesAudioPorPaso(
+    PASOS_RECORRIDO,
+    'burbujaDerecha'
+)
+
 function limitar(valor, minimo, maximo) {
     return Math.min(Math.max(valor, minimo), maximo)
 }
@@ -1048,6 +1059,25 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
     const pasoOrigenTransicionRef = useRef(null)
 
     const paso = PASOS_RECORRIDO[pasoActual]
+    const indiceAudioIzquierda = paso.burbujaIzquierda
+        ? INDICES_AUDIO_BLANCO[pasoActual]
+        : null
+    const indiceAudioDerecha = paso.burbujaDerecha
+        ? INDICES_AUDIO_ROJO[pasoActual]
+        : null
+    const colorAudioActivo = indiceAudioDerecha
+        ? 'rojo'
+        : indiceAudioIzquierda
+            ? 'blanco'
+            : null
+    const indiceAudioActivo = indiceAudioDerecha ?? indiceAudioIzquierda ?? null
+
+    useNarracionVoces({
+        seccion: 'sedimentador',
+        colorActivo: colorAudioActivo,
+        indiceActivo: indiceAudioActivo
+    })
+
     const usarEscenarioPrincipal = pasoActual >= PASO_CAMBIO_ESCENARIO
     const fondoEscena = usarEscenarioPrincipal ? ESCENA_SEDIMENTADOR_PRINCIPAL : ESCENA_SEDIMENTADOR_ARRIBA
 
@@ -1649,4 +1679,3 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
 }
 
 export default Sedimentador
-

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
+import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
+import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './filtro.css'
 
@@ -241,6 +243,15 @@ const PASOS_RECORRIDO = [
     })
 ]
 
+const INDICES_AUDIO_BLANCO = construirIndicesAudioPorPaso(
+    PASOS_RECORRIDO,
+    'burbujaIzquierda'
+)
+const INDICES_AUDIO_ROJO = construirIndicesAudioPorPaso(
+    PASOS_RECORRIDO,
+    'burbujaDerecha'
+)
+
 function limitar(valor, minimo, maximo) {
     return Math.min(Math.max(valor, minimo), maximo)
 }
@@ -268,6 +279,24 @@ function Filtro({ onVolverATamizaje, onCompletarFiltracion, iniciarEnFinal = fal
     const timeoutDebugCopiadoRef = useRef(null)
 
     const paso = PASOS_RECORRIDO[pasoActual]
+    const indiceAudioIzquierda = paso.burbujaIzquierda
+        ? INDICES_AUDIO_BLANCO[pasoActual]
+        : null
+    const indiceAudioDerecha = paso.burbujaDerecha
+        ? INDICES_AUDIO_ROJO[pasoActual]
+        : null
+    const colorAudioActivo = indiceAudioDerecha
+        ? 'rojo'
+        : indiceAudioIzquierda
+            ? 'blanco'
+            : null
+    const indiceAudioActivo = indiceAudioDerecha ?? indiceAudioIzquierda ?? null
+
+    useNarracionVoces({
+        seccion: 'filtro',
+        colorActivo: colorAudioActivo,
+        indiceActivo: indiceAudioActivo
+    })
 
     useEffect(() => {
         setPasoActual(iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0)
@@ -732,4 +761,3 @@ function Filtro({ onVolverATamizaje, onCompletarFiltracion, iniciarEnFinal = fal
 }
 
 export default Filtro
-

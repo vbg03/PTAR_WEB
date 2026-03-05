@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
+import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
+import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './pretratamiento.css'
 
@@ -266,6 +268,15 @@ const PASOS_RECORRIDO = [
 
     }),
 ]
+
+const INDICES_AUDIO_BLANCO = construirIndicesAudioPorPaso(
+    PASOS_RECORRIDO,
+    'burbujaIzquierda'
+)
+const INDICES_AUDIO_ROJO = construirIndicesAudioPorPaso(
+    PASOS_RECORRIDO,
+    'burbujaDerecha'
+)
 const PASO_VIDEO_RESUMEN_FINAL = PASOS_RECORRIDO.length - 1
 const CAMARA_ENTRADA_DESDE_AREACION = {
     camaraX: 95.9,
@@ -949,10 +960,39 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
         (pasoRequiereArrastreCanasta && canastaArrastreCompletado)
     const renderCanastaSucia = mostrarCanastaSuciaBase || (pasoRequiereArrastreCanasta && canastaArrastreCompletado)
     const renderCanastaLimpia = mostrarCanastaLimpia || pasoRequiereArrastreCanasta
-    const burbujaDerechaActiva =
+    const mostrarIndicacionRegresarCanasta =
         pasoRequiereArrastreCanasta && canastaArrastreCompletado && !canastaRetornoCompletado
+    const burbujaDerechaActiva =
+        mostrarIndicacionRegresarCanasta
             ? 'Ahora regresa la canasta limpia a su lugar.'
             : paso.burbujaDerecha
+    const indiceAudioIzquierda = paso.burbujaIzquierda
+        ? INDICES_AUDIO_BLANCO[pasoActual]
+        : null
+    const indiceAudioDerecha =
+        paso.burbujaDerecha && !(pasoRequiereArrastreCanasta && canastaArrastreCompletado)
+        ? INDICES_AUDIO_ROJO[pasoActual]
+        : null
+    const colorAudioActivo = paso.burbujaIzquierda
+        ? 'blanco'
+        : burbujaDerechaActiva
+            ? 'rojo'
+            : null
+    const indiceAudioActivo = paso.burbujaIzquierda
+        ? indiceAudioIzquierda
+        : burbujaDerechaActiva
+            ? indiceAudioDerecha
+            : null
+    const rutaAudioPersonalizada = mostrarIndicacionRegresarCanasta
+        ? '/voces/rojo/Pretratamiento/regresar-canasta-limpia-rojo.mp3'
+        : null
+
+    useNarracionVoces({
+        seccion: 'pretratamiento',
+        colorActivo: colorAudioActivo,
+        indiceActivo: indiceAudioActivo,
+        rutaPersonalizada: rutaAudioPersonalizada
+    })
 
     const iniciarArrastreCanasta = useCallback(
         (event) => {
@@ -1336,4 +1376,3 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
 }
 
 export default Pretratamiento
-
