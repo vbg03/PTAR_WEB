@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './pretratamiento.css'
 
@@ -71,14 +72,14 @@ const PASOS_RECORRIDO = [
         zoom: 7.27,
         gota: { x: 50, y: 42.5, escala: 1.1 },
         burbujaDerecha:
-            ' Continuamos con el tratamiento preliminar, es la primera etapa de limpieza real. Aquí quitamos todo lo que no debería estar en el agua: sólidos, arena y grasas. Es fundamental para proteger los equipos que vienen después.'
+            'Continuamos con el tratamiento preliminar, es la primera etapa de limpieza real. Aquí quitamos todo lo que no debería estar en el agua: sólidos, arena y grasas. Es fundamental para proteger los equipos que vienen después.'
     }),
     crearPaso({
         camaraX: 63.2,
         camaraY: 25.4,
         zoom: 4.71,
         gota: { x: 20, y: 24, escala: 0.7 },
-        burbujaIzquierda: 'Todo eso sucede aqui?'
+        burbujaIzquierda: '¿Todo eso sucede aqui?'
     }),
     crearPaso({
         camaraX: 96.1,
@@ -102,7 +103,7 @@ const PASOS_RECORRIDO = [
         zoom: 1.45,
         gota: { x: 25, y: 52, escala: 0.34 },
         mostrarEtiquetasPuntos: true,
-        burbujaIzquierda: 'Y como hacen eso exactamente?'
+        burbujaIzquierda: '¿Y cómo hacen eso exactamente?'
     }),
 
     crearPaso({
@@ -184,7 +185,7 @@ const PASOS_RECORRIDO = [
         mostrarCanastaLimpia: true,
         mostrarArena: true,
         mostrarBotonLimpiar: true,
-        burbujaDerecha: 'Ahora limpia la rejilla delgada y descaste de la arena.'
+        burbujaDerecha: 'Ahora limpia la rejilla delgada y deshazte de la arena.'
     }),
     crearPaso({
         camaraX: 52.3,
@@ -322,6 +323,9 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
         iniciarEnFinal ? GOTA_ENTRADA_DESDE_AREACION : null
     )
     const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
     const timeoutBloqueoRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
     const timeoutTransicionVistaRef = useRef(null)
@@ -722,21 +726,28 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
 
     useEffect(() => {
         const manejarRueda = (event) => {
-            if (bloqueoScrollRef.current || event.deltaY === 0) {
+            const direccionScroll = obtenerDireccionScrollPorGesto(
+            event,
+            acumulacionScrollRef,
+            ultimaMarcaScrollRef,
+            ultimaActivacionScrollRef
+        )
+
+            if (bloqueoScrollRef.current || direccionScroll === 0) {
                 return
             }
 
-            if (event.deltaY > 0 && pasoRequiereArrastreCanasta && !canastaRetornoCompletado) {
+            if (direccionScroll > 0 && pasoRequiereArrastreCanasta && !canastaRetornoCompletado) {
                 return
             }
 
-            if (event.deltaY > 0 && paso.mostrarBotonActivar) {
+            if (direccionScroll > 0 && paso.mostrarBotonActivar) {
                 return
             }
 
             bloqueoScrollRef.current = true
 
-            if (event.deltaY > 0) {
+            if (direccionScroll > 0) {
                 if (pasoActual >= PASOS_RECORRIDO.length - 1) {
                     if (typeof onCompletarPretratamiento === 'function') {
                         onCompletarPretratamiento()

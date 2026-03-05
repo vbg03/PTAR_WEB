@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../utils/wheelStepNavigation'
 import './casosUsos.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -35,7 +36,7 @@ const MEDIAS = {
 const PASOS_RECORRIDO = [
   {
     burbujaDerecha:
-      'Esta es una de las partes mas importantes. Un 15% del agua que esta en el tanque de almacenamiento se usa para los siguientes casos.'
+      'Esta es una de las partes más importantes. Un 15% del agua que esta en el tanque de almacenamiento se usa para los siguientes casos.'
   },
   {
     titulo: 'RIEGO DE CANCHAS'
@@ -44,7 +45,7 @@ const PASOS_RECORRIDO = [
     titulo: 'RIEGO DE CANCHAS',
     mediaId: 'canchas',
     burbujaDerecha:
-      'Primero, para regar las zonas verdes del campus, como las canchas deportivas. Asi no tenemos que gastar agua potable, lo que es mucho mas eficiente y ecologico.'
+      'Primero, para regar las zonas verdes del campus, como las canchas deportivas. Así no tenemos que gastar agua potable, lo que es mucho mas eficiente y ecológico.'
   },
   {
     titulo: 'RIEGO DE JARDINES',
@@ -56,12 +57,12 @@ const PASOS_RECORRIDO = [
     titulo: 'RIEGO DE JARDINES',
     mediaId: 'jardines',
     burbujaIzquierda:
-      'Entonces, todo el proceso tiene un fin que no solo ayuda a la universidad, sino tambien al medio ambiente, cierto?'
+      'Entonces, todo el proceso tiene un fin que no solo ayuda a la universidad, sino también al medio ambiente, ¿cierto?'
   },
   {
     titulo: 'REFLEXIÓN FINAL',
     burbujaDerecha:
-      'Asi es. El ciclo del agua nunca se detiene, y gracias a estos procesos, se recicla y reutiliza, protegiendo tanto los recursos de la UAO como el rio Lili.'
+      'Así es. El ciclo del agua nunca se detiene, y gracias a estos procesos, se recicla y reutiliza, protegiendo tanto los recursos de la UAO como el rio Lili.'
   },
   {
     titulo: 'REFLEXIÓN FINAL',
@@ -72,7 +73,7 @@ const PASOS_RECORRIDO = [
   {
     titulo: 'REFLEXIÓN FINAL',
     mediaId: 'reflexion',
-    burbujaIzquierda: 'Entonces, en pocas palabras, por que es tan importante que la UAO tenga una PTAR?'
+    burbujaIzquierda: 'Entonces, en pocas palabras, ¿por qué es tan importante que la UAO tenga una PTAR?'
   },
   {
     titulo: 'REFLEXIÓN FINAL',
@@ -84,7 +85,7 @@ const PASOS_RECORRIDO = [
     titulo: 'REFLEXIÓN FINAL',
     mediaId: 'reflexion',
     burbujaDerecha:
-      'Es la forma en que la universidad asume su responsabilidad ambiental y hace mas sostenible el uso del agua en el campus.'
+      'Es la forma en que la universidad asume su responsabilidad ambiental y hace más sostenible el uso del agua en el campus.'
   },
   {
     titulo: 'REFLEXIÓN FINAL',
@@ -107,6 +108,9 @@ function CasosUsos({ onVolverAPozo2, onCompletarUsos, iniciarEnFinal = false }) 
   const [burbujaDerechaRender, setBurbujaDerechaRender] = useState(null)
   const [burbujaDerechaVisible, setBurbujaDerechaVisible] = useState(false)
   const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
   const timeoutBloqueoRef = useRef(null)
   const timeoutMediaRef = useRef(null)
   const timeoutTituloRef = useRef(null)
@@ -303,13 +307,20 @@ function CasosUsos({ onVolverAPozo2, onCompletarUsos, iniciarEnFinal = false }) 
 
   useEffect(() => {
     const manejarRueda = (event) => {
-      if (bloqueoScrollRef.current || event.deltaY === 0) {
+      const direccionScroll = obtenerDireccionScrollPorGesto(
+            event,
+            acumulacionScrollRef,
+            ultimaMarcaScrollRef,
+            ultimaActivacionScrollRef
+        )
+
+            if (bloqueoScrollRef.current || direccionScroll === 0) {
         return
       }
 
       bloqueoScrollRef.current = true
 
-      if (event.deltaY > 0) {
+      if (direccionScroll > 0) {
         if (pasoActual < PASOS_RECORRIDO.length - 1) {
           setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
         } else if (typeof onCompletarUsos === 'function') {

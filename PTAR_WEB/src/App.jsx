@@ -15,6 +15,7 @@ import Almacenamiento from './components/Estaciones/Almacenamiento/almacenamient
 import Pozo2 from './components/Estaciones/Pozo2/pozo2.jsx'
 import CasosUsos from './components/Usos/casosUsos.jsx'
 import Documentacion from './components/Documentacion/documentacion.jsx'
+import Herramientas from './components/Herramientas/herramientas.jsx'
 
 const DURACION_TRANSICION_ESTACION = 760
 const MITAD_TRANSICION_ESTACION = 340
@@ -348,6 +349,7 @@ function App() {
         }}
         ocultarEnModoEstacion={ocultarHeaderHastaZonaSuperior}
       />
+      <Herramientas />
       <div className="ptar-app__content">
         {seccionActiva === 'inicio' ? (
           <Inicio

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './pozo2.css'
 
@@ -46,7 +47,7 @@ const PASOS_RECORRIDO = [
         camaraY: 42.8,
         zoom: 3.2,
         gota: { x: 50, y: 74.5, escala: 0.24 },
-        burbujaIzquierda: 'Este es otro pozo grande como el primero?'
+        burbujaIzquierda: '¿Este es otro pozo grande como el primero?'
     }),
     crearPaso({
         camaraX: 12.2,
@@ -54,7 +55,7 @@ const PASOS_RECORRIDO = [
         zoom: 3.2,
         gota: { x: 57, y: 67, escala: 0.24 },
         burbujaDerecha:
-            'Si, es otro pozo donde se junta el agua tratada de la planta y tambien agua de lluvias que viene de una laguna de almacenamiento.'
+            'Si, es otro pozo donde se junta el agua tratada de la planta y también agua de lluvias que viene de una laguna de almacenamiento.'
     }),
     crearPaso({
         camaraX: 12.2,
@@ -78,7 +79,7 @@ const PASOS_RECORRIDO = [
         gota: { x: 50, y: 54, escala: 0.3 },
         marcadores: MARCADORES_DESTINO,
         burbujaIzquierda:
-            'Entonces, esta agua que antes venia de baños, cafeteria y el laboratorio ahora termina aqui, juntandose con el rio.'
+            'Entonces, esta agua que antes venia de baños, cafetería y el laboratorio ahora termina aquí, juntándose con el rio.'
     }),
     crearPaso({
         camaraX: 52.3,
@@ -110,7 +111,7 @@ const PASOS_RECORRIDO = [
         zoom: 2.38,
         gota: { x: 47, y: 78, escala: 0.25 },
         burbujaIzquierda:
-            'Ahora si entiendo por que la PTAR no es solo un tanque mas, sino una forma de cuidar el rio y el medio ambiente desde la universidad.'
+            'Ahora sí entiendo por qué la PTAR no es solo un tanque más, sino una forma de cuidar el río y el medio ambiente desde la universidad.'
     }),
     crearPaso({
         camaraX: 96.3,
@@ -118,7 +119,7 @@ const PASOS_RECORRIDO = [
         zoom: 2.38,
         gota: { x: 60, y: 90, escala: 0.25 },
         burbujaDerecha:
-            'Esa es la idea: mostrar que detras de cada gota que sale por este tubo hay todo un trabajo para proteger el agua que compartimos.'
+            'Esa es la idea: mostrar que detrás de cada gota que sale por este tubo hay todo un trabajo para proteger el agua que compartimos.'
     }),
     crearPaso({
         camaraX: 96.3,
@@ -147,6 +148,9 @@ function Pozo2({
     const [debugCopiado, setDebugCopiado] = useState(false)
     const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
     const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
     const timeoutBloqueoRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
 
@@ -241,13 +245,20 @@ function Pozo2({
 
     useEffect(() => {
         const manejarRueda = (event) => {
-            if (bloqueoScrollRef.current || event.deltaY === 0) {
+            const direccionScroll = obtenerDireccionScrollPorGesto(
+            event,
+            acumulacionScrollRef,
+            ultimaMarcaScrollRef,
+            ultimaActivacionScrollRef
+        )
+
+            if (bloqueoScrollRef.current || direccionScroll === 0) {
                 return
             }
 
             bloqueoScrollRef.current = true
 
-            if (event.deltaY > 0) {
+            if (direccionScroll > 0) {
                 if (pasoActual >= PASOS_RECORRIDO.length - 1) {
                     if (typeof onCompletarPozo2 === 'function') {
                         onCompletarPozo2()

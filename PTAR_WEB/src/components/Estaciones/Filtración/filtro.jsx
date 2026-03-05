@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './filtro.css'
 
@@ -94,7 +95,7 @@ const PASOS_RECORRIDO = [
         gotaLimpia: true,
         gotaTema: 'filtro-arena',
         gota: { x: 72.6, y: 51, escala: 0.4 },
-        burbujaIzquierda: '¿Filtro rapido?\n¿Eso que es?'
+        burbujaIzquierda: '¿Filtro rápido?\n¿Eso qué es?'
     }),
     crearPaso({
         camaraX: 42.3,
@@ -103,7 +104,7 @@ const PASOS_RECORRIDO = [
         gotaLimpia: true,
         gotaTema: 'paleta-tamiz-3',
         gota: { x: 50, y: 51.2, escala: 0.55 },
-        burbujaDerecha: 'El filtro rapido, que es una unidad complementaria muy importante.'
+        burbujaDerecha: 'El filtro rápido, que es una unidad complementaria muy importante.'
     }),
     crearPaso({
         camaraX: 51.3,
@@ -121,7 +122,7 @@ const PASOS_RECORRIDO = [
         gotaLimpia: true,
         gotaTema: 'paleta-tamiz-3',
         gota: { x: 50, y: 51.2, escala: 0.55 },
-        burbujaIzquierda: '¿Y como funciona ese filtro?'
+        burbujaIzquierda: '¿Y cómo funciona ese filtro?'
     }),
     crearPaso({
         camaraX: 96.6,
@@ -140,7 +141,7 @@ const PASOS_RECORRIDO = [
         gotaTema: 'paleta-tamiz-3',
         gota: { x: 42, y: 50, escala: 0.16 },
         burbujaDerecha:
-            'El agua entra por la parte de arriba y va bajando. Mientras baja, esas capas van atrapando las particulas mas chiquitas que todavia quedan en el agua.'
+            'El agua entra por la parte de arriba y va bajando. Mientras baja, esas capas van atrapando las partículas mas chiquitas que todavía quedan en el agua.'
     }),
     crearPaso({
         camaraX: 96.6,
@@ -150,7 +151,7 @@ const PASOS_RECORRIDO = [
         gotaTema: 'paleta-tamiz-3',
         gota: { x: 45, y: 58.5, escala: 0.16 },
         burbujaIzquierda:
-            'O sea que el agua va quedando cada vez mas limpia a medida que atraviesa las capas.'
+            'O sea que el agua va quedando cada vez más limpia a medida que atraviesa las capas.'
     }),
     crearPaso({
         camaraX: 73.6,
@@ -160,7 +161,7 @@ const PASOS_RECORRIDO = [
         gotaTema: 'paleta-tamiz-3',
         gota: { x: 50, y: 50, escala: 0.6 },
         burbujaDerecha:
-            'Exactamente. Este filtro es capaz de remover mas del 90% de los solidos que aun pudieran quedar. El agua sale muy clara del filtro.'
+            'Exactamente. Este filtro es capaz de remover mas del 90% de los solidos que aún pudieran quedar. El agua sale muy clara del filtro.'
     }),
     crearPaso({
         camaraX: 73.6,
@@ -170,7 +171,7 @@ const PASOS_RECORRIDO = [
         gotaTema: 'filtro-arena',
         gota: { x: 50, y: 50, escala: 0.6 },
         burbujaDerecha:
-            'La arena retiene las particulas microscopicas. La grava cumple la funcion de brindar soporte estructural a la arena y, adicionalmente, contribuye a la retencion de particulas de menor tamaño, favoreciendo asi el proceso de filtracion.'
+            'La arena retiene las particulas microscopicas. La grava cumple la función de brindar soporte estructural a la arena y, adicionalmente, contribuye a la retención de partículas de menor tamaño, favoreciendo así el proceso de filtración.'
     }),
     crearPaso({
         camaraX: 73.6,
@@ -179,7 +180,7 @@ const PASOS_RECORRIDO = [
         gotaLimpia: true,
         gotaTema: 'filtro-observa',
         gota: { x: 50, y: 50, escala: 0.6 },
-        burbujaDerecha: 'Observa como la gota de agua se hace mas clara al pasar por cada uno de los filtros.'
+        burbujaDerecha: 'Observa como la gota de agua se hace más clara al pasar por cada uno de los filtros.'
     }),
     crearPaso({
         camaraX: 73.6,
@@ -188,7 +189,7 @@ const PASOS_RECORRIDO = [
         gotaLimpia: true,
         gotaTema: 'filtro-observa-clara',
         gota: { x: 50, y: 50, escala: 0.6 },
-        burbujaDerecha: 'Observa como la gota de agua se hace mas clara al pasar por cada uno de los filtros.'
+        burbujaDerecha: 'Observa como la gota de agua se hace más clara al pasar por cada uno de los filtros.'
     }),
     crearPaso({
         camaraX: 73.6,
@@ -207,7 +208,7 @@ const PASOS_RECORRIDO = [
         gotaLimpia: true,
         gotaTema: 'filtro-agua-muy-clara',
         gota: { x: 50, y: 71.5, escala: 0.6 },
-        burbujaIzquierda: '¿Y que sucede con esa agua?'
+        burbujaIzquierda: '¿Y qué sucede con esa agua?'
     }),
     crearPaso({
         camaraX: 73.1,
@@ -216,7 +217,7 @@ const PASOS_RECORRIDO = [
         gotaLimpia: true,
         gotaTema: 'filtro-agua-muy-clara',
         gota: { x: 57, y: 73, escala: 0.35 },
-        burbujaDerecha: 'Pasa por una tuberia la cual lleva el agua hacia la desinfeccion ultravioleta.'
+        burbujaDerecha: 'Pasa por una tubería la cual lleva el agua hacia la desinfección ultravioleta.'
     }),
     crearPaso({
         camaraX: 65.1,
@@ -260,6 +261,9 @@ function Filtro({ onVolverATamizaje, onCompletarFiltracion, iniciarEnFinal = fal
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
     const [mostrarResumenFinal, setMostrarResumenFinal] = useState(false)
     const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
     const timeoutBloqueoRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
 
@@ -362,13 +366,20 @@ function Filtro({ onVolverATamizaje, onCompletarFiltracion, iniciarEnFinal = fal
 
     useEffect(() => {
         const manejarRueda = (event) => {
-            if (bloqueoScrollRef.current || event.deltaY === 0) {
+            const direccionScroll = obtenerDireccionScrollPorGesto(
+            event,
+            acumulacionScrollRef,
+            ultimaMarcaScrollRef,
+            ultimaActivacionScrollRef
+        )
+
+            if (bloqueoScrollRef.current || direccionScroll === 0) {
                 return
             }
 
             bloqueoScrollRef.current = true
 
-            if (event.deltaY > 0) {
+            if (direccionScroll > 0) {
                 if (pasoActual >= PASOS_RECORRIDO.length - 1) {
                     if (typeof onCompletarFiltracion === 'function') {
                         onCompletarFiltracion()

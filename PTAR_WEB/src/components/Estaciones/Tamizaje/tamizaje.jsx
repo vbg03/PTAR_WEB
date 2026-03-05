@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './tamizaje.css'
 
@@ -141,7 +142,7 @@ const PASOS_RECORRIDO = [
         chorroEntrada: { x: 24.9, y: 48.6, ancho: 3.5, alto: 11.4, opacidad: 0.5 },
         opacidadTurbidez: 0.36,
         burbujaDerechaCompacta: true,
-        burbujaDerecha: 'Mueve la gota de agua y observa como cada vez se aclara mas.'
+        burbujaDerecha: 'Mueve la gota de agua y observa como cada vez se aclara más.'
     }),
     crearPaso({
         camaraX: 14.4,
@@ -154,7 +155,7 @@ const PASOS_RECORRIDO = [
         chorroEntrada: { x: 24.9, y: 48.6, ancho: 3.5, alto: 11.4, opacidad: 0.34 },
         opacidadTurbidez: 0.26,
         burbujaDerechaCompacta: true,
-        burbujaDerecha: 'Mueve la gota de agua y observa como cada vez se aclara mas.'
+        burbujaDerecha: 'Mueve la gota de agua y observa como cada vez se aclara más.'
     }),
     crearPaso({
         camaraX: 14.4,
@@ -167,7 +168,7 @@ const PASOS_RECORRIDO = [
         chorroEntrada: { x: 24.9, y: 48.6, ancho: 3.5, alto: 11.4, opacidad: 0.24 },
         opacidadTurbidez: 0.17,
         burbujaDerechaCompacta: true,
-        burbujaDerecha: 'Mueve la gota de agua y observa como cada vez se aclara mas.'
+        burbujaDerecha: 'Mueve la gota de agua y observa como cada vez se aclara más.'
     }),
     crearPaso({
         camaraX: 14.4,
@@ -218,6 +219,9 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
     const [mostrarResumenFinal, setMostrarResumenFinal] = useState(false)
     const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
     const timeoutBloqueoRef = useRef(null)
     const timeoutAutoavanceTransicionRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
@@ -355,7 +359,14 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false
 
     useEffect(() => {
         const manejarRueda = (event) => {
-            if (bloqueoScrollRef.current || event.deltaY === 0) {
+            const direccionScroll = obtenerDireccionScrollPorGesto(
+            event,
+            acumulacionScrollRef,
+            ultimaMarcaScrollRef,
+            ultimaActivacionScrollRef
+        )
+
+            if (bloqueoScrollRef.current || direccionScroll === 0) {
                 return
             }
 
@@ -365,7 +376,7 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false
 
             bloqueoScrollRef.current = true
 
-            if (event.deltaY > 0) {
+            if (direccionScroll > 0) {
                 if (pasoActual >= PASOS_RECORRIDO.length - 1) {
                     if (typeof onCompletarTamizaje === 'function') {
                         onCompletarTamizaje()

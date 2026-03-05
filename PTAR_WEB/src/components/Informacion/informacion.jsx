@@ -1,4 +1,5 @@
 ﻿import { useEffect, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../utils/wheelStepNavigation'
 import { useCallback } from 'react'
 import './informacion.css'
 
@@ -48,6 +49,9 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
   const [animarBloqueUbicacion, setAnimarBloqueUbicacion] = useState(false)
   const [mostrarTransicionPozo, setMostrarTransicionPozo] = useState(false)
   const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
   const transicionPozoRef = useRef(false)
   const timeoutTransicionPozoRef = useRef(null)
 
@@ -77,17 +81,20 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
 
   useEffect(() => {
     const manejarRueda = (event) => {
-      if (bloqueoScrollRef.current || transicionPozoRef.current) {
-        return
-      }
+      const direccionScroll = obtenerDireccionScrollPorGesto(
+        event,
+        acumulacionScrollRef,
+        ultimaMarcaScrollRef,
+        ultimaActivacionScrollRef
+      )
 
-      if (event.deltaY === 0) {
+      if (bloqueoScrollRef.current || transicionPozoRef.current || direccionScroll === 0) {
         return
       }
 
       bloqueoScrollRef.current = true
 
-      if (event.deltaY > 0) {
+      if (direccionScroll > 0) {
         if (etapaActual < ETAPA_VIDEO) {
           setEtapaActual((estadoAnterior) => {
             const nuevaEtapa = Math.min(estadoAnterior + 1, ETAPA_VIDEO)
@@ -114,7 +121,7 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
         }
       }
 
-      if (event.deltaY < 0) {
+      if (direccionScroll < 0) {
         if (etapaActual === ETAPA_UBICACION) {
           if (pasoConversacionUbicacion > PASO_UBICACION_RESPUESTA) {
             setPasoConversacionUbicacion(PASO_UBICACION_RESPUESTA)

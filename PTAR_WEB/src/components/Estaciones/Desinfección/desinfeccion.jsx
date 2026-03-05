@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './desinfeccion.css'
 
@@ -72,7 +73,7 @@ const PASOS_RECORRIDO = [
         zoom: 12,
         gota: { x: 50, y: 50, escala: 1 },
         burbujaDerecha:
-            'El agua puede estar clara pero puede aun tener microorganismos patogenos, bacterias daninas que pueden causar enfermedades.'
+            'El agua puede estar clara pero puede aun tener microorganismos patógenos, bacterias dañinas que pueden causar enfermedades.'
     }),
     crearPaso({
         camaraX: 85.2,
@@ -86,7 +87,7 @@ const PASOS_RECORRIDO = [
             ancho: 55,
             opacidad: 1
         },
-        burbujaIzquierda: 'Y como las eliminan?'
+        burbujaIzquierda: '¿Y cómo las eliminan?'
     }),
     crearPaso({
         camaraX: 77.9,
@@ -100,7 +101,7 @@ const PASOS_RECORRIDO = [
             ancho: 49.5,
             opacidad: 1
         },
-        burbujaDerecha: 'Usamos un sistema combinado: primero desinfeccion con luz ultravioleta y luego con cloro.'
+        burbujaDerecha: 'Usamos un sistema combinado: primero desinfección con luz ultravioleta y luego con cloro.'
     }),
     crearPaso({
         camaraX: 77.9,
@@ -115,7 +116,7 @@ const PASOS_RECORRIDO = [
             opacidad: 1
         },
         burbujaDerecha:
-            'Tenemos un tanque especial fabricado en acero inoxidable con un sistema electronico que tiene siete lamparas de luz UV.'
+            'Tenemos un tanque especial fabricado en acero inoxidable con un sistema electrónico que tiene siete lámparas de luz UV.'
     }),
     crearPaso({
         camaraX: 77.2,
@@ -129,7 +130,7 @@ const PASOS_RECORRIDO = [
             ancho: 55.5,
             opacidad: 1
         },
-        burbujaIzquierda: 'Y la luz UV mata las bacterias?'
+        burbujaIzquierda: '¿Y la luz UV mata las bacterias?'
     }),
     crearPaso({
         camaraX: 77.2,
@@ -144,7 +145,7 @@ const PASOS_RECORRIDO = [
             opacidad: 1
         },
         burbujaDerecha:
-            'Si, la radiacion ultravioleta dana el ADN de los microorganismos patogenos y los inactiva, impidiendo que se reproduzcan.'
+            'Si, la radiación ultravioleta daña el ADN de los microorganismos patógenos y los inactiva, impidiendo que se reproduzcan.'
     }),
     crearPaso({
         camaraX: 77.2,
@@ -153,7 +154,7 @@ const PASOS_RECORRIDO = [
         gota: { x: 50, y: 72.5, escala: 0.5 },
         mostrarBotonActivar: true,
         burbujaDerecha:
-            'Presiona el boton para activar la luz ultravioleta y eliminar los microorganismos restantes.'
+            'Presiona el botón para activar la luz ultravioleta y eliminar los microorganismos restantes.'
     }),
     crearPaso({
         camaraX: 77.2,
@@ -181,7 +182,7 @@ const PASOS_RECORRIDO = [
             ancho: 45,
             opacidad: 1
         },
-        burbujaIzquierda: 'Mencionaste que tambien usan cloro.'
+        burbujaIzquierda: 'Mencionaste que también usan cloro.'
     }),
     crearPaso({
         camaraX: 77.2,
@@ -200,7 +201,7 @@ const PASOS_RECORRIDO = [
         panelContaminantes: { x: 66, y: 38 },
         burbujaDerechaCompacta: true,
         burbujaDerecha:
-            'Correcto. Despues de la luz UV, agregamos cloro para garantizar la desinfeccion completa.'
+            'Correcto. Después de la luz UV, agregamos cloro para garantizar la desinfección completa.'
     }),
     crearPaso({
         camaraX: 85.2,
@@ -240,6 +241,9 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
     const [mostrarResumenFinal, setMostrarResumenFinal] = useState(false)
     const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
     const timeoutBloqueoRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
 
@@ -342,13 +346,20 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
 
     useEffect(() => {
         const manejarRueda = (event) => {
-            if (bloqueoScrollRef.current || event.deltaY === 0) {
+            const direccionScroll = obtenerDireccionScrollPorGesto(
+            event,
+            acumulacionScrollRef,
+            ultimaMarcaScrollRef,
+            ultimaActivacionScrollRef
+        )
+
+            if (bloqueoScrollRef.current || direccionScroll === 0) {
                 return
             }
 
             bloqueoScrollRef.current = true
 
-            if (event.deltaY > 0) {
+            if (direccionScroll > 0) {
                 if (pasoActual >= PASOS_RECORRIDO.length - 1) {
                     if (typeof onCompletarDesinfeccion === 'function') {
                         onCompletarDesinfeccion()

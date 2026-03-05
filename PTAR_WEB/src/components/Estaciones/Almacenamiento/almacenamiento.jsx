@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './almacenamiento.css'
 
@@ -42,7 +43,7 @@ const PASOS_RECORRIDO = [
         camaraY: 54,
         zoom: 12,
         gota: { x: 50, y: 50, escala: 1 },
-        burbujaIzquierda: 'Y con eso ya eliminan todo?'
+        burbujaIzquierda: '¿Y con eso ya eliminan todo?'
     }),
     crearPaso({
         camaraX: 49.7,
@@ -57,7 +58,7 @@ const PASOS_RECORRIDO = [
         camaraY: 54,
         zoom: 12,
         gota: { x: 50, y: 50, escala: 1 },
-        burbujaIzquierda: 'Y finalmente a donde va esa agua tratada?'
+        burbujaIzquierda: '¿Y finalmente a dónde va esa agua tratada?'
     }),
     crearPaso({
         camaraX: 7,
@@ -65,14 +66,14 @@ const PASOS_RECORRIDO = [
         zoom: 2.88,
         gota: { x: 93, y: 33.2, escala: 0.24 },
         burbujaDerecha:
-            'Despues de pasar por las lamparas UV, el agua ya viene limpia y desinfectada. De ahi no se va directo al rio.'
+            'Después de pasar por las lámparas UV, el agua ya viene limpia y desinfectada. De ahí no se va directo al rio.'
     }),
     crearPaso({
         camaraX: 7,
         camaraY: 64.6,
         zoom: 2.88,
         gota: { x: 76, y: 35, escala: 0.24 },
-        burbujaIzquierda: 'Ese tanque es como una cisterna grande?'
+        burbujaIzquierda: '¿Ese tanque es como una cisterna grande?'
     }),
     crearPaso({
         camaraX: 7,
@@ -80,14 +81,14 @@ const PASOS_RECORRIDO = [
         zoom: 2.88,
         gota: { x: 73.2, y: 40, escala: 0.24 },
         burbujaDerecha:
-            'Exacto, es como una bodega de agua limpia. Ahi se guarda el agua que ya paso por todos los procesos de la PTAR.'
+            'Exacto, es como una bodega de agua limpia. Ahí se guarda el agua que ya pasó por todos los procesos de la PTAR.'
     }),
     crearPaso({
         camaraX: 7,
         camaraY: 64.6,
         zoom: 2.88,
         gota: { x: 70, y: 60, escala: 0.24 },
-        burbujaIzquierda: 'Y para que la guardan ahi?'
+        burbujaIzquierda: '¿Y para qué la guardan ahí?'
     }),
     crearPaso({
         camaraX: 7,
@@ -95,14 +96,14 @@ const PASOS_RECORRIDO = [
         zoom: 2.88,
         gota: { x: 50, y: 70, escala: 0.24 },
         burbujaDerecha:
-            'Desde ese tanque, unas bombas la envian por tuberias para regar jardines y zonas verdes del campus.'
+            'Desde ese tanque, unas bombas la envían por tuberías para regar jardines y zonas verdes del campus.'
     }),
     crearPaso({
         camaraX: 7,
         camaraY: 64.6,
         zoom: 2.88,
         gota: { x: 50, y: 70, escala: 0.24 },
-        burbujaIzquierda: 'Y que pasa con el resto del agua?'
+        burbujaIzquierda: '¿Y qué pasa con el resto del agua?'
     }),
     crearPaso({
         camaraX: 1,
@@ -132,6 +133,9 @@ function Almacenamiento({ onVolverADesinfeccion, onCompletarAlmacenamiento, inic
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
     const [mostrarResumenFinal, setMostrarResumenFinal] = useState(false)
     const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
     const timeoutBloqueoRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
 
@@ -234,13 +238,20 @@ function Almacenamiento({ onVolverADesinfeccion, onCompletarAlmacenamiento, inic
 
     useEffect(() => {
         const manejarRueda = (event) => {
-            if (bloqueoScrollRef.current || event.deltaY === 0) {
+            const direccionScroll = obtenerDireccionScrollPorGesto(
+            event,
+            acumulacionScrollRef,
+            ultimaMarcaScrollRef,
+            ultimaActivacionScrollRef
+        )
+
+            if (bloqueoScrollRef.current || direccionScroll === 0) {
                 return
             }
 
             bloqueoScrollRef.current = true
 
-            if (event.deltaY > 0) {
+            if (direccionScroll > 0) {
                 if (pasoActual >= PASOS_RECORRIDO.length - 1) {
                     if (typeof onCompletarAlmacenamiento === 'function') {
                         onCompletarAlmacenamiento()

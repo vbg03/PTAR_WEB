@@ -1,0 +1,263 @@
+.ptar-tools {
+  position: fixed;
+  left: 12px;
+  top: max(74px, env(safe-area-inset-top, 0px) + 68px);
+  z-index: 44;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ptar-tools__button {
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 90%);
+  color: #8f001b;
+  cursor: pointer;
+  box-shadow:
+    0 6px 16px rgb(18 16 18 / 0.22),
+    inset 0 0 0 1px rgb(190 190 190 / 0.6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+  backdrop-filter: blur(2px);
+}
+
+.ptar-tools__button svg {
+  width: 22px;
+  height: 22px;
+}
+
+.ptar-tools__button:hover {
+  transform: translateY(-1px) scale(1.02);
+}
+
+.ptar-tools__button:focus-visible {
+  outline: 3px solid rgb(242 7 50 / 0.65);
+  outline-offset: 2px;
+}
+
+.ptar-tools__button--activa {
+  background: #f20732;
+  color: #fff;
+  box-shadow:
+    0 8px 18px rgb(126 0 22 / 0.42),
+    inset 0 0 0 1px rgb(255 255 255 / 0.2);
+}
+
+.ptar-tools__audio-panel {
+  margin-top: 2px;
+  width: 220px;
+  padding: 14px 14px 12px;
+  background: rgb(247 247 248 / 0.95);
+  border-radius: 14px;
+  box-shadow:
+    0 12px 24px rgb(0 0 0 / 0.2),
+    inset 0 0 0 1px rgb(196 196 196 / 0.6);
+  animation: ptar-tools-fade-in 180ms ease;
+}
+
+.ptar-tools__audio-panel h3 {
+  margin: 0 0 10px;
+  color: #820016;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.ptar-tools__slider-field {
+  margin: 10px 0 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 500;
+  color: #3d2e2e;
+}
+
+.ptar-tools__slider-field output {
+  color: #820016;
+  font-weight: 700;
+}
+
+.ptar-tools__audio-panel input[type='range'] {
+  width: 100%;
+  accent-color: #f20732;
+}
+
+.ptar-tools__audio-panel p {
+  margin: 12px 0 0;
+  font-size: 17px;
+  line-height: 1.15;
+  color: #4e3f3f;
+}
+
+.ptar-help-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 58;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(20 16 17 / 0.56);
+  backdrop-filter: blur(2px);
+  animation: ptar-tools-fade-in 180ms ease;
+}
+
+.ptar-help-overlay__card {
+  position: relative;
+  width: min(760px, calc(100vw - 36px));
+  max-height: calc(100vh - 36px);
+  overflow: auto;
+  padding: 38px 42px 32px;
+  border-radius: 18px;
+  background: #f8f7f7;
+  box-shadow:
+    0 24px 48px rgb(0 0 0 / 0.3),
+    inset 0 0 0 1px rgb(198 198 198 / 0.66);
+  animation: ptar-tools-pop-in 220ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.ptar-help-overlay__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: #f20732;
+  color: #fff;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 160ms ease;
+}
+
+.ptar-help-overlay__close:hover {
+  transform: scale(1.03);
+}
+
+.ptar-help-overlay__card h2 {
+  margin: 0 0 18px;
+  text-align: center;
+  color: #710017;
+  font-size: clamp(42px, 4vw, 58px);
+  line-height: 0.95;
+  text-shadow: 0 3px 8px rgb(0 0 0 / 0.16);
+}
+
+.ptar-help-overlay__card ul {
+  margin: 0;
+  padding: 0 0 0 8px;
+  list-style: none;
+}
+
+.ptar-help-overlay__card li {
+  position: relative;
+  padding-left: 28px;
+  margin: 12px 0;
+  font-size: clamp(27px, 2.1vw, 35px);
+  line-height: 1.03;
+  color: #1d1616;
+}
+
+.ptar-help-overlay__card li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.4em;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #f20732;
+}
+
+@keyframes ptar-tools-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ptar-tools-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 900px) {
+  .ptar-tools {
+    left: 8px;
+    top: max(66px, env(safe-area-inset-top, 0px) + 62px);
+    gap: 8px;
+  }
+
+  .ptar-tools__button {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .ptar-tools__button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ptar-tools__audio-panel {
+    width: 206px;
+    padding: 12px;
+  }
+
+  .ptar-tools__slider-field {
+    font-size: 18px;
+  }
+
+  .ptar-tools__audio-panel p {
+    font-size: 16px;
+  }
+
+  .ptar-help-overlay {
+    padding: 16px;
+  }
+
+  .ptar-help-overlay__card {
+    padding: 30px 18px 20px;
+    border-radius: 14px;
+    width: min(760px, calc(100vw - 16px));
+    max-height: calc(100vh - 16px);
+  }
+
+  .ptar-help-overlay__close {
+    font-size: 16px;
+    padding: 7px 12px;
+  }
+
+  .ptar-help-overlay__card li {
+    font-size: clamp(20px, 4.2vw, 28px);
+    line-height: 1.06;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ptar-tools__button,
+  .ptar-help-overlay,
+  .ptar-help-overlay__card {
+    animation: none !important;
+    transition: none !important;
+  }
+}

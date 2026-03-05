@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './pozo1.css'
 
@@ -184,6 +185,9 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
   const [residuosRetirados, setResiduosRetirados] = useState({})
   const [residuoArrastrandoId, setResiduoArrastrandoId] = useState(null)
   const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
   const transicionRegresoRef = useRef(false)
   const timeoutRegresoRef = useRef(null)
   const timeoutBloqueoRef = useRef(null)
@@ -474,17 +478,24 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
 
   useEffect(() => {
     const manejarRueda = (event) => {
-      if (bloqueoScrollRef.current || transicionRegresoRef.current || event.deltaY === 0) {
+      const direccionScroll = obtenerDireccionScrollPorGesto(
+      event,
+      acumulacionScrollRef,
+      ultimaMarcaScrollRef,
+      ultimaActivacionScrollRef
+    )
+
+    if (bloqueoScrollRef.current || transicionRegresoRef.current || direccionScroll === 0) {
         return
       }
 
-      if (event.deltaY > 0 && pasoActual === PASO_RETIRO_SOLIDOS && !retiroSolidosCompletado) {
+      if (direccionScroll > 0 && pasoActual === PASO_RETIRO_SOLIDOS && !retiroSolidosCompletado) {
         return
       }
 
       bloqueoScrollRef.current = true
 
-      if (event.deltaY > 0) {
+      if (direccionScroll > 0) {
         if (pasoActual >= PASOS_RECORRIDO.length - 1) {
           if (typeof onCompletarPozo1 === 'function') {
             onCompletarPozo1()

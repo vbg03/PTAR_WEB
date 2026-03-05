@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './areacion.css'
 
@@ -136,7 +137,7 @@ const PASOS_RECORRIDO = [
         indicadores: [{ clave: 'dbo', etiqueta: 'DBO', valor: 84 }],
         mostrarBotonActivar: true,
         autoAvanceActivar: true,
-        burbujaDerecha: 'Presiona el boton para activar el tanque de areacion.'
+        burbujaDerecha: 'Presiona el botón para activar el tanque de aireación.'
     }),
     crearPaso({
         camaraX: 19.7,
@@ -213,7 +214,7 @@ const PASOS_RECORRIDO = [
         renderBurbujas: true,
         forzarBurbujasActivas: true,
         burbujasModo: 'tanque',
-        burbujaDerecha: 'Perfecto! Ahora nuestra particula de agua esta mas limpia.'
+        burbujaDerecha: '¡Perfecto! Ahora nuestra partícula de agua esta mas limpia.'
     }),
     crearPaso({
         camaraX: 19.7,
@@ -233,7 +234,7 @@ const PASOS_RECORRIDO = [
         burbujasModo: 'tanque',
         mostrarRecirculacion: true,
         burbujaDerecha:
-            'Ahora durante quince minutos de reposo es cuando realizamos la recirculacion de lodos.'
+            'Ahora durante 15 minutos de reposo es cuando realizamos la recirculación de lodos.'
     }),
     crearPaso({
         camaraX: 7.7,
@@ -305,6 +306,9 @@ function Areacion({
         entradaSuaveDesdePretratamiento ? GOTA_ENTRADA_DESDE_PRETRATAMIENTO : null
     )
     const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
     const timeoutBloqueoRef = useRef(null)
     const timeoutAutoavanceTransicionRef = useRef(null)
     const timeoutAutoavanceActivarRef = useRef(null)
@@ -514,7 +518,14 @@ function Areacion({
 
     useEffect(() => {
         const manejarRueda = (event) => {
-            if (bloqueoScrollRef.current || event.deltaY === 0) {
+            const direccionScroll = obtenerDireccionScrollPorGesto(
+            event,
+            acumulacionScrollRef,
+            ultimaMarcaScrollRef,
+            ultimaActivacionScrollRef
+        )
+
+            if (bloqueoScrollRef.current || direccionScroll === 0) {
                 return
             }
 
@@ -522,17 +533,17 @@ function Areacion({
                 return
             }
 
-            if (event.deltaY > 0 && paso.mostrarBotonActivar && !aireacionActiva) {
+            if (direccionScroll > 0 && paso.mostrarBotonActivar && !aireacionActiva) {
                 return
             }
 
-            if (event.deltaY > 0 && paso.mostrarBotonDetalle && !detalleParticulaActivado) {
+            if (direccionScroll > 0 && paso.mostrarBotonDetalle && !detalleParticulaActivado) {
                 return
             }
 
             bloqueoScrollRef.current = true
 
-            if (event.deltaY > 0) {
+            if (direccionScroll > 0) {
                 if (pasoActual >= PASOS_RECORRIDO.length - 1) {
                     if (typeof onCompletarAreacion === 'function') {
                         onCompletarAreacion()

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../utils/wheelStepNavigation'
 import './documentacion.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -10,17 +11,27 @@ const ENLACE_DOCUMENTACION_OFICIAL =
 
 function Documentacion({ onVolverAUsos }) {
   const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
   const timeoutBloqueoRef = useRef(null)
 
   useEffect(() => {
     const manejarRueda = (event) => {
-      if (bloqueoScrollRef.current || event.deltaY === 0) {
+      const direccionScroll = obtenerDireccionScrollPorGesto(
+            event,
+            acumulacionScrollRef,
+            ultimaMarcaScrollRef,
+            ultimaActivacionScrollRef
+        )
+
+            if (bloqueoScrollRef.current || direccionScroll === 0) {
         return
       }
 
       bloqueoScrollRef.current = true
 
-      if (event.deltaY < 0 && typeof onVolverAUsos === 'function') {
+      if (direccionScroll < 0 && typeof onVolverAUsos === 'function') {
         onVolverAUsos()
       }
 

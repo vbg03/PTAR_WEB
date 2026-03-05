@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './lechos.css'
 
@@ -192,7 +193,7 @@ const PASOS_RECORRIDO = [
         flujoColector: 0.55,
         camas: CAMAS_VACIAS,
         burbujaDerecha:
-            'Cuando el lodo se extrae del tanque de sedimentacion, presenta una consistencia aun alta en liquido. Por eso se lleva a unos "camas" especiales que se llaman lechos de secado.'
+            'Cuando el lodo se extrae del tanque de sedimentación, presenta una consistencia aún alta en liquido. Por eso se lleva a unas "camas" especiales que se llaman lechos de secado.'
     }),
     crearPaso({
         camaraX: 50,
@@ -205,7 +206,7 @@ const PASOS_RECORRIDO = [
             { clave: 'c', x: 58.56, y: 27.4, ancho: 1.9, alto: 11.2, retardo: '-0.7s' },
             { clave: 'd', x: 77.05, y: 27.4, ancho: 1.9, alto: 11.3, retardo: '-1.1s' }
         ],
-        burbujaIzquierda: 'Camas? Como asi, como una cama normal?'
+        burbujaIzquierda: '¿Camas? ¿Cómo así?, ¿cómo una cama normal?'
     }),
     crearPaso({
         camaraX: 50,
@@ -265,7 +266,7 @@ const PASOS_RECORRIDO = [
             { clave: 'd', x: 77.05, y: 27.4, ancho: 1.9, alto: 11.3, retardo: '-1.1s' }
         ],
         burbujaDerecha:
-            'Mas o menos. Imagina una caja grande y poco profunda. Abajo tiene capas de piedra y arena para drenar, y arriba se acumula el lodo.'
+            'Más o menos. Imagina una caja grande y poco profunda. Abajo tiene capas de piedra y arena para drenar, y arriba se acumula el lodo.'
     }),
     crearPaso({
         camaraX: 50,
@@ -324,7 +325,7 @@ const PASOS_RECORRIDO = [
             { clave: 'c', x: 58.56, y: 27.4, ancho: 1.9, alto: 11.2, retardo: '-0.7s' },
             { clave: 'd', x: 77.05, y: 27.4, ancho: 1.9, alto: 11.3, retardo: '-1.1s' }
         ],
-        burbujaIzquierda: 'Y que pasa cuando el lodo llega ahi?'
+        burbujaIzquierda: '¿Y qué pasa cuando el lodo llega ahí?'
     }),
     crearPaso({
         camaraX: 50,
@@ -432,7 +433,7 @@ const PASOS_RECORRIDO = [
         ],
         burbujaDerechaLista: true,
         burbujaDerecha:
-            '1. Una parte del agua se escurre hacia abajo a traves de la arena y la grava.\n\n2. Otra parte del agua se evapora con el sol y el calor.'
+            '1. Una parte del agua se escurre hacia abajo a través de la arena y la grava. 2. Otra parte del agua se evapora con el sol y el calor.'
     }),
     crearPaso({
         camaraX: 50,
@@ -521,7 +522,7 @@ const PASOS_RECORRIDO = [
                 escalaY: 2.2
             }
         ],
-        burbujaIzquierda: 'Cuanto se demora en secarse?'
+        burbujaIzquierda: '¿Cuánto se demora en secarse?'
     }),
     crearPaso({
         camaraX: 50,
@@ -611,7 +612,7 @@ const PASOS_RECORRIDO = [
             }
         ],
         burbujaDerecha:
-            'Depende del clima y de cuanto lodo haya, pero no es de un dia para otro. Son varios dias o semanas hasta que se forma una masa casi seca, que se puede palear.'
+            'Depende del clima y de cuanto lodo haya, pero no es de un día para otro. Son varios días o semanas hasta que se forma una masa casi seca, que se puede palear.'
     }),
     crearPaso({
         camaraX: 50,
@@ -700,7 +701,7 @@ const PASOS_RECORRIDO = [
                 escalaY: 2.2
             }
         ],
-        burbujaIzquierda: 'Y cuando ya esta seco que hacen, lo botan a la basura?'
+        burbujaIzquierda: '¿Y cuándo ya esta seco que hacen, lo botan a la basura?'
     }),
     crearPaso({
         camaraX: 50,
@@ -791,7 +792,7 @@ const PASOS_RECORRIDO = [
         ],
         mostrarLombricompostaje: true,
         burbujaDerecha:
-            'No. Una parte de ese lodo se mezcla con residuos organicos y se lleva a la lombricultura. Las lombrices lo transforman en abono.'
+            'No. Una parte de ese lodo se mezcla con residuos orgánicos y se lleva a la lombricompostaje. Las lombrices lo transforman en abono.'
     }),
     crearPaso({
         camaraX: 50,
@@ -972,7 +973,7 @@ const PASOS_RECORRIDO = [
             }
         ],
         mostrarMediaFinal: true,
-        burbujaIzquierda: 'Interesante... y el agua despues del sedimentador hacia donde va?',
+        burbujaIzquierda: 'Interesante...¿y el agua después del sedimentador hacia donde va?',
         mostrarBotonTamizaje: true
     })
 ]
@@ -1126,6 +1127,9 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
     const [abrirReproductorFinal, setAbrirReproductorFinal] = useState(false)
     const [mostrarResumenFinal, setMostrarResumenFinal] = useState(false)
     const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
     const timeoutBloqueoRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
 
@@ -1227,13 +1231,20 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
 
     useEffect(() => {
         const manejarRueda = (event) => {
-            if (bloqueoScrollRef.current || event.deltaY === 0) {
+            const direccionScroll = obtenerDireccionScrollPorGesto(
+            event,
+            acumulacionScrollRef,
+            ultimaMarcaScrollRef,
+            ultimaActivacionScrollRef
+        )
+
+            if (bloqueoScrollRef.current || direccionScroll === 0) {
                 return
             }
 
             bloqueoScrollRef.current = true
 
-            if (event.deltaY > 0) {
+            if (direccionScroll > 0) {
                 setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
             } else if (pasoActual > 0) {
                 setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))

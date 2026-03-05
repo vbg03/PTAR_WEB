@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import './sedimentador.css'
 
@@ -357,7 +358,7 @@ const PASOS_RECORRIDO = [
             { x: 70, y: 59, escala: 0.5 }
         ],
         burbujaDerecha:
-            'Despues del tanque de aireacion, el agua con todas esas bacterias va al sedimentador secundario. Es otro tanque grande, rectangular.'
+            'Después del tanque de aireación, el agua con todas esas bacterias va al sedimentador secundario. Es otro tanque grande, rectangular.'
     }),
     crearPaso({
         camaraX: 50.2,
@@ -396,7 +397,7 @@ const PASOS_RECORRIDO = [
         ],
         marcadores: MARCADORES_SUPERIORES,
         burbujaDerecha:
-            'Aqui el agua se mueve de forma lenta para que los lodos y las particulas gruesas se agrupen y se vayan al fondo. Arriba queda el agua mas clara.'
+            'Aquí el agua se mueve de forma lenta para que los lodos y las partículas gruesas se agrupen y se vayan al fondo. Arriba queda el agua mas clara.'
     }),
     crearPaso({
         camaraX: 78,
@@ -507,7 +508,7 @@ const PASOS_RECORRIDO = [
             ]
         },
         burbujaDerecha:
-            'M�s que piedras, son restos de lodo y bacterias que ya hicieron su trabajo en el tanque anterior. Todo eso pesa m�s que el agua y, si le damos tiempo, se va hundiendo poco a poco.'
+            'Más que piedras, son restos de lodo y bacterias que ya hicieron su trabajo en el tanque anterior. Todo eso pesa más que el agua y, si le damos tiempo, se va hundiendo poco a poco.'
     }),
     crearPaso({
         camaraX: 60.9,
@@ -676,7 +677,7 @@ const PASOS_RECORRIDO = [
             desenfoque: '24px',
             grano: 10
         },
-        burbujaIzquierda: 'Y ustedes que aprovechan ahi, lo de arriba o lo de abajo?'
+        burbujaIzquierda: '¿Y ustedes que aprovechan ahí, lo de arriba o lo de abajo?'
     }),
     crearPaso({
         camaraX: 60.9,
@@ -847,7 +848,7 @@ const PASOS_RECORRIDO = [
             desenfoque: '24px',
             grano: 10
         },
-        burbujaIzquierda: 'Y cuanto tarda en cambiar de ese color cafe turbio a casi transparente?'
+        burbujaIzquierda: '¿Y cuánto tarda en cambiar de ese color café turbio a casi transparente?'
     }),
     crearPaso({
         camaraX: 60.9,
@@ -904,7 +905,7 @@ const PASOS_RECORRIDO = [
             grano: 10
         },
         burbujaDerecha:
-            'El proceso toma aproximadamente cinco horas. Durante ese tiempo el color va cambiando gradualmente: empieza de un color turbio, luego se aclara un poco, despues un tono amarillento y finalmente queda casi transparente en la parte superior.'
+            'El proceso toma aproximadamente 5 horas. Durante ese tiempo el color va cambiando gradualmente: empieza de un color turbio, luego se aclara un poco, después un tono amarillento y finalmente queda casi transparente en la parte superior.'
     }),
     crearPaso({
         camaraX: 66.4,
@@ -926,7 +927,7 @@ const PASOS_RECORRIDO = [
             { clave: 'dqo', etiqueta: 'DQO', valor: 42 },
             { clave: 'dbo', etiqueta: 'DBO', valor: 36 }
         ],
-        burbujaIzquierda: 'Y que sucede con el lodo que se asienta? Lo tiran?'
+        burbujaIzquierda: '¿Y qué sucede con el lodo que se asienta? ¿Lo tiran?'
     }),
     crearPaso({
         camaraX: 63.1,
@@ -985,7 +986,7 @@ const PASOS_RECORRIDO = [
         },
         mostrarMediaFinal: true,
         mostrarBotonLechos: true,
-        burbujaDerecha: 'Jamas. Ese lodo va a los lechos de secado.'
+        burbujaDerecha: 'Jamás. Ese lodo va a los lechos de secado.'
     }),
 ]
 
@@ -1038,6 +1039,9 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
     const [debugCopiado, setDebugCopiado] = useState(false)
     const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
     const bloqueoScrollRef = useRef(false)
+  const acumulacionScrollRef = useRef(0)
+  const ultimaMarcaScrollRef = useRef(0)
+  const ultimaActivacionScrollRef = useRef(0)
     const timeoutBloqueoRef = useRef(null)
     const timeoutAutoavanceTransicionRef = useRef(null)
     const timeoutDebugCopiadoRef = useRef(null)
@@ -1179,7 +1183,14 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
 
     useEffect(() => {
         const manejarRueda = (event) => {
-            if (bloqueoScrollRef.current || event.deltaY === 0) {
+            const direccionScroll = obtenerDireccionScrollPorGesto(
+            event,
+            acumulacionScrollRef,
+            ultimaMarcaScrollRef,
+            ultimaActivacionScrollRef
+        )
+
+            if (bloqueoScrollRef.current || direccionScroll === 0) {
                 return
             }
 
@@ -1189,7 +1200,7 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
 
             bloqueoScrollRef.current = true
 
-            if (event.deltaY > 0) {
+            if (direccionScroll > 0) {
                 if (pasoActual >= PASOS_RECORRIDO.length - 1) {
                     if (typeof onCompletarSedimentador === 'function') {
                         onCompletarSedimentador()
