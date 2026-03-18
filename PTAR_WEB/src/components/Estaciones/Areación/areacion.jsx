@@ -26,6 +26,8 @@ const PASO_DETALLE = 9
 const AUDIO_AREACION_INICIAL = '/audio/sonido-agua.mp3'
 const AUDIO_AREACION_POST_TRANSICION = '/audio/agua-estaciones.mp3'
 const AUDIO_AREACION_BURBUJAS = '/audio/burbujas.mp3'
+const VIDEO_AREACION_YOUTUBE_ID = 'yJgwavusvAo'
+const VIDEO_AREACION_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_AREACION_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 const FACTOR_VOLUMEN_AGUA_ESTACIONES = 0.74
 const FACTOR_VOLUMEN_BURBUJAS = 0.20
 const DURACION_FADE_AUDIO_AREACION_MS = 520
@@ -1221,10 +1223,13 @@ function Areacion({
                                     >
                                         x
                                     </button>
-                                    <video className="ptar-are__video-player" controls autoPlay poster="/images/video1.png">
-                                        <source src="/videos/ptar.mp4" type="video/mp4" />
-                                        Tu navegador no soporta este reproductor.
-                                    </video>
+                                    <iframe
+                                        className="ptar-are__video-player ptar-are__video-player--iframe"
+                                        title="Video del tanque de areacion"
+                                        src={VIDEO_AREACION_EMBED_URL}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                    />
                                 </div>
                             </div>
                         ) : null}

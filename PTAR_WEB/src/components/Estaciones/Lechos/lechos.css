@@ -945,6 +945,13 @@
   max-height: 78vh;
 }
 
+.ptar-lec__video-player--iframe {
+  border: none;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  background: #000;
+}
+
 .ptar-lec__modal-close {
   position: absolute;
   top: 10px;

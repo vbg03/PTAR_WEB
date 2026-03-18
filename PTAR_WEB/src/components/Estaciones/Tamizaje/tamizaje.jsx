@@ -11,6 +11,8 @@ const VALOR_MIN_CAMARA = -120
 const VALOR_MAX_CAMARA = 220
 const ZOOM_MIN_CAMARA = 0.2
 const ZOOM_MAX_CAMARA = 12
+const VIDEO_TAMIZ_YOUTUBE_ID = 'mjS_Xb3jXIQ'
+const VIDEO_TAMIZ_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_TAMIZ_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 
 const PASO_CAMBIO_ESCENARIO = 4
 const PASO_TRANSICION_ESCENARIO = PASO_CAMBIO_ESCENARIO - 1
@@ -746,10 +748,13 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false
                                     >
                                         x
                                     </button>
-                                    <video className="ptar-tam__video-player" controls autoPlay poster="/images/tamizaje/tamizaje-filtro.svg">
-                                        <source src="/videos/ptar.mp4" type="video/mp4" />
-                                        Tu navegador no soporta este reproductor.
-                                    </video>
+                                    <iframe
+                                        className="ptar-tam__video-player ptar-tam__video-player--iframe"
+                                        title="Video de tamizaje"
+                                        src={VIDEO_TAMIZ_EMBED_URL}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                    />
                                 </div>
                             </div>
                         ) : null}

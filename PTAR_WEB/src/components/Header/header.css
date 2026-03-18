@@ -59,6 +59,7 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
+  white-space: nowrap;
 }
 
 .ptar-header__button:hover {
@@ -122,4 +123,96 @@
 
 .ptar-header__menu-item:hover {
   background: #e8e8e8;
+}
+
+@media (max-width: 1100px) {
+  .ptar-header {
+    gap: 12px;
+  }
+
+  .ptar-header__logo {
+    padding: 7px 16px;
+  }
+
+  .ptar-header__logo img {
+    height: 38px;
+  }
+
+  .ptar-header__button {
+    padding: 10px 18px;
+    font-size: 16px;
+    gap: 9px;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .ptar-header__menu {
+    top: 48px;
+    min-width: 188px;
+  }
+}
+
+@media (max-width: 860px) and (orientation: landscape) {
+  .ptar-header {
+    gap: 8px;
+  }
+
+  .ptar-header__logo {
+    padding: 5px 12px;
+    border-radius: 0 0 12px 0;
+  }
+
+  .ptar-header__logo img {
+    height: 32px;
+  }
+
+  .ptar-header__nav {
+    gap: 3px;
+  }
+
+  .ptar-header__button {
+    padding: 8px 12px;
+    font-size: 13px;
+    gap: 7px;
+    border-radius: 0 0 10px 10px;
+  }
+
+  .ptar-header__chevron {
+    padding: 3px;
+  }
+
+  .ptar-header__menu {
+    top: 42px;
+    min-width: 164px;
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .ptar-header__menu-item {
+    padding: 7px 10px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 640px) and (orientation: landscape) {
+  .ptar-header {
+    gap: 6px;
+  }
+
+  .ptar-header__logo {
+    padding: 4px 9px;
+  }
+
+  .ptar-header__logo img {
+    height: 28px;
+  }
+
+  .ptar-header__nav {
+    gap: 2px;
+  }
+
+  .ptar-header__button {
+    padding: 7px 10px;
+    font-size: 12px;
+    gap: 6px;
+  }
 }

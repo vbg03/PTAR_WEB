@@ -16,6 +16,8 @@ const PASO_TRANSICION_ESCENARIO = PASO_CAMBIO_ESCENARIO - 1
 const PASO_PREVIO_TRANSICION_ESCENARIO = PASO_TRANSICION_ESCENARIO - 1
 const PASO_POST_CAMBIO_ESCENARIO = PASO_CAMBIO_ESCENARIO + 1
 const PASO_INICIO_PARTICULAS_INDIVIDUALES = PASO_CAMBIO_ESCENARIO
+const VIDEO_SEDIMENTADOR_YOUTUBE_ID = '53t16sPfovE'
+const VIDEO_SEDIMENTADOR_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_SEDIMENTADOR_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 
 const ESCENA_SEDIMENTADOR_ARRIBA = '/images/sedimentador/sedimentador-arriba_nuevo.svg'
 const ESCENA_SEDIMENTADOR_PRINCIPAL = '/svg/aireacion-sedimentador-tamizaje.svg'
@@ -1654,10 +1656,13 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
                                     >
                                         x
                                     </button>
-                                    <video className="ptar-sed__video-player" controls autoPlay poster="/images/sedimentador/sedimentador.jpg">
-                                        <source src="/videos/ptar.mp4" type="video/mp4" />
-                                        Tu navegador no soporta este reproductor.
-                                    </video>
+                                    <iframe
+                                        className="ptar-sed__video-player ptar-sed__video-player--iframe"
+                                        title="Video del sedimentador"
+                                        src={VIDEO_SEDIMENTADOR_EMBED_URL}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                    />
                                 </div>
                             </div>
                         ) : null}

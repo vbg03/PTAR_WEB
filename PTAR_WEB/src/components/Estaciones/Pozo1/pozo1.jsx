@@ -15,6 +15,8 @@ const VALOR_MIN_CAMARA = -120
 const VALOR_MAX_CAMARA = 220
 const ZOOM_MIN_CAMARA = 0.2
 const ZOOM_MAX_CAMARA = 12
+const VIDEO_POZO1_YOUTUBE_ID = 'VhDasYTYGrI'
+const VIDEO_POZO1_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_POZO1_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 const AUDIO_OBJETOS_POZO1 = '/audio/objetos.mp3'
 const PASO_RETIRO_SOLIDOS = 9
 const PASO_SIGUIENTE_RETIRO_SOLIDOS = PASO_RETIRO_SOLIDOS + 1
@@ -907,7 +909,7 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
             className="ptar-pozo1__modal"
             role="dialog"
             aria-modal="true"
-            aria-label="Reproductor del pretratamiento"
+            aria-label="Reproductor del Pozo 1"
           >
             <button
               type="button"
@@ -924,15 +926,13 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
               >
                 ×
               </button>
-              <video
-                className="ptar-pozo1__video-player"
-                controls
-                autoPlay
-                poster="/images/video1.png"
-              >
-                <source src="/videos/ptar.mp4" type="video/mp4" />
-                Tu navegador no soporta este reproductor.
-              </video>
+              <iframe
+                className="ptar-pozo1__video-player ptar-pozo1__video-player--iframe"
+                title="Video del Pozo 1"
+                src={VIDEO_POZO1_EMBED_URL}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
             </div>
           </div>
         ) : null}
