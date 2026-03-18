@@ -3,6 +3,7 @@ import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigati
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
+import { useFixedSceneLayout } from '../../../hooks/useFixedSceneLayout'
 import './filtro.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -518,10 +519,12 @@ function Filtro({ onVolverATamizaje, onCompletarFiltracion, iniciarEnFinal = fal
     }, [])
 
     const camaraActiva = obtenerCamaraActivaPaso()
+    const { viewportRef, estiloEscenaFija } = useFixedSceneLayout()
     const estiloPanel = {
         '--cam-x': `${camaraActiva.camaraX}%`,
         '--cam-y': `${camaraActiva.camaraY}%`,
-        '--cam-zoom': `${camaraActiva.zoom}`
+        '--cam-zoom': `${camaraActiva.zoom}`,
+        ...(estiloEscenaFija ?? {})
     }
     const estiloEscena = useMemo(
         () => ({
@@ -564,7 +567,7 @@ function Filtro({ onVolverATamizaje, onCompletarFiltracion, iniciarEnFinal = fal
     }
 
     return (
-        <main className="ptar-fil">
+        <main className="ptar-fil" ref={viewportRef}>
             <section className="ptar-fil__panel" style={estiloPanel} aria-label="Estacion de filtracion">
                 <div className="ptar-fil__escena" style={estiloEscena} aria-hidden="true" />
                 <div className="ptar-fil__capa-escena" aria-hidden="true" />

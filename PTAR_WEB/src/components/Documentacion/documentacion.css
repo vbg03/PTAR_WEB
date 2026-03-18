@@ -130,3 +130,121 @@
     font-size: clamp(24px, 3.1vw, 36px);
   }
 }
+
+@media (max-width: 1180px) and (orientation: landscape) {
+  .ptar-documentacion {
+    padding: 0 14px 0;
+  }
+
+  .ptar-documentacion__panel {
+    align-items: flex-start;
+    overflow-y: auto;
+    padding: clamp(70px, 10vh, 94px) 0 18px;
+  }
+
+  .ptar-documentacion__contenido {
+    width: min(100%, 900px);
+    gap: clamp(12px, 2vh, 18px);
+  }
+
+  .ptar-documentacion__contenido h1 {
+    max-width: 96%;
+    font-size: clamp(34px, 5vw, 58px);
+    line-height: 1.02;
+  }
+
+  .ptar-documentacion__contenido > p {
+    max-width: 760px;
+    font-size: clamp(18px, 2.4vw, 28px);
+    line-height: 1.12;
+  }
+
+  .ptar-documentacion__acciones {
+    width: 100%;
+    gap: 14px;
+  }
+
+  .ptar-documentacion__boton {
+    width: min(70vw, 560px);
+    min-width: 0;
+    border-radius: 20px;
+    padding: 14px 18px;
+    gap: 12px;
+    font-size: clamp(18px, 2vw, 24px);
+  }
+
+  .ptar-documentacion__icono {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 13px;
+    flex: 0 0 auto;
+  }
+
+  .ptar-documentacion__icono--documento::after {
+    font-size: 13px;
+  }
+
+  .ptar-documentacion__nota {
+    margin-top: 0;
+    max-width: 760px;
+    font-size: clamp(18px, 2.2vw, 28px);
+    line-height: 1.1;
+  }
+}
+
+@media (max-width: 950px) and (max-height: 450px) and (orientation: landscape) {
+  .ptar-documentacion {
+    padding: 0 12px 0;
+  }
+
+  .ptar-documentacion__panel {
+    padding-top: 78px;
+    padding-bottom: 12px;
+  }
+
+  .ptar-documentacion__contenido {
+    width: min(100%, 760px);
+    gap: 10px;
+  }
+
+  .ptar-documentacion__contenido h1 {
+    max-width: 88vw;
+    font-size: clamp(24px, 4.6vw, 40px);
+  }
+
+  .ptar-documentacion__contenido > p {
+    max-width: 76vw;
+    font-size: clamp(14px, 2.6vw, 20px);
+    line-height: 1.16;
+  }
+
+  .ptar-documentacion__acciones {
+    gap: 10px;
+  }
+
+  .ptar-documentacion__boton {
+    width: min(62vw, 520px);
+    border-radius: 18px;
+    padding: 12px 14px;
+    gap: 10px;
+    font-size: clamp(14px, 2.4vw, 18px);
+  }
+
+  .ptar-documentacion__icono {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .ptar-documentacion__icono--documento::after {
+    font-size: 12px;
+    margin-left: 2px;
+  }
+
+  .ptar-documentacion__nota {
+    max-width: 80vw;
+    font-size: clamp(14px, 2.6vw, 20px);
+    line-height: 1.12;
+  }
+}

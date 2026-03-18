@@ -74,8 +74,11 @@
 
 .ptar-usos__media-track {
   position: relative;
-  display: flex;
+  display: inline-flex;
   justify-content: center;
+  align-items: flex-start;
+  width: max-content;
+  max-width: 100%;
 }
 
 .ptar-usos__video-preview {
@@ -380,9 +383,11 @@
   }
 
   .ptar-usos__resumen-wrap {
-    position: static;
-    margin-top: 12px;
-    flex-direction: row;
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    margin-top: 0;
+    flex-direction: row-reverse;
   }
 
   .ptar-usos__resumen-toggle {
@@ -390,7 +395,7 @@
   }
 
   .ptar-usos__resumen {
-    width: min(84vw, 420px);
+    width: min(42vw, 320px);
   }
 
   .ptar-usos__personaje {
@@ -414,12 +419,24 @@
     font-size: clamp(14px, 2.2vw, 18px);
   }
 
-  .ptar-usos__burbuja--izquierda,
-  .ptar-usos__burbuja--derecha {
-    left: 50%;
+  .ptar-usos__burbuja--izquierda {
+    left: clamp(74px, 8vw, 120px);
     right: auto;
-    --ptar-usos-burbuja-transform-hidden: translateX(-50%) translateY(14px) scale(0.97);
-    --ptar-usos-burbuja-transform-visible: translateX(-50%) translateY(0) scale(1);
+    --ptar-usos-burbuja-transform-hidden: translateY(14px) scale(0.97);
+    --ptar-usos-burbuja-transform-visible: translateY(0) scale(1);
+    bottom: clamp(56px, 6vh, 98px);
+  }
+
+  .ptar-usos__burbuja--derecha {
+    left: auto;
+    right: clamp(74px, 8vw, 124px);
+    --ptar-usos-burbuja-transform-hidden: translateY(14px) scale(0.97);
+    --ptar-usos-burbuja-transform-visible: translateY(0) scale(1);
+    bottom: clamp(56px, 6vh, 98px);
+  }
+
+  .ptar-usos__burbuja--derecha.is-intro {
+    right: clamp(74px, 8vw, 124px);
     bottom: clamp(56px, 6vh, 98px);
   }
 }
@@ -450,9 +467,12 @@
   }
 
   .ptar-usos__resumen-wrap {
+    position: absolute;
     top: -6px;
     right: -6px;
     gap: 6px;
+    margin-top: 0;
+    flex-direction: row-reverse;
   }
 
   .ptar-usos__resumen-toggle {
@@ -507,8 +527,8 @@
   }
 
   .ptar-usos__burbuja--derecha.is-intro {
-    right: clamp(250px, 22vw, 360px);
-    bottom: clamp(78px, 12vh, 146px);
+    right: clamp(74px, 7vw, 120px);
+    bottom: clamp(18px, 3vh, 44px);
   }
 }
 
@@ -535,6 +555,14 @@
   .ptar-usos__resumen {
     width: min(27vw, 200px);
     padding: 10px 12px;
+  }
+
+  .ptar-usos__resumen-wrap {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    margin-top: 0;
+    flex-direction: row-reverse;
   }
 
   .ptar-usos__resumen h3 {
@@ -568,7 +596,7 @@
   }
 
   .ptar-usos__burbuja--derecha.is-intro {
-    right: clamp(176px, 25vw, 244px);
-    bottom: clamp(56px, 11vh, 100px);
+    right: clamp(50px, 7vw, 86px);
+    bottom: clamp(18px, 3vh, 44px);
   }
 }

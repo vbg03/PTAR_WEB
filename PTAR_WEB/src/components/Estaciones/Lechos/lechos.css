@@ -1168,8 +1168,9 @@
 
   .ptar-lec__lombricompostaje {
     left: 70%;
-    top: 50%;
-    width: clamp(96px, 28vw, 150px);
+    top: 35%;
+    width: clamp(84px, 22vw, 128px);
+    z-index: 14;
   }
 }
 

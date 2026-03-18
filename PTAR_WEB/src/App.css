@@ -102,7 +102,131 @@
   overflow: hidden;
 }
 
-@media (max-width: 900px) and (max-height: 450px) and (orientation: landscape) {
+@media (max-width: 1100px) {
+  .ptar-app.ptar-app--estacion :is(
+    .ptar-pre__contaminantes,
+    .ptar-are__contaminantes,
+    .ptar-are__contaminantes.is-flotante,
+    .ptar-sed__contaminantes,
+    .ptar-sed__contaminantes.is-grande,
+    .ptar-tam__contaminantes,
+    .ptar-fil__contaminantes,
+    .ptar-des__contaminantes
+  ) {
+    min-width: 98px;
+    min-height: auto;
+    padding: 10px 12px 8px;
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.42);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+      0 8px 18px rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(4px);
+  }
+
+  .ptar-app.ptar-app--estacion :is(
+    .ptar-pre__contaminantes,
+    .ptar-are__contaminantes,
+    .ptar-are__contaminantes.is-flotante,
+    .ptar-sed__contaminantes,
+    .ptar-sed__contaminantes.is-grande,
+    .ptar-tam__contaminantes,
+    .ptar-fil__contaminantes,
+    .ptar-des__contaminantes
+  ) h3 {
+    margin-bottom: 6px;
+    color: #fff;
+    font-size: clamp(13px, 1.8vw, 17px);
+    text-align: center;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.32);
+  }
+
+  .ptar-app.ptar-app--estacion :is(
+    .ptar-pre__contaminantes-grid,
+    .ptar-are__contaminantes-grid,
+    .ptar-sed__contaminantes-grid,
+    .ptar-tam__contaminantes-grid,
+    .ptar-fil__contaminantes-grid,
+    .ptar-des__contaminantes-grid
+  ) {
+    gap: 10px;
+  }
+
+  .ptar-app.ptar-app--estacion :is(
+    .ptar-pre__indicador,
+    .ptar-are__indicador,
+    .ptar-sed__indicador,
+    .ptar-tam__indicador,
+    .ptar-fil__indicador,
+    .ptar-des__indicador
+  ) {
+    gap: 4px;
+  }
+
+  .ptar-app.ptar-app--estacion :is(
+    .ptar-pre__indicador > span,
+    .ptar-are__indicador > span,
+    .ptar-sed__indicador > span,
+    .ptar-tam__indicador > span,
+    .ptar-fil__indicador > span,
+    .ptar-des__indicador > span
+  ) {
+    color: #fff;
+    font-size: clamp(11px, 1.45vw, 13px);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+  }
+
+  .ptar-app.ptar-app--estacion :is(
+    .ptar-pre__indicador-canal,
+    .ptar-are__indicador-canal,
+    .ptar-sed__indicador-canal,
+    .ptar-tam__indicador-canal,
+    .ptar-fil__indicador-canal,
+    .ptar-des__indicador-canal
+  ) {
+    width: clamp(10px, 1vw, 12px);
+    height: clamp(72px, 11vh, 98px);
+  }
+}
+
+.ptar-app.ptar-app--estacion :is(
+  .ptar-pre,
+  .ptar-are,
+  .ptar-sed,
+  .ptar-lec,
+  .ptar-tam,
+  .ptar-fil,
+  .ptar-des,
+  .ptar-alm,
+  .ptar-pozo2
+) {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.ptar-app.ptar-app--estacion :is(
+  .ptar-pre__panel,
+  .ptar-are__panel,
+  .ptar-sed__panel,
+  .ptar-lec__panel,
+  .ptar-tam__panel,
+  .ptar-fil__panel,
+  .ptar-des__panel,
+  .ptar-alm__panel,
+  .ptar-pozo2__panel
+) {
+  flex: none;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+
+@media (max-width: 950px) and (max-height: 450px) and (orientation: landscape) {
   .ptar-app.ptar-app--estacion :is(
     .ptar-pozo1__avatar,
     .ptar-pre__avatar,
@@ -260,6 +384,119 @@
     right: 18px;
     left: auto;
   }
+
+  .ptar-app.ptar-app--estacion button[class*="__accion"] {
+    padding: 9px 16px;
+    border-radius: 18px;
+    font-size: clamp(14px, 1.75vw, 17px);
+    letter-spacing: 0.2px;
+    gap: 7px;
+  }
+
+  .ptar-app.ptar-app--estacion :is(
+    [class*="__accion-flecha"],
+    [class*="__accion-icono"]
+  ) {
+    width: 18px;
+    height: 18px;
+  }
+
+  .ptar-app.ptar-app--estacion [class*="__accion-flecha"]::before {
+    width: 5px;
+    height: 5px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+  }
+
+  .ptar-app.ptar-app--estacion [class*="__accion-icono"] > span {
+    width: 7px;
+    height: 7px;
+    border-left-width: 3px;
+    border-bottom-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 3px;
+  }
+
+  .ptar-app.ptar-app--estacion :is(
+    button[class*="__resumen-toggle"],
+    button[class*="__modal-close"]
+  ) {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .ptar-app.ptar-app--estacion button[class*="__debug-boton"] {
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+  }
+
+  .ptar-app.ptar-app--estacion [class$="__video-preview-final"] {
+    width: min(32vw, 240px) !important;
+    border-radius: 24px !important;
+  }
+
+  .ptar-app.ptar-app--estacion [class$="__media-final"] {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: max-content;
+    max-width: calc(100% - 24px);
+    display: flex;
+    justify-content: center;
+  }
+
+  .ptar-app.ptar-app--estacion [class*="__media-final-track"] {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: max-content;
+    max-width: 100%;
+  }
+
+  .ptar-app.ptar-app--estacion [class$="__resumen-wrap-final"] {
+    position: absolute !important;
+    top: 1px !important;
+    right: 0 !important;
+    left: auto !important;
+    width: 30px !important;
+    height: 30px !important;
+    display: block !important;
+    margin-top: 0 !important;
+    z-index: 14 !important;
+  }
+
+  .ptar-app.ptar-app--estacion [class*="__resumen-final"] {
+    position: absolute !important;
+    top: calc(100% + 6px) !important;
+    right: 0 !important;
+    left: auto !important;
+    width: min(34vw, 180px) !important;
+    padding: 8px 10px !important;
+    border-radius: 12px !important;
+  }
+
+  .ptar-app.ptar-app--estacion [class$="__pin-video-final"] {
+    left: clamp(-18px, -2vw, -8px) !important;
+    top: 80px !important;
+    right: auto !important;
+    width: 34px !important;
+    height: auto !important;
+    z-index: 3 !important;
+  }
+
+  .ptar-app.ptar-app--estacion [class*="__resumen-final"] :is(h3, h4) {
+    margin-bottom: 6px !important;
+    font-size: 13px !important;
+  }
+
+  .ptar-app.ptar-app--estacion [class*="__resumen-final"] p {
+    font-size: 11px !important;
+    line-height: 1.25 !important;
+  }
 }
 
 .ptar-app.ptar-app--pozo1 .ptar-header {
@@ -340,6 +577,17 @@
   left: 0;
   right: 0;
   z-index: 30;
+}
+
+@media (max-width: 950px) and (max-height: 450px) and (orientation: landscape) {
+  .ptar-app.ptar-app--estacion .ptar-header.ptar-header--compact-layout {
+    position: fixed;
+    top: env(safe-area-inset-top, 0px);
+    left: 12px;
+    right: auto;
+    width: auto;
+    z-index: 120;
+  }
 }
 
 .ptar-app__content {

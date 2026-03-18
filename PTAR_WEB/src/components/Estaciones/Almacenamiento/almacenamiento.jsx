@@ -3,6 +3,7 @@ import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigati
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
+import { useFixedSceneLayout } from '../../../hooks/useFixedSceneLayout'
 import './almacenamiento.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -390,10 +391,12 @@ function Almacenamiento({ onVolverADesinfeccion, onCompletarAlmacenamiento, inic
     }, [])
 
     const camaraActiva = obtenerCamaraActivaPaso()
+    const { viewportRef, estiloEscenaFija } = useFixedSceneLayout()
     const estiloPanel = {
         '--cam-x': `${camaraActiva.camaraX}%`,
         '--cam-y': `${camaraActiva.camaraY}%`,
-        '--cam-zoom': `${camaraActiva.zoom}`
+        '--cam-zoom': `${camaraActiva.zoom}`,
+        ...(estiloEscenaFija ?? {})
     }
     const estiloEscena = useMemo(
         () => ({
@@ -408,7 +411,7 @@ function Almacenamiento({ onVolverADesinfeccion, onCompletarAlmacenamiento, inic
     }
 
     return (
-        <main className="ptar-alm">
+        <main className="ptar-alm" ref={viewportRef}>
             <section className="ptar-alm__panel" style={estiloPanel} aria-label="Estacion de almacenamiento">
                 <div className="ptar-alm__escena" style={estiloEscena} aria-hidden="true" />
                 <div className="ptar-alm__capa-escena" aria-hidden="true" />

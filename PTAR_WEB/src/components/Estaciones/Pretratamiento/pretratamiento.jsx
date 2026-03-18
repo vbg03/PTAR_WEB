@@ -3,6 +3,7 @@ import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigati
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
+import { useFixedSceneLayout } from '../../../hooks/useFixedSceneLayout'
 import './pretratamiento.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -890,10 +891,12 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
     }, [])
 
     const camaraActiva = obtenerCamaraActivaPaso()
+    const { viewportRef, estiloEscenaFija } = useFixedSceneLayout()
     const estiloPanel = {
         '--cam-x': `${camaraActiva.camaraX}%`,
         '--cam-y': `${camaraActiva.camaraY}%`,
-        '--cam-zoom': `${camaraActiva.zoom}`
+        '--cam-zoom': `${camaraActiva.zoom}`,
+        ...(estiloEscenaFija ?? {})
     }
     const estiloEscena = useMemo(
         () => ({
@@ -1034,7 +1037,7 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
     )
 
     return (
-        <main className="ptar-pre">
+        <main className="ptar-pre" ref={viewportRef}>
             <section
                 className="ptar-pre__panel"
                 style={estiloPanel}

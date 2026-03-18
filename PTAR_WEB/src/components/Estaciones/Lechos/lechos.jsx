@@ -7,6 +7,7 @@ import {
     EVENTO_CAMBIO_CONFIG_AUDIO,
     obtenerVolumenMusica
 } from '../../../utils/audioSettings'
+import { useFixedSceneLayout } from '../../../hooks/useFixedSceneLayout'
 import './lechos.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -1545,10 +1546,12 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
     }, [limpiarFadeAudioLechos])
 
     const camaraActiva = obtenerCamaraActivaPaso()
+    const { viewportRef, estiloEscenaFija } = useFixedSceneLayout()
     const estiloPanel = {
         '--cam-x': `${camaraActiva.camaraX}%`,
         '--cam-y': `${camaraActiva.camaraY}%`,
-        '--cam-zoom': `${camaraActiva.zoom}`
+        '--cam-zoom': `${camaraActiva.zoom}`,
+        ...(estiloEscenaFija ?? {})
     }
     const estiloEscena = useMemo(
         () => ({
@@ -1558,7 +1561,7 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
     )
 
     return (
-        <main className="ptar-lec">
+        <main className="ptar-lec" ref={viewportRef}>
             <section className="ptar-lec__panel" style={estiloPanel} aria-label="Estacion Lechos de secado">
                 <div className="ptar-lec__escena" style={estiloEscena} aria-hidden="true" />
                 <div className="ptar-lec__capa-escena" aria-hidden="true" />

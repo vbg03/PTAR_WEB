@@ -3,6 +3,7 @@ import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigati
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
+import { useFixedSceneLayout } from '../../../hooks/useFixedSceneLayout'
 import './sedimentador.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -1358,10 +1359,12 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
     }, [])
 
     const camaraActiva = obtenerCamaraActivaPaso()
+    const { viewportRef, estiloEscenaFija } = useFixedSceneLayout()
     const estiloPanel = {
         '--cam-x': `${camaraActiva.camaraX}%`,
         '--cam-y': `${camaraActiva.camaraY}%`,
-        '--cam-zoom': `${camaraActiva.zoom}`
+        '--cam-zoom': `${camaraActiva.zoom}`,
+        ...(estiloEscenaFija ?? {})
     }
     const estiloEscena = useMemo(
         () => ({
@@ -1429,7 +1432,7 @@ function Sedimentador({ onVolverAAreacion, onCompletarSedimentador, iniciarEnFin
     const ocultarContenidoEscena = !!paso.soloTransicion
 
     return (
-        <main className="ptar-sed">
+        <main className="ptar-sed" ref={viewportRef}>
             <section className="ptar-sed__panel" style={estiloPanel} aria-label="Estacion sedimentador">
                 <div className="ptar-sed__escena" style={estiloEscena} aria-hidden="true" />
                 <div className="ptar-sed__capa-escena" aria-hidden="true" />

@@ -7,6 +7,7 @@ import {
     EVENTO_CAMBIO_CONFIG_AUDIO,
     obtenerVolumenMusica
 } from '../../../utils/audioSettings'
+import { useFixedSceneLayout } from '../../../hooks/useFixedSceneLayout'
 import './desinfeccion.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -720,10 +721,12 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
     }, [limpiarFadeAudioAmbiente])
 
     const camaraActiva = obtenerCamaraActivaPaso()
+    const { viewportRef, estiloEscenaFija } = useFixedSceneLayout()
     const estiloPanel = {
         '--cam-x': `${camaraActiva.camaraX}%`,
         '--cam-y': `${camaraActiva.camaraY}%`,
-        '--cam-zoom': `${camaraActiva.zoom}`
+        '--cam-zoom': `${camaraActiva.zoom}`,
+        ...(estiloEscenaFija ?? {})
     }
     const estiloEscena = useMemo(
         () => ({
@@ -753,7 +756,7 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
     const esterilizadorPasoLamparasUv = pasoActual === 3
 
     return (
-        <main className="ptar-des">
+        <main className="ptar-des" ref={viewportRef}>
             <section className="ptar-des__panel" style={estiloPanel} aria-label="Estacion de desinfeccion">
                 <div className="ptar-des__escena" style={estiloEscena} aria-hidden="true" />
                 <div className="ptar-des__capa-escena" aria-hidden="true" />

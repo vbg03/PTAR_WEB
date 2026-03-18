@@ -178,6 +178,12 @@
   background: #f20732;
 }
 
+@media (max-width: 950px) and (max-height: 450px) and (orientation: landscape) {
+  .ptar-tools {
+    top: max(130px, env(safe-area-inset-top, 0px) + 124px);
+  }
+}
+
 @keyframes ptar-tools-fade-in {
   from {
     opacity: 0;
@@ -364,6 +370,19 @@
 
   .ptar-help-overlay__card li {
     font-size: clamp(13px, 1.9vw, 18px);
+  }
+}
+
+@media (max-width: 950px) and (max-height: 450px) and (orientation: landscape) {
+  .ptar-tools {
+    left: auto;
+    right: 12px;
+    top: max(130px, env(safe-area-inset-top, 0px) + 124px);
+    align-items: flex-end;
+  }
+
+  .ptar-tools__audio-panel {
+    transform-origin: top right;
   }
 }
 

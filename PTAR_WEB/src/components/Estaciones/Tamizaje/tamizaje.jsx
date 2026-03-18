@@ -3,6 +3,7 @@ import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigati
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
+import { useFixedSceneLayout } from '../../../hooks/useFixedSceneLayout'
 import './tamizaje.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -523,10 +524,12 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false
     }, [])
 
     const camaraActiva = obtenerCamaraActivaPaso()
+    const { viewportRef, estiloEscenaFija } = useFixedSceneLayout()
     const estiloPanel = {
         '--cam-x': `${camaraActiva.camaraX}%`,
         '--cam-y': `${camaraActiva.camaraY}%`,
-        '--cam-zoom': `${camaraActiva.zoom}`
+        '--cam-zoom': `${camaraActiva.zoom}`,
+        ...(estiloEscenaFija ?? {})
     }
     const estiloEscena = useMemo(
         () => ({
@@ -562,7 +565,7 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false
     const ocultarContenidoEscena = !!paso.soloTransicion
 
     return (
-        <main className="ptar-tam">
+        <main className="ptar-tam" ref={viewportRef}>
             <section className="ptar-tam__panel" style={estiloPanel} aria-label="Estacion de tamizaje">
                 <div className="ptar-tam__escena" style={estiloEscena} aria-hidden="true" />
                 <div className="ptar-tam__capa-escena" aria-hidden="true" />

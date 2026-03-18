@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
@@ -18,6 +18,11 @@ const ZOOM_MAX_CAMARA = 12
 const VIDEO_POZO1_YOUTUBE_ID = 'VhDasYTYGrI'
 const VIDEO_POZO1_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_POZO1_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 const AUDIO_OBJETOS_POZO1 = '/audio/objetos.mp3'
+const ASPECTO_ESCENA_POZO1_DESKTOP = 16 / 9
+const ASPECTO_ESCENA_POZO1_MOVIL = 19.5 / 9
+const ANCHO_MAXIMO_MOVIL_LANDSCAPE = 950
+const ALTO_MAXIMO_MOVIL_LANDSCAPE = 450
+const AJUSTE_GLOBAL_CAMARA_X_POZO1 = 0
 const PASO_RETIRO_SOLIDOS = 9
 const PASO_SIGUIENTE_RETIRO_SOLIDOS = PASO_RETIRO_SOLIDOS + 1
 const LIMITES_POZO_INTERACTIVO = {
@@ -199,6 +204,7 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
   const [debugCamaraActiva, setDebugCamaraActiva] = useState(DEBUG_CAMARA_HABILITADO)
   const [debugCopiado, setDebugCopiado] = useState(false)
   const [debugCamarasPorPaso, setDebugCamarasPorPaso] = useState({})
+  const [dimensionesEscena, setDimensionesEscena] = useState(null)
   const [posicionesResiduos, setPosicionesResiduos] = useState(POSICIONES_INICIALES_RESIDUOS)
   const [residuosRetirados, setResiduosRetirados] = useState({})
   const [residuoArrastrandoId, setResiduoArrastrandoId] = useState(null)
@@ -210,6 +216,7 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
   const timeoutRegresoRef = useRef(null)
   const timeoutBloqueoRef = useRef(null)
   const timeoutDebugCopiadoRef = useRef(null)
+  const viewportEscenaRef = useRef(null)
   const panelEscenaRef = useRef(null)
   const arrastreResiduoRef = useRef(null)
   const posicionesResiduosRef = useRef(POSICIONES_INICIALES_RESIDUOS)
@@ -520,6 +527,70 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
     }
   }, [pasoActual])
 
+  useLayoutEffect(() => {
+    const viewport = viewportEscenaRef.current
+    if (!viewport) {
+      return undefined
+    }
+
+    const actualizarDimensionesEscena = () => {
+      const { width, height } = viewport.getBoundingClientRect()
+      if (!width || !height) {
+        return
+      }
+
+      const esMovilLandscape =
+        width > height &&
+        width <= ANCHO_MAXIMO_MOVIL_LANDSCAPE &&
+        height <= ALTO_MAXIMO_MOVIL_LANDSCAPE
+      const aspectoEscena = esMovilLandscape
+        ? ASPECTO_ESCENA_POZO1_MOVIL
+        : ASPECTO_ESCENA_POZO1_DESKTOP
+
+      let anchoEscena = width
+      let altoEscena = anchoEscena / aspectoEscena
+
+      if (altoEscena > height) {
+        altoEscena = height
+        anchoEscena = altoEscena * aspectoEscena
+      }
+
+      setDimensionesEscena((estadoAnterior) => {
+        if (
+          estadoAnterior &&
+          Math.abs(estadoAnterior.width - anchoEscena) < 0.5 &&
+          Math.abs(estadoAnterior.height - altoEscena) < 0.5
+        ) {
+          return estadoAnterior
+        }
+
+        return {
+          width: anchoEscena,
+          height: altoEscena
+        }
+      })
+    }
+
+    actualizarDimensionesEscena()
+
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', actualizarDimensionesEscena)
+      return () => {
+        window.removeEventListener('resize', actualizarDimensionesEscena)
+      }
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      actualizarDimensionesEscena()
+    })
+
+    resizeObserver.observe(viewport)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [])
+
   useEffect(() => {
     if (pasoActual >= PASO_RETIRO_SOLIDOS) {
       return
@@ -705,10 +776,21 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
 
   const esPasoRetiroSolidos = pasoActual === PASO_RETIRO_SOLIDOS
   const camaraActiva = obtenerCamaraActivaPaso()
+  const camaraXAjustada = limitar(
+    camaraActiva.camaraX + AJUSTE_GLOBAL_CAMARA_X_POZO1,
+    VALOR_MIN_CAMARA,
+    VALOR_MAX_CAMARA
+  )
   const estiloPanel = {
-    '--cam-x': `${camaraActiva.camaraX}%`,
+    '--cam-x': `${camaraXAjustada}%`,
     '--cam-y': `${camaraActiva.camaraY}%`,
-    '--cam-zoom': `${camaraActiva.zoom}`
+    '--cam-zoom': `${camaraActiva.zoom}`,
+    ...(dimensionesEscena
+      ? {
+        width: `${dimensionesEscena.width}px`,
+        height: `${dimensionesEscena.height}px`
+      }
+      : {})
   }
   const estiloGota = {
     left: `${paso.gota.x}%`,
@@ -721,7 +803,10 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
     : RESIDUOS_POZO
 
   return (
-    <main className={`ptar-pozo1 ${mostrarTransicionRegreso ? 'is-regresando' : ''}`}>
+    <main
+      className={`ptar-pozo1 ${mostrarTransicionRegreso ? 'is-regresando' : ''}`}
+      ref={viewportEscenaRef}
+    >
       <section
         className={`ptar-pozo1__panel ${mostrarTransicionRegreso ? 'is-regresando' : ''}`}
         style={estiloPanel}

@@ -7,6 +7,7 @@ import {
     EVENTO_CAMBIO_CONFIG_AUDIO,
     obtenerVolumenMusica
 } from '../../../utils/audioSettings'
+import { useFixedSceneLayout } from '../../../hooks/useFixedSceneLayout'
 import './pozo2.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -572,10 +573,12 @@ function Pozo2({
     }, [limpiarFadeAudioParteFinalPozo2])
 
     const camaraActiva = obtenerCamaraActivaPaso()
+    const { viewportRef, estiloEscenaFija } = useFixedSceneLayout()
     const estiloPanel = {
         '--cam-x': `${camaraActiva.camaraX}%`,
         '--cam-y': `${camaraActiva.camaraY}%`,
-        '--cam-zoom': `${camaraActiva.zoom}`
+        '--cam-zoom': `${camaraActiva.zoom}`,
+        ...(estiloEscenaFija ?? {})
     }
     const estiloEscena = useMemo(
         () => ({
@@ -590,7 +593,7 @@ function Pozo2({
     }
 
     return (
-        <main className="ptar-pozo2">
+        <main className="ptar-pozo2" ref={viewportRef}>
             <section className="ptar-pozo2__panel" style={estiloPanel} aria-label="Estacion pozo 2">
                 <div className="ptar-pozo2__escena" style={estiloEscena} aria-hidden="true" />
                 <div className="ptar-pozo2__capa-escena" aria-hidden="true" />

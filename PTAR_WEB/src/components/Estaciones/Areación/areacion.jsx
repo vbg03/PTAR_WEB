@@ -7,6 +7,7 @@ import {
     EVENTO_CAMBIO_CONFIG_AUDIO,
     obtenerVolumenMusica
 } from '../../../utils/audioSettings'
+import { useFixedSceneLayout } from '../../../hooks/useFixedSceneLayout'
 import './areacion.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -955,10 +956,12 @@ function Areacion({
     }, [detenerFadeAudioAmbiente])
 
     const camaraActiva = obtenerCamaraActivaPaso()
+    const { viewportRef, estiloEscenaFija } = useFixedSceneLayout()
     const estiloPanel = {
         '--cam-x': `${camaraActiva.camaraX}%`,
         '--cam-y': `${camaraActiva.camaraY}%`,
-        '--cam-zoom': `${camaraActiva.zoom}`
+        '--cam-zoom': `${camaraActiva.zoom}`,
+        ...(estiloEscenaFija ?? {})
     }
     const estiloEscena = useMemo(
         () => ({
@@ -989,7 +992,7 @@ function Areacion({
     const ocultarContenidoEscena = !!paso.soloTransicion
 
     return (
-        <main className="ptar-are">
+        <main className="ptar-are" ref={viewportRef}>
             <section
                 className="ptar-are__panel"
                 style={estiloPanel}
