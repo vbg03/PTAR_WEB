@@ -19,6 +19,7 @@ const VIDEO_POZO1_YOUTUBE_ID = 'VhDasYTYGrI'
 const VIDEO_POZO1_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_POZO1_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 const AUDIO_OBJETOS_POZO1 = '/audio/objetos.mp3'
 const ASPECTO_ESCENA_POZO1_DESKTOP = 16 / 9
+const ASPECTO_ESCENA_POZO1_DESKTOP_MAX = 2.12
 const ASPECTO_ESCENA_POZO1_MOVIL = 19.5 / 9
 const ANCHO_MAXIMO_MOVIL_LANDSCAPE = 950
 const ALTO_MAXIMO_MOVIL_LANDSCAPE = 450
@@ -543,9 +544,14 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
         width > height &&
         width <= ANCHO_MAXIMO_MOVIL_LANDSCAPE &&
         height <= ALTO_MAXIMO_MOVIL_LANDSCAPE
+      const aspectoViewport = width / height
       const aspectoEscena = esMovilLandscape
         ? ASPECTO_ESCENA_POZO1_MOVIL
-        : ASPECTO_ESCENA_POZO1_DESKTOP
+        : limitar(
+          aspectoViewport,
+          ASPECTO_ESCENA_POZO1_DESKTOP,
+          ASPECTO_ESCENA_POZO1_DESKTOP_MAX
+        )
 
       let anchoEscena = width
       let altoEscena = anchoEscena / aspectoEscena

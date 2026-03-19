@@ -16,6 +16,7 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  container-type: inline-size;
 }
 
 .ptar-usos__titulo {
@@ -196,7 +197,7 @@
 .ptar-usos__personaje {
   position: absolute;
   bottom: 0;
-  height: clamp(200px, 40vw, 340px);
+  height: clamp(126px, 20cqi, 340px);
   width: auto;
   pointer-events: none;
   will-change: left, right, height;
@@ -207,7 +208,7 @@
 }
 
 .ptar-usos__personaje.is-grande {
-  height: clamp(450px, 46vh, 570px);
+  height: clamp(200px, 28cqi, 570px);
 }
 
 .ptar-usos__personaje--izquierda.is-intro {
@@ -230,10 +231,10 @@
   --ptar-usos-burbuja-transform-hidden: translateY(14px) scale(0.97);
   --ptar-usos-burbuja-transform-visible: translateY(0) scale(1);
   position: absolute;
-  max-width: min(35vw, 470px);
+  max-width: min(28cqi, 470px);
   border-radius: 999px;
-  padding: 15px 22px;
-  font-size: clamp(17px, 1.2vw, 25px);
+  padding: clamp(10px, 1.2cqi, 15px) clamp(14px, 1.55cqi, 22px);
+  font-size: clamp(12px, 1.38cqi, 25px);
   font-weight: 500;
   line-height: 1.18;
   text-align: center;
@@ -582,9 +583,10 @@
   }
 
   .ptar-usos__burbuja {
-    max-width: min(30vw, 210px);
-    padding: 8px 12px;
-    font-size: clamp(10px, 1.4vw, 13px);
+    max-width: min(28vw, 190px);
+    padding: clamp(6px, 1.4vh, 8px) clamp(10px, 1.7vw, 12px);
+    font-size: clamp(9px, 1.24vw, 12px);
+    line-height: 1.12;
   }
 
   .ptar-usos__burbuja--izquierda {

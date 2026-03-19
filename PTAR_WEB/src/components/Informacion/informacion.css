@@ -17,6 +17,7 @@
   align-items: center;
   overflow: hidden;
   transform-origin: center center;
+  container-type: inline-size;
 }
 
 .ptar-info__titulos {
@@ -344,7 +345,7 @@
 .ptar-info__personaje {
   position: absolute;
   bottom: 0;
-  height: clamp(200px, 40vw, 340px);
+  height: clamp(126px, 20cqi, 340px);
   width: auto;
   pointer-events: none;
 }
@@ -560,12 +561,12 @@
 
 .ptar-info__burbuja {
   position: absolute;
-  max-width: min(34vw, 360px);
+  max-width: min(24cqi, 360px);
   border-radius: 999px;
-  padding: 14px 22px;
-  font-size: clamp(18px, 1.2vw, 24px);
+  padding: clamp(10px, 1.2cqi, 14px) clamp(14px, 1.5cqi, 22px);
+  font-size: clamp(12px, 1.35cqi, 24px);
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.18;
   text-align: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   opacity: 0;
@@ -649,9 +650,9 @@
 .ptar-info__burbuja--izquierda.is-location-step {
   left: clamp(40px, 4vw, 74px);
   bottom: clamp(12px, 2vh, 30px);
-  max-width: min(30vw, 390px);
-  padding: 10px 16px;
-  font-size: clamp(15px, 1.15vw, 21px);
+  max-width: min(22cqi, 390px);
+  padding: clamp(8px, 1cqi, 10px) clamp(12px, 1.3cqi, 16px);
+  font-size: clamp(11px, 1.18cqi, 21px);
 }
 
 
@@ -663,9 +664,9 @@
 .ptar-info__burbuja--derecha.is-location-step {
   right: clamp(70px, 8vw, 140px);
   bottom: clamp(14px, 2.4vh, 34px);
-  max-width: min(29vw, 360px);
-  padding: 10px 16px;
-  font-size: clamp(15px, 1.15vw, 21px);
+  max-width: min(22cqi, 360px);
+  padding: clamp(8px, 1cqi, 10px) clamp(12px, 1.3cqi, 16px);
+  font-size: clamp(11px, 1.18cqi, 21px);
 }
 
 @media (max-width: 1100px) {
@@ -996,9 +997,10 @@
   }
 
   .ptar-info__burbuja {
-    max-width: min(30vw, 220px);
-    padding: 8px 12px;
-    font-size: clamp(11px, 1.55vw, 14px);
+    max-width: min(28vw, 200px);
+    padding: clamp(6px, 1.4vh, 8px) clamp(10px, 1.7vw, 12px);
+    font-size: clamp(9px, 1.28vw, 12px);
+    line-height: 1.12;
   }
 
   .ptar-info__burbuja--izquierda,
@@ -1027,19 +1029,19 @@
   .ptar-info__burbuja--derecha.is-welcome-step {
     right: clamp(52px, 6vw, 88px);
     bottom: clamp(48px, 9vh, 82px);
-    max-width: min(28vw, 220px);
+    max-width: min(26vw, 190px);
   }
 
   .ptar-info__burbuja--derecha.is-video-step {
     right: 4px;
     bottom: clamp(16px, 2.4vh, 28px);
-    max-width: min(22vw, 170px);
+    max-width: min(21vw, 156px);
   }
 
   .ptar-info__burbuja--izquierda.is-location-step,
   .ptar-info__burbuja--derecha.is-location-step {
-    max-width: min(23vw, 180px);
-    font-size: clamp(10px, 1.35vw, 12px);
+    max-width: min(22vw, 164px);
+    font-size: clamp(9px, 1.18vw, 11px);
   }
 
   .ptar-info__burbuja--izquierda.is-location-step {

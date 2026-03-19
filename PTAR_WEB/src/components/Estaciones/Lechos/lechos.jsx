@@ -911,7 +911,7 @@ const PASOS_RECORRIDO = [
                 secoHeight: 70,
                 secoEscala: 2,
                 secoEscalaX: 1.2,
-                secoEscalaY: 0.45,
+                secoEscalaY: 0.456,
                 x: 28.56,
                 y: 66.5,
                 width: 19.9,
@@ -931,7 +931,7 @@ const PASOS_RECORRIDO = [
                 secoHeight: 70,
                 secoEscala: 2,
                 secoEscalaX: 1.2,
-                secoEscalaY: 0.45,
+                secoEscalaY: 0.456,
                 x: 42.7,
                 y: 66.5,
                 width: 19.9,
@@ -951,7 +951,7 @@ const PASOS_RECORRIDO = [
                 secoHeight: 70,
                 secoEscala: 2,
                 secoEscalaX: 1.2,
-                secoEscalaY: 0.45,
+                secoEscalaY: 0.456,
                 x: 56.2,
                 y: 66.5,
                 width: 19.9,
@@ -971,7 +971,7 @@ const PASOS_RECORRIDO = [
                 secoHeight: 70,
                 secoEscala: 2,
                 secoEscalaX: 1.2,
-                secoEscalaY: 0.45,
+                secoEscalaY: 0.456,
                 x: 70.1,
                 y: 66.5,
                 width: 19.9,
@@ -1797,3 +1797,5 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
 }
 
 export default Lechos
+
+

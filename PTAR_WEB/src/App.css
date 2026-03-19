@@ -102,6 +102,24 @@
   overflow: hidden;
 }
 
+.ptar-app.ptar-app--estacion :is(
+  .ptar-pre__contaminantes,
+  .ptar-are__contaminantes,
+  .ptar-are__contaminantes.is-flotante,
+  .ptar-sed__contaminantes,
+  .ptar-sed__contaminantes.is-grande,
+  .ptar-tam__contaminantes,
+  .ptar-fil__contaminantes,
+  .ptar-des__contaminantes
+) {
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.42);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 8px 18px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(4px);
+}
+
 @media (max-width: 1100px) {
   .ptar-app.ptar-app--estacion :is(
     .ptar-pre__contaminantes,
@@ -206,6 +224,22 @@
 }
 
 .ptar-app.ptar-app--estacion :is(
+  .ptar-pozo1__panel,
+  .ptar-pre__panel,
+  .ptar-are__panel,
+  .ptar-sed__panel,
+  .ptar-lec__panel,
+  .ptar-tam__panel,
+  .ptar-fil__panel,
+  .ptar-des__panel,
+  .ptar-alm__panel,
+  .ptar-pozo2__panel
+) {
+  container-type: inline-size;
+}
+
+.ptar-app.ptar-app--estacion :is(
+  .ptar-pozo1__panel,
   .ptar-pre__panel,
   .ptar-are__panel,
   .ptar-sed__panel,
@@ -223,6 +257,39 @@
   max-height: 100%;
   min-width: 0;
   min-height: 0;
+}
+
+.ptar-app.ptar-app--estacion :is(
+  .ptar-pozo1__avatar,
+  .ptar-pre__avatar,
+  .ptar-are__avatar,
+  .ptar-sed__avatar,
+  .ptar-lec__avatar,
+  .ptar-tam__avatar,
+  .ptar-fil__avatar,
+  .ptar-des__avatar,
+  .ptar-alm__avatar,
+  .ptar-pozo2__avatar
+) {
+  width: clamp(86px, 8.2cqi, 148px);
+}
+
+.ptar-app.ptar-app--estacion :is(
+  .ptar-pozo1__burbuja,
+  .ptar-pre__burbuja,
+  .ptar-are__burbuja,
+  .ptar-sed__burbuja,
+  .ptar-lec__burbuja,
+  .ptar-tam__burbuja,
+  .ptar-fil__burbuja,
+  .ptar-des__burbuja,
+  .ptar-alm__burbuja,
+  .ptar-pozo2__burbuja
+) {
+  max-width: min(28cqi, 410px);
+  padding: clamp(10px, 1.15cqi, 16px) clamp(14px, 1.55cqi, 22px);
+  font-size: clamp(12px, 1.32cqi, 24px);
+  line-height: 1.18;
 }
 
 
@@ -254,9 +321,10 @@
     .ptar-alm__burbuja,
     .ptar-pozo2__burbuja
   ) {
-    max-width: min(34vw, 390px);
-    padding: 12px 18px;
-    font-size: clamp(16px, 1.08vw, 22px);
+    max-width: min(31vw, 280px);
+    padding: clamp(7px, 1.6vh, 10px) clamp(11px, 1.8vw, 14px);
+    font-size: clamp(10px, 1.35vw, 13px);
+    line-height: 1.14;
   }
 
   .ptar-app.ptar-app--estacion :is(
@@ -271,9 +339,9 @@
     .ptar-alm__burbuja,
     .ptar-pozo2__burbuja
   )::before {
-    width: 9px;
-    height: 9px;
-    bottom: -14px;
+    width: 7px;
+    height: 7px;
+    bottom: -11px;
   }
 
   .ptar-app.ptar-app--estacion :is(
@@ -288,9 +356,9 @@
     .ptar-alm__burbuja,
     .ptar-pozo2__burbuja
   )::after {
-    width: 14px;
-    height: 14px;
-    bottom: -8px;
+    width: 11px;
+    height: 11px;
+    bottom: -6px;
   }
 
   .ptar-app.ptar-app--estacion :is(

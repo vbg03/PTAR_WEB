@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 
 const ASPECTO_ESCENA_DESKTOP = 16 / 9
+const ASPECTO_ESCENA_DESKTOP_MAX = 2.12
 const ASPECTO_ESCENA_MOVIL = 19.5 / 9
 const ANCHO_MAXIMO_MOVIL_LANDSCAPE = 950
 const ALTO_MAXIMO_MOVIL_LANDSCAPE = 450
@@ -25,7 +26,13 @@ export function useFixedSceneLayout() {
         width > height &&
         width <= ANCHO_MAXIMO_MOVIL_LANDSCAPE &&
         height <= ALTO_MAXIMO_MOVIL_LANDSCAPE
-      const aspectoEscena = esMovilLandscape ? ASPECTO_ESCENA_MOVIL : ASPECTO_ESCENA_DESKTOP
+      const aspectoViewport = width / height
+      const aspectoEscena = esMovilLandscape
+        ? ASPECTO_ESCENA_MOVIL
+        : Math.min(
+          Math.max(aspectoViewport, ASPECTO_ESCENA_DESKTOP),
+          ASPECTO_ESCENA_DESKTOP_MAX
+        )
 
       let anchoEscena = width
       let altoEscena = anchoEscena / aspectoEscena
