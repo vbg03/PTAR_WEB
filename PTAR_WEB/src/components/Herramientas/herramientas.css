@@ -373,7 +373,7 @@
   }
 }
 
-@media (max-width: 950px) and (max-height: 450px) and (orientation: landscape) {
+@media (max-width: 1180px) and (orientation: landscape) and (pointer: coarse) {
   .ptar-tools {
     left: auto;
     right: 12px;

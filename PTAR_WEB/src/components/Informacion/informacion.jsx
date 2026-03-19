@@ -2,6 +2,7 @@
 import { obtenerDireccionScrollPorGesto } from '../../utils/wheelStepNavigation'
 import { useCallback } from 'react'
 import { useNarracionVoces } from '../../hooks/useNarracionVoces'
+import { useEsNavegacionTactil } from '../../hooks/useEsNavegacionTactil'
 import './informacion.css'
 
 const ETAPA_BIENVENIDA = 0
@@ -37,6 +38,7 @@ const CONVERSACIONES = {
 }
 
 function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
+  const esNavegacionTactil = useEsNavegacionTactil()
   const etapaInicial = iniciarEnUbicacion ? ETAPA_UBICACION : ETAPA_BIENVENIDA
   const pasoUbicacionInicial = iniciarEnUbicacion
     ? PASO_UBICACION_PREGUNTA
@@ -240,8 +242,12 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
   const textoIndicacionScroll =
     etapaActual === ETAPA_UBICACION &&
     pasoConversacionUbicacion === PASO_UBICACION_PREGUNTA
-      ? 'Sigue con la rueda para ir a la estacion Pozo 1'
-      : 'Muevete usando la rueda del raton'
+      ? esNavegacionTactil
+        ? 'Desliza a la izquierda para seguir a Pozo 1'
+        : 'Sigue con la rueda para ir a la estacion Pozo 1'
+      : esNavegacionTactil
+        ? 'Desliza: izquierda avanza, derecha retrocede'
+        : 'Muevete usando la rueda del raton'
 
   const mostrarBurbujaBienvenida = etapaActual === ETAPA_BIENVENIDA
   const mostrarBurbujaTitulo = etapaActual === ETAPA_TITULO
@@ -577,8 +583,24 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
         ) : null}
 
         {mostrarIndicacionScroll ? (
-          <p className="ptar-info__hint-scroll" aria-live="polite">
-            {textoIndicacionScroll}
+          <p
+            className={`ptar-info__hint-scroll${esNavegacionTactil ? ' is-touch' : ''}`}
+            aria-live="polite"
+          >
+            {esNavegacionTactil ? (
+              <>
+                <span className="ptar-info__hint-gesture" aria-hidden="true">
+                  <img
+                    className="ptar-info__hint-gesture-icon"
+                    src="/images/dedo-click.png"
+                    alt=""
+                  />
+                </span>
+                <span className="ptar-info__hint-scroll-text">{textoIndicacionScroll}</span>
+              </>
+            ) : (
+              textoIndicacionScroll
+            )}
           </p>
         ) : null}
       </section>

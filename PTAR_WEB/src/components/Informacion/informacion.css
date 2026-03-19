@@ -364,6 +364,11 @@
   bottom: clamp(12px, 2.2vh, 22px);
   transform: translateX(-50%);
   margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: min(34vw, 420px);
   padding: 8px 14px;
   border-radius: 999px;
   background: rgba(231, 0, 50, 0.9);
@@ -375,6 +380,36 @@
   pointer-events: none;
   z-index: 9;
   animation: ptar-scroll-hint-soft 2.2s ease-in-out infinite;
+}
+
+.ptar-info__hint-scroll-text {
+  display: block;
+  line-height: 1.15;
+}
+
+.ptar-info__hint-scroll.is-touch {
+  max-width: min(38vw, 400px);
+  padding: 8px 16px 8px 12px;
+  text-align: left;
+}
+
+.ptar-info__hint-gesture {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.ptar-info__hint-gesture-icon {
+  width: 28px;
+  height: auto;
+  object-fit: contain;
+  animation: ptar-hint-swipe-left 1.7s ease-in-out infinite;
 }
 
 .ptar-info__bienvenida.is-transicion-activa {
@@ -476,6 +511,24 @@
   50% {
     opacity: 1;
     transform: translateX(-50%) translateY(-1px) scale(1.015);
+  }
+}
+
+@keyframes ptar-hint-swipe-left {
+  0%,
+  100% {
+    transform: translateX(7px) scale(0.96);
+    opacity: 0.82;
+  }
+
+  45% {
+    transform: translateX(-9px) scale(1);
+    opacity: 1;
+  }
+
+  70% {
+    transform: translateX(-3px) scale(0.98);
+    opacity: 0.92;
   }
 }
 
@@ -739,8 +792,12 @@
   }
 
   .ptar-info__hint-scroll {
-    width: min(90vw, 520px);
+    max-width: min(44vw, 340px);
     bottom: 10px;
+  }
+
+  .ptar-info__hint-scroll.is-touch {
+    max-width: min(46vw, 360px);
   }
 }
 
@@ -913,8 +970,24 @@
 
   .ptar-info__hint-scroll {
     bottom: 8px;
+    max-width: min(48vw, 320px);
     padding: 7px 12px;
     font-size: clamp(12px, 1vw, 15px);
+  }
+
+  .ptar-info__hint-scroll.is-touch {
+    max-width: min(50vw, 330px);
+    gap: 8px;
+    padding: 7px 12px 7px 10px;
+  }
+
+  .ptar-info__hint-gesture {
+    width: 28px;
+    height: 28px;
+  }
+
+  .ptar-info__hint-gesture-icon {
+    width: 22px;
   }
 }
 
@@ -1057,7 +1130,24 @@
   }
 
   .ptar-info__hint-scroll {
-    width: min(82vw, 420px);
+    max-width: min(66vw, 300px);
     font-size: 12px;
+    gap: 7px;
+    padding: 7px 10px;
+  }
+
+  .ptar-info__hint-scroll.is-touch {
+    max-width: min(68vw, 310px);
+    padding-left: 9px;
+  }
+
+  .ptar-info__hint-gesture {
+    width: 26px;
+    height: 26px;
+  }
+
+  .ptar-info__hint-gesture-icon {
+    width: 20px;
   }
 }
+

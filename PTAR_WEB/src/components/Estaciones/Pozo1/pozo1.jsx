@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
+import { useEsNavegacionTactil } from '../../../hooks/useEsNavegacionTactil'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
 import {
@@ -196,6 +197,7 @@ function obtenerPuntoEnPanel(event, panel) {
 }
 
 function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false }) {
+  const esNavegacionTactil = useEsNavegacionTactil()
   const [pasoActual, setPasoActual] = useState(() =>
     iniciarEnFinal ? PASOS_RECORRIDO.length - 1 : 0
   )
@@ -960,7 +962,9 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
 
         {pasoActual <= 1 ? (
           <p className="ptar-pozo1__hint" aria-live="polite">
-            Mueve la gota de agua con la rueda del raton
+            {esNavegacionTactil
+              ? 'Mueve la gota deslizando: izquierda avanza, derecha retrocede'
+              : 'Mueve la gota de agua con la rueda del raton'}
           </p>
         ) : null}
 

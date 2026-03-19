@@ -3,7 +3,7 @@ import './header.css'
 
 const UMBRAL_ACTIVACION_HEADER = 24
 const UMBRAL_OCULTAR_HEADER = 148
-const QUERY_HEADER_COMPACTO = '(max-width: 950px) and (max-height: 450px) and (orientation: landscape)'
+const QUERY_HEADER_COMPACTO = '(max-width: 1180px) and (orientation: landscape) and (pointer: coarse)'
 
 const estaciones = [
   'Pozo de Bombeo No. 1',
