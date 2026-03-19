@@ -7,6 +7,8 @@ import {
   emitirEventoConfiguracionAudio,
   leerVolumenDesdeStorage
 } from '../../utils/audioSettings'
+import { useEsNavegacionTactil } from '../../hooks/useEsNavegacionTactil'
+import { registrarNavegacionSwipeGlobal } from '../../utils/wheelStepNavigation'
 import './herramientas.css'
 
 function IconoPregunta() {
@@ -33,6 +35,7 @@ function IconoAudio() {
 
 function Herramientas() {
   const herramientasRef = useRef(null)
+  const esNavegacionTactil = useEsNavegacionTactil()
   const [mostrarInstrucciones, setMostrarInstrucciones] = useState(false)
   const [mostrarPanelAudio, setMostrarPanelAudio] = useState(false)
   const [volumenVoces, setVolumenVoces] = useState(() =>
@@ -61,6 +64,14 @@ function Herramientas() {
   useEffect(() => {
     emitirEventoConfiguracionAudio({ volumenVoces, volumenMusica })
   }, [volumenVoces, volumenMusica])
+
+  useEffect(() => {
+    if (!esNavegacionTactil || typeof window === 'undefined') {
+      return undefined
+    }
+
+    return registrarNavegacionSwipeGlobal(window)
+  }, [esNavegacionTactil])
 
   useEffect(() => {
     if (!mostrarInstrucciones) {
@@ -109,7 +120,7 @@ function Herramientas() {
 
   return (
     <>
-      <aside className="ptar-tools" aria-label="Herramientas de navegación" ref={herramientasRef}>
+      <aside className="ptar-tools" aria-label="Herramientas de navegacion" ref={herramientasRef}>
         <button
           type="button"
           className={`ptar-tools__button${mostrarInstrucciones ? ' ptar-tools__button--activa' : ''}`}
@@ -150,7 +161,7 @@ function Herramientas() {
             />
 
             <label className="ptar-tools__slider-field" htmlFor="ptar-volumen-musica">
-              <span>Música</span>
+              <span>Musica</span>
               <output>{volumenMusica}%</output>
             </label>
             <input
@@ -161,7 +172,6 @@ function Herramientas() {
               value={volumenMusica}
               onChange={(event) => setVolumenMusica(Number(event.target.value))}
             />
-
           </section>
         ) : null}
       </aside>
@@ -187,16 +197,19 @@ function Herramientas() {
 
             <h2 id="ptar-help-title">Instrucciones</h2>
             <ul>
-              <li>Usa la rueda del ratón para avanzar o retroceder en el recorrido.</li>
-              <li>
-                En touchpad de portátil: desliza dos dedos hacia abajo para ir a la
-                derecha.
-              </li>
-              <li>
-                En touchpad de portátil: desliza dos dedos hacia arriba para ir a la
-                izquierda.
-              </li>
-              <li>Si el gesto no responde en tu equipo, usa un ratón externo.</li>
+              {esNavegacionTactil ? (
+                <>
+                  <li>Desliza un dedo hacia la izquierda para avanzar en el recorrido.</li>
+                  <li>Desliza un dedo hacia la derecha para retroceder al paso anterior.</li>
+                </>
+              ) : (
+                <>
+                  <li>Usa la rueda del raton para avanzar o retroceder en el recorrido.</li>
+                  <li>En touchpad de portatil: desliza dos dedos hacia abajo para avanzar.</li>
+                  <li>En touchpad de portatil: desliza dos dedos hacia arriba para retroceder.</li>
+                  <li>Si el gesto no responde en tu equipo, usa un raton externo.</li>
+                </>
+              )}
               <li>
                 Puedes abrir esta ayuda y los controles de sonido desde los botones del
                 lateral izquierdo.

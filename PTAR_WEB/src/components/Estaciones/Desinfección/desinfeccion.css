@@ -701,6 +701,13 @@
   max-height: 78vh;
 }
 
+.ptar-des__video-player--iframe {
+  border: none;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  background: #000;
+}
+
 .ptar-des__modal-close {
   position: absolute;
   top: 10px;

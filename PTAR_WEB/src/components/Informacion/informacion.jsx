@@ -2,6 +2,7 @@
 import { obtenerDireccionScrollPorGesto } from '../../utils/wheelStepNavigation'
 import { useCallback } from 'react'
 import { useNarracionVoces } from '../../hooks/useNarracionVoces'
+import { useEsNavegacionTactil } from '../../hooks/useEsNavegacionTactil'
 import './informacion.css'
 
 const ETAPA_BIENVENIDA = 0
@@ -16,6 +17,11 @@ const PASO_UBICACION_RESPUESTA = 0
 const PASO_UBICACION_PREGUNTA = 1
 const DURACION_TRANSICION_ETAPA = 520
 const DURACION_TRANSICION_POZO = 1480
+const VIDEO_INICIAL_YOUTUBE_ID = 'AJVGGiLtAo8'
+const VIDEO_INICIAL_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_INICIAL_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
+const VIDEO_UBICACION_YOUTUBE_ID = '2VKo5IrmLqs'
+const VIDEO_UBICACION_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_UBICACION_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
+const VIDEO_UBICACION_POSTER = '/images/ubicacion1.png'
 
 const CONVERSACIONES = {
   bienvenida:
@@ -32,6 +38,7 @@ const CONVERSACIONES = {
 }
 
 function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
+  const esNavegacionTactil = useEsNavegacionTactil()
   const etapaInicial = iniciarEnUbicacion ? ETAPA_UBICACION : ETAPA_BIENVENIDA
   const pasoUbicacionInicial = iniciarEnUbicacion
     ? PASO_UBICACION_PREGUNTA
@@ -235,8 +242,12 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
   const textoIndicacionScroll =
     etapaActual === ETAPA_UBICACION &&
     pasoConversacionUbicacion === PASO_UBICACION_PREGUNTA
-      ? 'Sigue con la rueda para ir a la estacion Pozo 1'
-      : 'Muevete usando la rueda del raton'
+      ? esNavegacionTactil
+        ? 'Desliza a la izquierda para seguir a Pozo 1'
+        : 'Sigue con la rueda para ir a la estacion Pozo 1'
+      : esNavegacionTactil
+        ? 'Desliza: izquierda avanza, derecha retrocede'
+        : 'Muevete usando la rueda del raton'
 
   const mostrarBurbujaBienvenida = etapaActual === ETAPA_BIENVENIDA
   const mostrarBurbujaTitulo = etapaActual === ETAPA_TITULO
@@ -318,6 +329,8 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
         <aside
           key={`info-izq-${etapaActual}-${pasoConversacionVideo}-${pasoConversacionUbicacion}-${textoBurbujaIzquierda}`}
           className={`ptar-info__burbuja ptar-info__burbuja--izquierda ptar-info__burbuja--blanca ${
+            mostrarBurbujaTitulo ? 'is-title-step' : ''
+          } ${
             mostrarBurbujaVideoPregunta ? 'is-video-step' : ''
           } ${mostrarBurbujaUbicacionPregunta ? 'is-location-step' : ''} ${
             mostrarBurbujaTitulo ||
@@ -411,7 +424,7 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
 
               <div className="ptar-info__recorrido-wrap">
                 <div className="ptar-info__video-preview ptar-info__video-preview--recorrido">
-                  <img src="/images/video1.png" alt="Vista previa del recorrido a la PTAR" />
+                  <img src={VIDEO_UBICACION_POSTER} alt="Vista previa del recorrido a la PTAR" />
                   <button
                     type="button"
                     className="ptar-info__play-button"
@@ -455,6 +468,10 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
         <aside
           key={`info-der-${etapaActual}-${pasoConversacionVideo}-${pasoConversacionUbicacion}-${textoBurbujaDerecha}`}
           className={`ptar-info__burbuja ptar-info__burbuja--derecha ptar-info__burbuja--roja ${
+            mostrarBurbujaBienvenida ? 'is-welcome-step' : ''
+          } ${
+            mostrarBurbujaVideoSiglas || mostrarBurbujaVideoExplicacion ? 'is-video-step' : ''
+          } ${
             mostrarBurbujaUbicacionRespuesta ? 'is-location-step' : ''
           } ${
             (mostrarResumen && mostrarBloqueVideo) ||
@@ -503,15 +520,13 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
               >
                 ×
               </button>
-              <video
-                className="ptar-info__video-player"
-                controls
-                autoPlay
-                poster="/images/video1.png"
-              >
-                <source src="/videos/ptar.mp4" type="video/mp4" />
-                Tu navegador no soporta este reproductor.
-              </video>
+              <iframe
+                className="ptar-info__video-player ptar-info__video-player--iframe"
+                title="Video introductorio de la PTAR"
+                src={VIDEO_INICIAL_EMBED_URL}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
             </div>
           </div>
         ) : null}
@@ -538,15 +553,13 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
               >
                 ×
               </button>
-              <video
-                className="ptar-info__video-player"
-                controls
-                autoPlay
-                poster="/images/video1.png"
-              >
-                <source src="/videos/ptar.mp4" type="video/mp4" />
-                Tu navegador no soporta este reproductor.
-              </video>
+              <iframe
+                className="ptar-info__video-player ptar-info__video-player--iframe"
+                title="Video del recorrido hacia la PTAR"
+                src={VIDEO_UBICACION_EMBED_URL}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
             </div>
           </div>
         ) : null}
@@ -570,8 +583,24 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
         ) : null}
 
         {mostrarIndicacionScroll ? (
-          <p className="ptar-info__hint-scroll" aria-live="polite">
-            {textoIndicacionScroll}
+          <p
+            className={`ptar-info__hint-scroll${esNavegacionTactil ? ' is-touch' : ''}`}
+            aria-live="polite"
+          >
+            {esNavegacionTactil ? (
+              <>
+                <span className="ptar-info__hint-gesture" aria-hidden="true">
+                  <img
+                    className="ptar-info__hint-gesture-icon"
+                    src="/images/dedo-click.png"
+                    alt=""
+                  />
+                </span>
+                <span className="ptar-info__hint-scroll-text">{textoIndicacionScroll}</span>
+              </>
+            ) : (
+              textoIndicacionScroll
+            )}
           </p>
         ) : null}
       </section>

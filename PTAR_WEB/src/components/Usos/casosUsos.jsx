@@ -13,26 +13,34 @@ const RETRASO_ENTRADA_BURBUJA = 22
 const TEXTO_BURBUJA_JARDINES =
   'Y segundo, zonas verdes del campus, como los jardines externos. Es una forma de hacer mas sostenible el uso de los recursos.'
 const RUTA_AUDIO_BURBUJA_JARDINES = '/voces/rojo/Usos/Jessica_Usos_003.mp3'
+const VIDEO_CANCHAS_YOUTUBE_ID = 'MsnByyq5bjo'
+const VIDEO_CANCHAS_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_CANCHAS_YOUTUBE_ID}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${VIDEO_CANCHAS_YOUTUBE_ID}&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
+const VIDEO_JARDINES_YOUTUBE_ID = 'd-3BLsPlAgY'
+const VIDEO_JARDINES_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_JARDINES_YOUTUBE_ID}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${VIDEO_JARDINES_YOUTUBE_ID}&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
+const VIDEO_REFLEXION_YOUTUBE_ID = 'BlmTnuo4tCE'
+const VIDEO_REFLEXION_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_REFLEXION_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 
 const MEDIAS = {
   canchas: {
     titulo: 'RIEGO DE CANCHAS',
     portada: '/images/casos/canchas.jpg',
-    video: '/videos/ptar.mp4',
+    embedUrl: VIDEO_CANCHAS_EMBED_URL,
+    reproducirInline: true,
     resumen:
       'El agua tratada se reutiliza para el riego de canchas y zonas deportivas del campus, reduciendo el consumo de agua potable.'
   },
   jardines: {
     titulo: 'RIEGO DE JARDINES',
     portada: '/images/casos/jardines.jpg',
-    video: '/videos/ptar.mp4',
+    embedUrl: VIDEO_JARDINES_EMBED_URL,
+    reproducirInline: true,
     resumen:
       'Tambien se usa para jardines y zonas verdes externas, haciendo mas sostenible la gestion del agua dentro de la universidad.'
   },
   reflexion: {
     titulo: 'REFLEXION FINAL',
     portada: '/images/casos/reflexion.jpg',
-    video: '/videos/ptar.mp4',
+    embedUrl: VIDEO_REFLEXION_EMBED_URL,
     resumen:
       'La PTAR permite limpiar y reutilizar parte del agua en el campus, y devolver el resto al rio en mejores condiciones.'
   }
@@ -136,6 +144,7 @@ function CasosUsos({ onVolverAPozo2, onCompletarUsos, iniciarEnFinal = false }) 
 
   const paso = PASOS_RECORRIDO[pasoActual]
   const mediaActiva = paso.mediaId ? MEDIAS[paso.mediaId] : null
+  const mediaModal = mediaActiva ?? mediaRenderizada
   const indiceAudioIzquierda =
     burbujaIzquierdaVisible && paso.burbujaIzquierda
       ? INDICES_AUDIO_BLANCO[pasoActual]
@@ -439,20 +448,32 @@ function CasosUsos({ onVolverAPozo2, onCompletarUsos, iniciarEnFinal = false }) 
         {mediaRenderizada ? (
           <div className={`ptar-usos__media ${mediaVisible ? 'is-visible' : ''}`}>
             <div className="ptar-usos__media-track">
-              <button
-                type="button"
-                className="ptar-usos__video-preview"
-                onClick={() => setAbrirReproductor(true)}
-                aria-label={`Abrir video de ${mediaRenderizada.titulo.toLowerCase()}`}
-              >
-                <img
-                  src={mediaRenderizada.portada}
-                  alt={`Vista previa de ${mediaRenderizada.titulo.toLowerCase()}`}
-                />
-                <span className="ptar-usos__play-icon" aria-hidden="true">
-                  &#9654;
-                </span>
-              </button>
+              {mediaRenderizada.reproducirInline ? (
+                <div className="ptar-usos__video-preview ptar-usos__video-preview--inline">
+                  <iframe
+                    className="ptar-usos__video-inline-player"
+                    title={`Video de ${mediaRenderizada.titulo.toLowerCase()}`}
+                    src={mediaRenderizada.embedUrl}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="ptar-usos__video-preview"
+                  onClick={() => setAbrirReproductor(true)}
+                  aria-label={`Abrir video de ${mediaRenderizada.titulo.toLowerCase()}`}
+                >
+                  <img
+                    src={mediaRenderizada.portada}
+                    alt={`Vista previa de ${mediaRenderizada.titulo.toLowerCase()}`}
+                  />
+                  <span className="ptar-usos__play-icon" aria-hidden="true">
+                    &#9654;
+                  </span>
+                </button>
+              )}
 
               <div className="ptar-usos__resumen-wrap">
                 <button
@@ -503,7 +524,7 @@ function CasosUsos({ onVolverAPozo2, onCompletarUsos, iniciarEnFinal = false }) 
           </aside>
         ) : null}
 
-        {abrirReproductor && mediaRenderizada ? (
+        {abrirReproductor && mediaModal ? (
           <div className="ptar-usos__modal" role="dialog" aria-modal="true" aria-label="Reproductor de video">
             <button
               type="button"
@@ -520,10 +541,20 @@ function CasosUsos({ onVolverAPozo2, onCompletarUsos, iniciarEnFinal = false }) 
               >
                 x
               </button>
-              <video className="ptar-usos__video-player" controls autoPlay poster={mediaRenderizada.portada}>
-                <source src={mediaRenderizada.video} type="video/mp4" />
-                Tu navegador no soporta este reproductor.
-              </video>
+              {mediaModal.embedUrl ? (
+                <iframe
+                  className="ptar-usos__video-player ptar-usos__video-player--iframe"
+                  title={`Video de ${mediaModal.titulo.toLowerCase()}`}
+                  src={mediaModal.embedUrl}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              ) : (
+                <video className="ptar-usos__video-player" controls autoPlay poster={mediaModal.portada}>
+                  <source src={mediaModal.video} type="video/mp4" />
+                  Tu navegador no soporta este reproductor.
+                </video>
+              )}
             </div>
           </div>
         ) : null}

@@ -3,6 +3,7 @@ import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigati
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
+import { useFixedSceneLayout } from '../../../hooks/useFixedSceneLayout'
 import './pretratamiento.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -18,6 +19,8 @@ const UMBRAL_RETORNO_CANASTA = 3.5
 const DURACION_AUTOAVANCE_CANASTA = 460
 const DURACION_AUTOAVANCE_ARENA = 420
 const DURACION_AUTOAVANCE_GRASAS = 720
+const VIDEO_PRETRATAMIENTO_YOUTUBE_ID = 'ieVJGjDm6-g'
+const VIDEO_PRETRATAMIENTO_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_PRETRATAMIENTO_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 
 const VISTA_LATERAL = '/svg/recorrido-pozo-pretratamiento.svg'
 const VISTA_SUPERIOR = '/svg/pretratamiento.svg'
@@ -888,10 +891,12 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
     }, [])
 
     const camaraActiva = obtenerCamaraActivaPaso()
+    const { viewportRef, estiloEscenaFija } = useFixedSceneLayout()
     const estiloPanel = {
         '--cam-x': `${camaraActiva.camaraX}%`,
         '--cam-y': `${camaraActiva.camaraY}%`,
-        '--cam-zoom': `${camaraActiva.zoom}`
+        '--cam-zoom': `${camaraActiva.zoom}`,
+        ...(estiloEscenaFija ?? {})
     }
     const estiloEscena = useMemo(
         () => ({
@@ -1032,7 +1037,7 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
     )
 
     return (
-        <main className="ptar-pre">
+        <main className="ptar-pre" ref={viewportRef}>
             <section
                 className="ptar-pre__panel"
                 style={estiloPanel}
@@ -1323,10 +1328,13 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
                             >
                                 ×
                             </button>
-                            <video className="ptar-pre__video-player" controls autoPlay poster="/images/pretratamiento/pretratamiento.jpg">
-                                <source src="/videos/ptar.mp4" type="video/mp4" />
-                                Tu navegador no soporta este reproductor.
-                            </video>
+                            <iframe
+                                className="ptar-pre__video-player ptar-pre__video-player--iframe"
+                                title="Video introductorio del pretratamiento"
+                                src={VIDEO_PRETRATAMIENTO_EMBED_URL}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                            />
                         </div>
                     </div>
                 ) : null}
@@ -1353,10 +1361,13 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
                             >
                                 ×
                             </button>
-                            <video className="ptar-pre__video-player" controls autoPlay poster="/images/pretratamiento/pretratamiento.jpg">
-                                <source src="/videos/ptar.mp4" type="video/mp4" />
-                                Tu navegador no soporta este reproductor.
-                            </video>
+                            <iframe
+                                className="ptar-pre__video-player ptar-pre__video-player--iframe"
+                                title="Video del pretratamiento"
+                                src={VIDEO_PRETRATAMIENTO_EMBED_URL}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                            />
                         </div>
                     </div>
                 ) : null}

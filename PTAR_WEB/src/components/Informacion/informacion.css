@@ -17,6 +17,7 @@
   align-items: center;
   overflow: hidden;
   transform-origin: center center;
+  container-type: inline-size;
 }
 
 .ptar-info__titulos {
@@ -82,6 +83,8 @@
   position: relative;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  min-width: 0;
   transition: transform 300ms ease;
 }
 
@@ -114,6 +117,10 @@
   align-items: start;
 }
 
+.ptar-info__ubicacion-track > * {
+  min-width: 0;
+}
+
 .ptar-info__mapa {
   border: 3px solid #7a001b;
   border-radius: 24px;
@@ -134,6 +141,8 @@
   position: relative;
   display: flex;
   justify-content: flex-start;
+  min-width: 0;
+  width: min(38vw, 500px);
 }
 
 .ptar-info__video-preview {
@@ -157,11 +166,12 @@
 }
 
 .ptar-info__video-preview--recorrido img {
-  width: min(38vw, 500px);
+  width: 100%;
   aspect-ratio: 4 / 3;
 }
 
 .ptar-info__video-preview--recorrido {
+  width: 100%;
   cursor: default;
 }
 
@@ -309,6 +319,13 @@
   max-height: 78vh;
 }
 
+.ptar-info__video-player--iframe {
+  border: none;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  background: #000;
+}
+
 .ptar-info__modal-close {
   position: absolute;
   top: 10px;
@@ -328,7 +345,7 @@
 .ptar-info__personaje {
   position: absolute;
   bottom: 0;
-  height: clamp(200px, 40vw, 340px);
+  height: clamp(126px, 20cqi, 340px);
   width: auto;
   pointer-events: none;
 }
@@ -347,6 +364,11 @@
   bottom: clamp(12px, 2.2vh, 22px);
   transform: translateX(-50%);
   margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: min(34vw, 420px);
   padding: 8px 14px;
   border-radius: 999px;
   background: rgba(231, 0, 50, 0.9);
@@ -358,6 +380,36 @@
   pointer-events: none;
   z-index: 9;
   animation: ptar-scroll-hint-soft 2.2s ease-in-out infinite;
+}
+
+.ptar-info__hint-scroll-text {
+  display: block;
+  line-height: 1.15;
+}
+
+.ptar-info__hint-scroll.is-touch {
+  max-width: min(38vw, 400px);
+  padding: 8px 16px 8px 12px;
+  text-align: left;
+}
+
+.ptar-info__hint-gesture {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.ptar-info__hint-gesture-icon {
+  width: 28px;
+  height: auto;
+  object-fit: contain;
+  animation: ptar-hint-swipe-left 1.7s ease-in-out infinite;
 }
 
 .ptar-info__bienvenida.is-transicion-activa {
@@ -462,6 +514,24 @@
   }
 }
 
+@keyframes ptar-hint-swipe-left {
+  0%,
+  100% {
+    transform: translateX(7px) scale(0.96);
+    opacity: 0.82;
+  }
+
+  45% {
+    transform: translateX(-9px) scale(1);
+    opacity: 1;
+  }
+
+  70% {
+    transform: translateX(-3px) scale(0.98);
+    opacity: 0.92;
+  }
+}
+
 @keyframes ptar-info-burbuja {
   from {
     opacity: 0;
@@ -544,12 +614,12 @@
 
 .ptar-info__burbuja {
   position: absolute;
-  max-width: min(34vw, 360px);
+  max-width: min(24cqi, 360px);
   border-radius: 999px;
-  padding: 14px 22px;
-  font-size: clamp(18px, 1.2vw, 24px);
+  padding: clamp(10px, 1.2cqi, 14px) clamp(14px, 1.5cqi, 22px);
+  font-size: clamp(12px, 1.35cqi, 24px);
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.18;
   text-align: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   opacity: 0;
@@ -633,9 +703,9 @@
 .ptar-info__burbuja--izquierda.is-location-step {
   left: clamp(40px, 4vw, 74px);
   bottom: clamp(12px, 2vh, 30px);
-  max-width: min(30vw, 390px);
-  padding: 10px 16px;
-  font-size: clamp(15px, 1.15vw, 21px);
+  max-width: min(22cqi, 390px);
+  padding: clamp(8px, 1cqi, 10px) clamp(12px, 1.3cqi, 16px);
+  font-size: clamp(11px, 1.18cqi, 21px);
 }
 
 
@@ -647,9 +717,9 @@
 .ptar-info__burbuja--derecha.is-location-step {
   right: clamp(70px, 8vw, 140px);
   bottom: clamp(14px, 2.4vh, 34px);
-  max-width: min(29vw, 360px);
-  padding: 10px 16px;
-  font-size: clamp(15px, 1.15vw, 21px);
+  max-width: min(22cqi, 360px);
+  padding: clamp(8px, 1cqi, 10px) clamp(12px, 1.3cqi, 16px);
+  font-size: clamp(11px, 1.18cqi, 21px);
 }
 
 @media (max-width: 1100px) {
@@ -722,7 +792,362 @@
   }
 
   .ptar-info__hint-scroll {
-    width: min(90vw, 520px);
+    max-width: min(44vw, 340px);
     bottom: 10px;
   }
+
+  .ptar-info__hint-scroll.is-touch {
+    max-width: min(46vw, 360px);
+  }
 }
+
+@media (max-width: 1180px) and (orientation: landscape) {
+  .ptar-info {
+    padding: 0 14px 0;
+  }
+
+  .ptar-info__titulos {
+    top: 6%;
+    width: min(100%, 900px);
+    min-height: clamp(90px, 14vh, 160px);
+  }
+
+  .ptar-info__titulo {
+    font-size: clamp(52px, 6vw, 90px);
+  }
+
+  .ptar-info__media {
+    width: min(88vw, 920px);
+    margin-top: clamp(92px, 12vh, 126px);
+  }
+
+  .ptar-info__video-preview img {
+    width: min(52vw, 520px);
+  }
+
+  .ptar-info__media-track.is-summary-open {
+    transform: translateX(clamp(-110px, -7vw, -68px));
+  }
+
+  .ptar-info__resumen-wrap {
+    position: absolute;
+    top: 0;
+    left: calc(100% + 14px);
+    margin-top: 0;
+    gap: 8px;
+  }
+
+  .ptar-info__resumen {
+    width: min(26vw, 250px);
+    padding: 12px 14px;
+  }
+
+  .ptar-info__resumen h3 {
+    font-size: 22px;
+  }
+
+  .ptar-info__resumen p {
+    font-size: 15px;
+  }
+
+  .ptar-info__ubicacion {
+    width: min(90vw, 940px);
+    margin-top: clamp(70px, 9vh, 92px);
+  }
+
+  .ptar-info__ubicacion-track {
+    width: min(90vw, 900px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+    gap: 18px;
+    align-items: center;
+  }
+
+  .ptar-info__mapa {
+    width: min(39vw, 350px);
+    max-height: min(68vh, 320px);
+    border-radius: 18px;
+  }
+
+  .ptar-info__video-preview--recorrido img {
+    width: min(34vw, 350px);
+  }
+
+  .ptar-info__recorrido-wrap {
+    width: min(34vw, 350px);
+  }
+
+  .ptar-info__resumen-wrap--recorrido {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    left: auto;
+    margin-top: 0;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .ptar-info__resumen--recorrido {
+    width: min(24vw, 240px);
+  }
+
+  .ptar-info__resumen-toggle {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+  }
+
+  .ptar-info__personaje {
+    height: clamp(150px, 28vh, 250px);
+  }
+
+  .ptar-info__burbuja {
+    max-width: min(28vw, 300px);
+    padding: 10px 16px;
+    font-size: clamp(13px, 1vw, 17px);
+    line-height: 1.14;
+  }
+
+  .ptar-info__burbuja--izquierda,
+  .ptar-info__burbuja--derecha {
+    transform: translateY(14px) scale(0.96);
+  }
+
+  .ptar-info__burbuja.is-visible {
+    transform: translateY(0) scale(1);
+  }
+
+  .ptar-info__burbuja--izquierda {
+    left: clamp(72px, 7vw, 104px);
+    right: auto;
+    bottom: clamp(28px, 3.8vh, 72px);
+  }
+
+  .ptar-info__burbuja--derecha {
+    left: auto;
+    right: clamp(76px, 7vw, 132px);
+    bottom: clamp(28px, 3.8vh, 72px);
+  }
+
+  .ptar-info__burbuja--izquierda.is-title-step {
+    bottom: clamp(34px, 4.2vh, 84px);
+  }
+
+  .ptar-info__burbuja--derecha.is-welcome-step {
+    right: clamp(84px, 8vw, 140px);
+    bottom: clamp(58px, 8.5vh, 104px);
+    max-width: min(26vw, 280px);
+  }
+
+  .ptar-info__burbuja--izquierda.is-video-step {
+    left: clamp(72px, 7vw, 104px);
+    bottom: clamp(34px, 4.4vh, 84px);
+  }
+
+  .ptar-info__burbuja--derecha.is-video-step {
+    right: clamp(10px, 1.4vw, 20px);
+    bottom: clamp(22px, 3vh, 46px);
+    max-width: min(22vw, 220px);
+  }
+
+  .ptar-info__burbuja--izquierda.is-location-step {
+    left: clamp(10px, 1.4vw, 20px);
+    right: auto;
+    bottom: clamp(6px, 0.8vh, 14px);
+    max-width: min(24vw, 250px);
+    padding: 8px 12px;
+    font-size: clamp(11px, 0.92vw, 15px);
+  }
+
+  .ptar-info__burbuja--derecha.is-location-step {
+    left: auto;
+    right: clamp(10px, 1.4vw, 20px);
+    bottom: clamp(6px, 0.8vh, 14px);
+    max-width: min(24vw, 250px);
+    padding: 8px 12px;
+    font-size: clamp(11px, 0.92vw, 15px);
+  }
+
+  .ptar-info__hint-scroll {
+    bottom: 8px;
+    max-width: min(48vw, 320px);
+    padding: 7px 12px;
+    font-size: clamp(12px, 1vw, 15px);
+  }
+
+  .ptar-info__hint-scroll.is-touch {
+    max-width: min(50vw, 330px);
+    gap: 8px;
+    padding: 7px 12px 7px 10px;
+  }
+
+  .ptar-info__hint-gesture {
+    width: 28px;
+    height: 28px;
+  }
+
+  .ptar-info__hint-gesture-icon {
+    width: 22px;
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .ptar-info__titulos {
+    top: 4%;
+    width: min(100%, 760px);
+  }
+
+  .ptar-info__titulo {
+    font-size: clamp(42px, 5.8vw, 66px);
+  }
+
+  .ptar-info__media {
+    width: min(86vw, 760px);
+    margin-top: clamp(76px, 10vh, 100px);
+  }
+
+  .ptar-info__video-preview img {
+    width: min(50vw, 420px);
+  }
+
+  .ptar-info__resumen {
+    width: min(28vw, 210px);
+    padding: 10px 12px;
+  }
+
+  .ptar-info__resumen h3 {
+    font-size: 18px;
+  }
+
+  .ptar-info__resumen p {
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  .ptar-info__ubicacion {
+    width: min(88vw, 760px);
+    margin-top: clamp(52px, 6.8vh, 70px);
+  }
+
+  .ptar-info__ubicacion-track {
+    width: min(88vw, 740px);
+    gap: 14px;
+  }
+
+  .ptar-info__mapa {
+    width: min(36vw, 280px);
+    max-height: min(62vh, 250px);
+    border-radius: 16px;
+  }
+
+  .ptar-info__video-preview--recorrido img {
+    width: min(33vw, 268px);
+  }
+
+  .ptar-info__recorrido-wrap {
+    width: min(33vw, 268px);
+  }
+
+  .ptar-info__resumen-wrap {
+    position: absolute;
+    top: 0;
+    left: calc(100% + 10px);
+    margin-top: 0;
+  }
+
+  .ptar-info__resumen-wrap--recorrido {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    left: auto;
+    margin-top: 0;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .ptar-info__personaje {
+    height: clamp(126px, 24vh, 190px);
+  }
+
+  .ptar-info__burbuja {
+    max-width: min(28vw, 200px);
+    padding: clamp(6px, 1.4vh, 8px) clamp(10px, 1.7vw, 12px);
+    font-size: clamp(9px, 1.28vw, 12px);
+    line-height: 1.12;
+  }
+
+  .ptar-info__burbuja--izquierda,
+  .ptar-info__burbuja--derecha {
+    transform: translateY(14px) scale(0.96);
+  }
+
+  .ptar-info__burbuja.is-visible {
+    transform: translateY(0) scale(1);
+  }
+
+  .ptar-info__burbuja--izquierda {
+    left: clamp(52px, 7vw, 76px);
+    right: auto;
+  }
+
+  .ptar-info__burbuja--derecha {
+    left: auto;
+    right: clamp(52px, 7vw, 92px);
+  }
+
+  .ptar-info__burbuja--izquierda.is-title-step {
+    bottom: clamp(28px, 4vh, 56px);
+  }
+
+  .ptar-info__burbuja--derecha.is-welcome-step {
+    right: clamp(52px, 6vw, 88px);
+    bottom: clamp(48px, 9vh, 82px);
+    max-width: min(26vw, 190px);
+  }
+
+  .ptar-info__burbuja--derecha.is-video-step {
+    right: 4px;
+    bottom: clamp(16px, 2.4vh, 28px);
+    max-width: min(21vw, 156px);
+  }
+
+  .ptar-info__burbuja--izquierda.is-location-step,
+  .ptar-info__burbuja--derecha.is-location-step {
+    max-width: min(22vw, 164px);
+    font-size: clamp(9px, 1.18vw, 11px);
+  }
+
+  .ptar-info__burbuja--izquierda.is-location-step {
+    left: 6px;
+    right: auto;
+    bottom: 4px;
+  }
+
+  .ptar-info__burbuja--derecha.is-location-step {
+    left: auto;
+    right: 4px;
+    bottom: 4px;
+  }
+
+  .ptar-info__hint-scroll {
+    max-width: min(66vw, 300px);
+    font-size: 12px;
+    gap: 7px;
+    padding: 7px 10px;
+  }
+
+  .ptar-info__hint-scroll.is-touch {
+    max-width: min(68vw, 310px);
+    padding-left: 9px;
+  }
+
+  .ptar-info__hint-gesture {
+    width: 26px;
+    height: 26px;
+  }
+
+  .ptar-info__hint-gesture-icon {
+    width: 20px;
+  }
+}
+

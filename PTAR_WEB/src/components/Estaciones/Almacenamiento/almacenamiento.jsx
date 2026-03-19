@@ -3,6 +3,7 @@ import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigati
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
+import { useFixedSceneLayout } from '../../../hooks/useFixedSceneLayout'
 import './almacenamiento.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -10,6 +11,8 @@ const VALOR_MIN_CAMARA = -120
 const VALOR_MAX_CAMARA = 220
 const ZOOM_MIN_CAMARA = 0.2
 const ZOOM_MAX_CAMARA = 12
+const VIDEO_ALMACENAMIENTO_YOUTUBE_ID = 'GjRI-8puvas'
+const VIDEO_ALMACENAMIENTO_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_ALMACENAMIENTO_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 
 const ESCENA_ALMACENAMIENTO = '/svg/desinfeccion-almacenamiento.svg'
 
@@ -388,10 +391,12 @@ function Almacenamiento({ onVolverADesinfeccion, onCompletarAlmacenamiento, inic
     }, [])
 
     const camaraActiva = obtenerCamaraActivaPaso()
+    const { viewportRef, estiloEscenaFija } = useFixedSceneLayout()
     const estiloPanel = {
         '--cam-x': `${camaraActiva.camaraX}%`,
         '--cam-y': `${camaraActiva.camaraY}%`,
-        '--cam-zoom': `${camaraActiva.zoom}`
+        '--cam-zoom': `${camaraActiva.zoom}`,
+        ...(estiloEscenaFija ?? {})
     }
     const estiloEscena = useMemo(
         () => ({
@@ -406,7 +411,7 @@ function Almacenamiento({ onVolverADesinfeccion, onCompletarAlmacenamiento, inic
     }
 
     return (
-        <main className="ptar-alm">
+        <main className="ptar-alm" ref={viewportRef}>
             <section className="ptar-alm__panel" style={estiloPanel} aria-label="Estacion de almacenamiento">
                 <div className="ptar-alm__escena" style={estiloEscena} aria-hidden="true" />
                 <div className="ptar-alm__capa-escena" aria-hidden="true" />
@@ -561,10 +566,13 @@ function Almacenamiento({ onVolverADesinfeccion, onCompletarAlmacenamiento, inic
                             >
                                 x
                             </button>
-                            <video className="ptar-alm__video-player" controls autoPlay poster="/images/almacenamiento/almacenamiento.jpg">
-                                <source src="/videos/ptar.mp4" type="video/mp4" />
-                                Tu navegador no soporta este reproductor.
-                            </video>
+                            <iframe
+                                className="ptar-alm__video-player ptar-alm__video-player--iframe"
+                                title="Video de almacenamiento"
+                                src={VIDEO_ALMACENAMIENTO_EMBED_URL}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                            />
                         </div>
                     </div>
                 ) : null}

@@ -62,6 +62,7 @@
   --relleno-escala-y: 1;
   position: absolute;
   overflow: hidden;
+  clip-path: inset(0);
   transform: translate(-50%, -50%) scale(var(--relleno-escala-x), var(--relleno-escala-y));
   transform-origin: center center;
   transition:
@@ -522,7 +523,7 @@
   position: absolute;
   left: 74%;
   top: 62%;
-  width: clamp(120px, 10vw, 210px);
+  width: clamp(96px, 11cqi, 210px);
   transform: translate(-50%, -50%);
   z-index: 12;
   pointer-events: none;
@@ -945,6 +946,13 @@
   max-height: 78vh;
 }
 
+.ptar-lec__video-player--iframe {
+  border: none;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  background: #000;
+}
+
 .ptar-lec__modal-close {
   position: absolute;
   top: 10px;
@@ -1161,8 +1169,9 @@
 
   .ptar-lec__lombricompostaje {
     left: 70%;
-    top: 50%;
-    width: clamp(96px, 28vw, 150px);
+    top: 35%;
+    width: clamp(72px, 14cqi, 128px);
+    z-index: 14;
   }
 }
 

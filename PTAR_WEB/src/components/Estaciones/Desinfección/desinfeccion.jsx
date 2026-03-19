@@ -7,6 +7,7 @@ import {
     EVENTO_CAMBIO_CONFIG_AUDIO,
     obtenerVolumenMusica
 } from '../../../utils/audioSettings'
+import { useFixedSceneLayout } from '../../../hooks/useFixedSceneLayout'
 import './desinfeccion.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -16,6 +17,8 @@ const ZOOM_MIN_CAMARA = 0.2
 const ZOOM_MAX_CAMARA = 12
 const AUDIO_DESINFECCION_AMBIENTE_AGUA = '/audio/sonido-agua.mp3'
 const AUDIO_DESINFECCION_AMBIENTE_ESTERILIZADOR = '/audio/esterilizador-activado.mp3'
+const VIDEO_DESINFECCION_YOUTUBE_ID = '719L3cGlwHc'
+const VIDEO_DESINFECCION_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_DESINFECCION_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 const DURACION_FADE_AUDIO_DESINFECCION_MS = 640
 const INTERVALO_FADE_AUDIO_DESINFECCION_MS = 32
 const DURACION_FADE_SALIDA_AUDIO_DESINFECCION_MS = 420
@@ -718,10 +721,12 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
     }, [limpiarFadeAudioAmbiente])
 
     const camaraActiva = obtenerCamaraActivaPaso()
+    const { viewportRef, estiloEscenaFija } = useFixedSceneLayout()
     const estiloPanel = {
         '--cam-x': `${camaraActiva.camaraX}%`,
         '--cam-y': `${camaraActiva.camaraY}%`,
-        '--cam-zoom': `${camaraActiva.zoom}`
+        '--cam-zoom': `${camaraActiva.zoom}`,
+        ...(estiloEscenaFija ?? {})
     }
     const estiloEscena = useMemo(
         () => ({
@@ -751,7 +756,7 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
     const esterilizadorPasoLamparasUv = pasoActual === 3
 
     return (
-        <main className="ptar-des">
+        <main className="ptar-des" ref={viewportRef}>
             <section className="ptar-des__panel" style={estiloPanel} aria-label="Estacion de desinfeccion">
                 <div className="ptar-des__escena" style={estiloEscena} aria-hidden="true" />
                 <div className="ptar-des__capa-escena" aria-hidden="true" />
@@ -954,10 +959,13 @@ function Desinfeccion({ onVolverAFiltro, onCompletarDesinfeccion, iniciarEnFinal
                             >
                                 x
                             </button>
-                            <video className="ptar-des__video-player" controls autoPlay poster="/images/desinfeccion/uv.jpg">
-                                <source src="/videos/ptar.mp4" type="video/mp4" />
-                                Tu navegador no soporta este reproductor.
-                            </video>
+                            <iframe
+                                className="ptar-des__video-player ptar-des__video-player--iframe"
+                                title="Video de desinfeccion"
+                                src={VIDEO_DESINFECCION_EMBED_URL}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                            />
                         </div>
                     </div>
                 ) : null}

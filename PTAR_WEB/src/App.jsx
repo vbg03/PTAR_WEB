@@ -412,10 +412,11 @@ function App() {
       documentacion: 'ptar-app--documentacion',
       inicio: 'ptar-app--inicio'
     }[seccionActiva] || ''
-  const ocultarHeaderHastaZonaSuperior = SECCIONES_ESTACIONES.includes(seccionActiva)
+  const esSeccionEstacion = SECCIONES_ESTACIONES.includes(seccionActiva)
+  const ocultarHeaderHastaZonaSuperior = esSeccionEstacion
 
   return (
-    <div className={`ptar-app ${claseApp}`}>
+    <div className={`ptar-app ${claseApp} ${esSeccionEstacion ? 'ptar-app--estacion' : ''}`}>
       <Header
         onLogoClick={() => {
           setVolverAUbicacion(false)
@@ -630,6 +631,18 @@ function App() {
         ocultarEnModoEstacion={ocultarHeaderHastaZonaSuperior}
       />
       <Herramientas />
+      <div className="ptar-app__orientacion" aria-live="polite" aria-label="Aviso de orientacion">
+        <div className="ptar-app__orientacion-card">
+          <span className="ptar-app__orientacion-icon" aria-hidden="true">
+            <span className="ptar-app__orientacion-phone" />
+            <span className="ptar-app__orientacion-arrow" />
+          </span>
+          <h2 className="ptar-app__orientacion-titulo">Gira tu dispositivo</h2>
+          <p className="ptar-app__orientacion-texto">
+            Esta experiencia esta pensada para usarse en horizontal en tablets y moviles.
+          </p>
+        </div>
+      </div>
       <div className="ptar-app__content">
         {seccionActiva === 'inicio' ? (
           <Inicio

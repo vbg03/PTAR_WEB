@@ -7,6 +7,7 @@ import {
     EVENTO_CAMBIO_CONFIG_AUDIO,
     obtenerVolumenMusica
 } from '../../../utils/audioSettings'
+import { useFixedSceneLayout } from '../../../hooks/useFixedSceneLayout'
 import './lechos.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -15,6 +16,8 @@ const VALOR_MAX_CAMARA = 220
 const ZOOM_MIN_CAMARA = 0.2
 const ZOOM_MAX_CAMARA = 12
 const CANTIDAD_CAMAS = 4
+const VIDEO_LECHOS_YOUTUBE_ID = 'FzofFJl8jIU'
+const VIDEO_LECHOS_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_LECHOS_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 const ESCENA_LECHOS = '/images/lechos/lechos-fondo.svg'
 const ASSET_LODO = '/images/lechos/lodo.svg'
 const TEXTURAS_SECADO = [
@@ -908,7 +911,7 @@ const PASOS_RECORRIDO = [
                 secoHeight: 70,
                 secoEscala: 2,
                 secoEscalaX: 1.2,
-                secoEscalaY: 0.45,
+                secoEscalaY: 0.456,
                 x: 28.56,
                 y: 66.5,
                 width: 19.9,
@@ -928,7 +931,7 @@ const PASOS_RECORRIDO = [
                 secoHeight: 70,
                 secoEscala: 2,
                 secoEscalaX: 1.2,
-                secoEscalaY: 0.45,
+                secoEscalaY: 0.456,
                 x: 42.7,
                 y: 66.5,
                 width: 19.9,
@@ -948,7 +951,7 @@ const PASOS_RECORRIDO = [
                 secoHeight: 70,
                 secoEscala: 2,
                 secoEscalaX: 1.2,
-                secoEscalaY: 0.45,
+                secoEscalaY: 0.456,
                 x: 56.2,
                 y: 66.5,
                 width: 19.9,
@@ -968,7 +971,7 @@ const PASOS_RECORRIDO = [
                 secoHeight: 70,
                 secoEscala: 2,
                 secoEscalaX: 1.2,
-                secoEscalaY: 0.45,
+                secoEscalaY: 0.456,
                 x: 70.1,
                 y: 66.5,
                 width: 19.9,
@@ -1543,10 +1546,12 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
     }, [limpiarFadeAudioLechos])
 
     const camaraActiva = obtenerCamaraActivaPaso()
+    const { viewportRef, estiloEscenaFija } = useFixedSceneLayout()
     const estiloPanel = {
         '--cam-x': `${camaraActiva.camaraX}%`,
         '--cam-y': `${camaraActiva.camaraY}%`,
-        '--cam-zoom': `${camaraActiva.zoom}`
+        '--cam-zoom': `${camaraActiva.zoom}`,
+        ...(estiloEscenaFija ?? {})
     }
     const estiloEscena = useMemo(
         () => ({
@@ -1556,7 +1561,7 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
     )
 
     return (
-        <main className="ptar-lec">
+        <main className="ptar-lec" ref={viewportRef}>
             <section className="ptar-lec__panel" style={estiloPanel} aria-label="Estacion Lechos de secado">
                 <div className="ptar-lec__escena" style={estiloEscena} aria-hidden="true" />
                 <div className="ptar-lec__capa-escena" aria-hidden="true" />
@@ -1776,10 +1781,13 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
                             >
                                 x
                             </button>
-                            <video className="ptar-lec__video-player" controls autoPlay poster="/images/lechos/lechos.png">
-                                <source src="/videos/ptar.mp4" type="video/mp4" />
-                                Tu navegador no soporta este reproductor.
-                            </video>
+                            <iframe
+                                className="ptar-lec__video-player ptar-lec__video-player--iframe"
+                                title="Video de lechos de secado"
+                                src={VIDEO_LECHOS_EMBED_URL}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                            />
                         </div>
                     </div>
                 ) : null}
@@ -1789,3 +1797,5 @@ function Lechos({ onVolverASedimentador, onCompletarLechos, iniciarEnFinal = fal
 }
 
 export default Lechos
+
+
