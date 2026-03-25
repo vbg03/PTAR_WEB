@@ -630,7 +630,7 @@ function App() {
         }}
         ocultarEnModoEstacion={ocultarHeaderHastaZonaSuperior}
       />
-      <Herramientas />
+      <Herramientas mostrarPantallaCompletaEnEstacion={esSeccionEstacion} />
       <div className="ptar-app__orientacion" aria-live="polite" aria-label="Aviso de orientacion">
         <div className="ptar-app__orientacion-card">
           <span className="ptar-app__orientacion-icon" aria-hidden="true">
