@@ -251,11 +251,16 @@ function Herramientas({ mostrarPantallaCompletaEnEstacion = false }) {
     }
 
     const contenidoApp = document.querySelector('.ptar-app__content')
-    if (contenidoApp instanceof HTMLElement && elementoRaiz instanceof HTMLElement) {
-      const { width, height } = contenidoApp.getBoundingClientRect()
-      if (width > 0 && height > 0) {
-        elementoRaiz.style.setProperty('--ptar-fullscreen-lock-width', `${Math.round(width)}px`)
-        elementoRaiz.style.setProperty('--ptar-fullscreen-lock-height', `${Math.round(height)}px`)
+    if (elementoRaiz instanceof HTMLElement) {
+      if (esNavegacionTactil) {
+        elementoRaiz.style.removeProperty('--ptar-fullscreen-lock-width')
+        elementoRaiz.style.removeProperty('--ptar-fullscreen-lock-height')
+      } else if (contenidoApp instanceof HTMLElement) {
+        const { width, height } = contenidoApp.getBoundingClientRect()
+        if (width > 0 && height > 0) {
+          elementoRaiz.style.setProperty('--ptar-fullscreen-lock-width', `${Math.round(width)}px`)
+          elementoRaiz.style.setProperty('--ptar-fullscreen-lock-height', `${Math.round(height)}px`)
+        }
       }
     }
 
