@@ -33,11 +33,25 @@ function IconoAudio() {
   )
 }
 
-function Herramientas() {
+function IconoPantallaCompleta() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M4 9V4h5v2H6v3H4Zm10-5h6v6h-2V6h-4V4ZM4 15h2v3h3v2H4v-5Zm14 3v-3h2v5h-5v-2h3Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+function Herramientas({ mostrarPantallaCompletaEnEstacion = false }) {
   const herramientasRef = useRef(null)
   const esNavegacionTactil = useEsNavegacionTactil()
   const [mostrarInstrucciones, setMostrarInstrucciones] = useState(false)
   const [mostrarPanelAudio, setMostrarPanelAudio] = useState(false)
+  const [soportaPantallaCompleta, setSoportaPantallaCompleta] = useState(false)
+  const [enPantallaCompleta, setEnPantallaCompleta] = useState(false)
+  const [enModoStandalone, setEnModoStandalone] = useState(false)
   const [volumenVoces, setVolumenVoces] = useState(() =>
     leerVolumenDesdeStorage(LLAVE_VOLUMEN_VOCES, VOLUMEN_DEFECTO_VOCES)
   )
@@ -108,6 +122,89 @@ function Herramientas() {
       window.removeEventListener('mousedown', cerrarPanelAudioPorClickExterno)
   }, [mostrarPanelAudio])
 
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return undefined
+    }
+
+    const elementoApp = document.getElementById('root')
+    const elementoRaiz = document.documentElement
+    const mediaStandalone =
+      typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? window.matchMedia('(display-mode: standalone)')
+        : null
+    const soporta = Boolean(
+      document.fullscreenEnabled ||
+      document.webkitFullscreenEnabled ||
+      elementoRaiz.requestFullscreen ||
+      elementoRaiz.webkitRequestFullscreen
+    )
+
+    const actualizarEstadoPantallaCompleta = () => {
+      const hayPantallaCompleta = Boolean(
+        document.fullscreenElement || document.webkitFullscreenElement
+      )
+
+      setEnPantallaCompleta(hayPantallaCompleta)
+
+      if (!hayPantallaCompleta && elementoApp) {
+        elementoApp.style.removeProperty('--ptar-fullscreen-lock-width')
+        elementoApp.style.removeProperty('--ptar-fullscreen-lock-height')
+      }
+    }
+
+    const actualizarModoStandalone = () => {
+      const modoStandalone =
+        Boolean(mediaStandalone?.matches) ||
+        (typeof navigator !== 'undefined' && navigator.standalone === true)
+
+      setEnModoStandalone(modoStandalone)
+    }
+
+    setSoportaPantallaCompleta(soporta)
+    actualizarEstadoPantallaCompleta()
+    actualizarModoStandalone()
+
+    document.addEventListener('fullscreenchange', actualizarEstadoPantallaCompleta)
+    document.addEventListener('webkitfullscreenchange', actualizarEstadoPantallaCompleta)
+    if (typeof mediaStandalone?.addEventListener === 'function') {
+      mediaStandalone.addEventListener('change', actualizarModoStandalone)
+    } else if (typeof mediaStandalone?.addListener === 'function') {
+      mediaStandalone.addListener(actualizarModoStandalone)
+    }
+
+    return () => {
+      document.removeEventListener('fullscreenchange', actualizarEstadoPantallaCompleta)
+      document.removeEventListener('webkitfullscreenchange', actualizarEstadoPantallaCompleta)
+      if (typeof mediaStandalone?.removeEventListener === 'function') {
+        mediaStandalone.removeEventListener('change', actualizarModoStandalone)
+      } else if (typeof mediaStandalone?.removeListener === 'function') {
+        mediaStandalone.removeListener(actualizarModoStandalone)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (
+      typeof document === 'undefined' ||
+      esNavegacionTactil ||
+      mostrarPantallaCompletaEnEstacion ||
+      !enPantallaCompleta
+    ) {
+      return
+    }
+
+    const salirPantallaCompleta =
+      document.exitFullscreen?.bind(document) ||
+      document.webkitExitFullscreen?.bind(document)
+
+    if (!salirPantallaCompleta) {
+      return
+    }
+
+    void salirPantallaCompleta().catch(() => {})
+  }, [enPantallaCompleta, esNavegacionTactil, mostrarPantallaCompletaEnEstacion])
+
   const alternarInstrucciones = () => {
     setMostrarInstrucciones((valorAnterior) => !valorAnterior)
     setMostrarPanelAudio(false)
@@ -117,6 +214,72 @@ function Herramientas() {
     setMostrarPanelAudio((valorAnterior) => !valorAnterior)
     setMostrarInstrucciones(false)
   }
+
+  const alternarPantallaCompleta = async () => {
+    if (typeof document === 'undefined') {
+      return
+    }
+
+    const elementoRaiz = document.getElementById('root') ?? document.documentElement
+    const elementoEnPantallaCompleta =
+      document.fullscreenElement || document.webkitFullscreenElement
+
+    if (elementoEnPantallaCompleta) {
+      const salirPantallaCompleta =
+        document.exitFullscreen?.bind(document) ||
+        document.webkitExitFullscreen?.bind(document)
+
+      if (!salirPantallaCompleta) {
+        return
+      }
+
+      try {
+        await salirPantallaCompleta()
+      } catch {
+        // Algunos navegadores moviles rechazan la salida si el estado cambio fuera del gesto.
+      }
+
+      return
+    }
+
+    const solicitarPantallaCompleta =
+      elementoRaiz.requestFullscreen?.bind(elementoRaiz) ||
+      elementoRaiz.webkitRequestFullscreen?.bind(elementoRaiz)
+
+    if (!solicitarPantallaCompleta) {
+      return
+    }
+
+    const contenidoApp = document.querySelector('.ptar-app__content')
+    if (contenidoApp instanceof HTMLElement && elementoRaiz instanceof HTMLElement) {
+      const { width, height } = contenidoApp.getBoundingClientRect()
+      if (width > 0 && height > 0) {
+        elementoRaiz.style.setProperty('--ptar-fullscreen-lock-width', `${Math.round(width)}px`)
+        elementoRaiz.style.setProperty('--ptar-fullscreen-lock-height', `${Math.round(height)}px`)
+      }
+    }
+
+    try {
+      await solicitarPantallaCompleta()
+
+      if (window.screen?.orientation?.lock) {
+        try {
+          await window.screen.orientation.lock('landscape')
+        } catch {
+          // No todos los navegadores permiten bloquear la orientacion.
+        }
+      }
+    } catch {
+      // En iOS y algunos navegadores la API puede no estar disponible para sitios web.
+    }
+  }
+
+  const mostrarBotonPantallaCompleta = soportaPantallaCompleta &&
+    (esNavegacionTactil || mostrarPantallaCompletaEnEstacion)
+  const mostrarBloqueoPantallaCompletaMovil =
+    esNavegacionTactil &&
+    !enPantallaCompleta &&
+    !enModoStandalone
 
   return (
     <>
@@ -131,6 +294,18 @@ function Herramientas() {
         >
           <IconoPregunta />
         </button>
+
+        {mostrarBotonPantallaCompleta ? (
+          <button
+            type="button"
+            className={`ptar-tools__button${enPantallaCompleta ? ' ptar-tools__button--activa' : ''}`}
+            onClick={() => void alternarPantallaCompleta()}
+            aria-label={enPantallaCompleta ? 'Salir de pantalla completa' : 'Activar pantalla completa'}
+            title={enPantallaCompleta ? 'Salir de pantalla completa' : 'Activar pantalla completa'}
+          >
+            <IconoPantallaCompleta />
+          </button>
+        ) : null}
 
         <button
           type="button"
@@ -176,6 +351,37 @@ function Herramientas() {
         ) : null}
       </aside>
 
+      {mostrarBloqueoPantallaCompletaMovil ? (
+        <div
+          className="ptar-tools__fullscreen-required"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="ptar-fullscreen-required-title"
+        >
+          <section className="ptar-tools__fullscreen-required-card">
+            <h2 id="ptar-fullscreen-required-title">Activa pantalla completa</h2>
+            <p>
+              Para usar la experiencia en telefono, activa la pantalla completa desde el
+              inicio.
+            </p>
+            {soportaPantallaCompleta ? (
+              <button
+                type="button"
+                className="ptar-tools__fullscreen-required-button"
+                onClick={() => void alternarPantallaCompleta()}
+              >
+                Activar pantalla completa
+              </button>
+            ) : (
+              <p className="ptar-tools__fullscreen-required-note">
+                Si tu navegador no permite pantalla completa aqui, abre la app desde la
+                pantalla de inicio.
+              </p>
+            )}
+          </section>
+        </div>
+      ) : null}
+
       {mostrarInstrucciones ? (
         <div
           id="ptar-overlay-instrucciones"
@@ -211,8 +417,18 @@ function Herramientas() {
                 </>
               )}
               <li>
-                Puedes abrir esta ayuda y los controles de sonido desde los botones del
-                lateral izquierdo.
+                Puedes abrir esta ayuda y los controles de sonido desde los botones
+                laterales.
+              </li>
+              {mostrarBotonPantallaCompleta ? (
+                <li>
+                  Usa el boton de pantalla completa para ganar mas espacio cuando el
+                  navegador lo permita.
+                </li>
+              ) : null}
+              <li>
+                Si quieres verla sin la barra del navegador, agrega la app a la pantalla
+                de inicio desde el menu del navegador.
               </li>
             </ul>
           </section>

@@ -109,10 +109,68 @@
   animation: ptar-tools-fade-in 180ms ease;
 }
 
+.ptar-tools__fullscreen-required {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background:
+    radial-gradient(circle at 50% 20%, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0) 34%),
+    rgb(24 18 18 / 0.78);
+  backdrop-filter: blur(10px);
+  animation: ptar-tools-fade-in 180ms ease;
+}
+
+.ptar-tools__fullscreen-required-card {
+  width: min(92vw, 440px);
+  display: grid;
+  gap: 14px;
+  padding: 24px 20px 20px;
+  border-radius: 24px;
+  background: rgb(251 245 236 / 0.98);
+  color: #221818;
+  text-align: center;
+  box-shadow:
+    0 24px 48px rgb(0 0 0 / 0.28),
+    inset 0 0 0 1px rgb(210 210 210 / 0.72);
+}
+
+.ptar-tools__fullscreen-required-card h2 {
+  margin: 0;
+  color: #7d001b;
+  font-size: clamp(28px, 7vw, 40px);
+  line-height: 0.98;
+}
+
+.ptar-tools__fullscreen-required-card p {
+  margin: 0;
+  font-size: clamp(16px, 4vw, 20px);
+  line-height: 1.15;
+}
+
+.ptar-tools__fullscreen-required-button {
+  border: none;
+  border-radius: 999px;
+  padding: 14px 18px;
+  background: #f20732;
+  color: #fff;
+  font-family: inherit;
+  font-size: clamp(16px, 4vw, 18px);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 12px 22px rgb(126 0 22 / 0.28);
+}
+
+.ptar-tools__fullscreen-required-note {
+  color: #5a4747;
+}
+
 .ptar-help-overlay__card {
   position: relative;
   width: min(760px, calc(100vw - 36px));
-  max-height: calc(100vh - 36px);
+  max-height: calc(100dvh - 36px);
   overflow: auto;
   padding: 38px 42px 32px;
   border-radius: 18px;
@@ -241,11 +299,22 @@
     padding: 16px;
   }
 
+  .ptar-tools__fullscreen-required {
+    padding: 14px;
+  }
+
+  .ptar-tools__fullscreen-required-card {
+    width: min(92vw, 360px);
+    gap: 12px;
+    padding: 20px 16px 16px;
+    border-radius: 20px;
+  }
+
   .ptar-help-overlay__card {
     padding: 30px 18px 20px;
     border-radius: 14px;
     width: min(760px, calc(100vw - 16px));
-    max-height: calc(100vh - 16px);
+    max-height: calc(100dvh - 16px);
   }
 
   .ptar-help-overlay__close {
@@ -302,9 +371,28 @@
     padding: 12px;
   }
 
+  .ptar-tools__fullscreen-required-card {
+    width: min(86vw, 340px);
+    gap: 10px;
+    padding: 18px 14px 14px;
+  }
+
+  .ptar-tools__fullscreen-required-card h2 {
+    font-size: clamp(22px, 4vw, 30px);
+  }
+
+  .ptar-tools__fullscreen-required-card p {
+    font-size: clamp(13px, 1.9vw, 16px);
+  }
+
+  .ptar-tools__fullscreen-required-button {
+    padding: 11px 14px;
+    font-size: clamp(13px, 1.9vw, 15px);
+  }
+
   .ptar-help-overlay__card {
     width: min(620px, calc(100vw - 18px));
-    max-height: calc(100vh - 18px);
+    max-height: calc(100dvh - 18px);
     padding: 24px 18px 18px;
     border-radius: 14px;
   }

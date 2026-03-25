@@ -2,12 +2,44 @@
 
 #root {
   min-height: 100vh;
+  min-height: 100dvh;
   height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   background: #ececec;
 }
 
+#root:fullscreen,
+#root:-webkit-full-screen {
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+}
+
+#root:fullscreen .ptar-app,
+#root:fullscreen .ptar-app.ptar-app--estacion,
+#root:-webkit-full-screen .ptar-app,
+#root:-webkit-full-screen .ptar-app.ptar-app--estacion {
+  min-height: 100%;
+  height: 100%;
+}
+
+#root:fullscreen .ptar-app.ptar-app--estacion,
+#root:-webkit-full-screen .ptar-app.ptar-app--estacion {
+  display: grid;
+  justify-items: center;
+  align-items: center;
+}
+
+#root:fullscreen .ptar-app.ptar-app--estacion .ptar-app__content,
+#root:-webkit-full-screen .ptar-app.ptar-app--estacion .ptar-app__content {
+  flex: none;
+  width: min(var(--ptar-fullscreen-lock-width, 100%), 100%);
+  height: min(var(--ptar-fullscreen-lock-height, 100%), 100%);
+}
+
 .ptar-app {
-  min-height: 100vh;
+  min-height: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -97,7 +129,9 @@
 }
 
 .ptar-app.ptar-app--estacion {
+  min-height: 100svh;
   min-height: 100dvh;
+  height: 100svh;
   height: 100dvh;
   overflow: hidden;
 }

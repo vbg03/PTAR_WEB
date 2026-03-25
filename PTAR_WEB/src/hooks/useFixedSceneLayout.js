@@ -9,11 +9,22 @@ const ALTO_MAXIMO_MOVIL_LANDSCAPE = 450
 export function useFixedSceneLayout() {
   const viewportRef = useRef(null)
   const [estiloEscenaFija, setEstiloEscenaFija] = useState(null)
+  const ultimoAspectoEscenaRef = useRef(ASPECTO_ESCENA_DESKTOP)
+  const aspectoBloqueadoFullscreenRef = useRef(null)
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current
     if (!viewport) {
       return undefined
+    }
+    const visualViewport = window.visualViewport
+
+    const programarActualizacionEscena = () => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          actualizarDimensionesEscena()
+        })
+      })
     }
 
     const actualizarDimensionesEscena = () => {
@@ -26,13 +37,15 @@ export function useFixedSceneLayout() {
         width > height &&
         width <= ANCHO_MAXIMO_MOVIL_LANDSCAPE &&
         height <= ALTO_MAXIMO_MOVIL_LANDSCAPE
-      const aspectoViewport = width / height
-      const aspectoEscena = esMovilLandscape
-        ? ASPECTO_ESCENA_MOVIL
-        : Math.min(
-          Math.max(aspectoViewport, ASPECTO_ESCENA_DESKTOP),
-          ASPECTO_ESCENA_DESKTOP_MAX
-        )
+      const aspectoEscena = aspectoBloqueadoFullscreenRef.current ??
+        (esMovilLandscape
+          ? ASPECTO_ESCENA_MOVIL
+          : Math.min(
+            Math.max(width / height, ASPECTO_ESCENA_DESKTOP),
+            ASPECTO_ESCENA_DESKTOP_MAX
+          ))
+
+      ultimoAspectoEscenaRef.current = aspectoEscena
 
       let anchoEscena = width
       let altoEscena = anchoEscena / aspectoEscena
@@ -58,12 +71,32 @@ export function useFixedSceneLayout() {
       })
     }
 
+    const manejarCambioFullscreen = () => {
+      const hayFullscreen = Boolean(
+        document.fullscreenElement || document.webkitFullscreenElement
+      )
+
+      aspectoBloqueadoFullscreenRef.current = hayFullscreen
+        ? ultimoAspectoEscenaRef.current
+        : null
+
+      programarActualizacionEscena()
+    }
+
     actualizarDimensionesEscena()
+    window.addEventListener('orientationchange', programarActualizacionEscena)
+    window.addEventListener('resize', actualizarDimensionesEscena)
+    document.addEventListener('fullscreenchange', manejarCambioFullscreen)
+    document.addEventListener('webkitfullscreenchange', manejarCambioFullscreen)
+    visualViewport?.addEventListener('resize', actualizarDimensionesEscena)
 
     if (typeof ResizeObserver === 'undefined') {
-      window.addEventListener('resize', actualizarDimensionesEscena)
       return () => {
         window.removeEventListener('resize', actualizarDimensionesEscena)
+        window.removeEventListener('orientationchange', programarActualizacionEscena)
+        document.removeEventListener('fullscreenchange', manejarCambioFullscreen)
+        document.removeEventListener('webkitfullscreenchange', manejarCambioFullscreen)
+        visualViewport?.removeEventListener('resize', actualizarDimensionesEscena)
       }
     }
 
@@ -75,6 +108,11 @@ export function useFixedSceneLayout() {
 
     return () => {
       resizeObserver.disconnect()
+      window.removeEventListener('resize', actualizarDimensionesEscena)
+      window.removeEventListener('orientationchange', programarActualizacionEscena)
+      document.removeEventListener('fullscreenchange', manejarCambioFullscreen)
+      document.removeEventListener('webkitfullscreenchange', manejarCambioFullscreen)
+      visualViewport?.removeEventListener('resize', actualizarDimensionesEscena)
     }
   }, [])
 

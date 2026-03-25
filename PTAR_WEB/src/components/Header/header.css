@@ -296,7 +296,7 @@
     top: 0;
     left: calc(100% + 10px);
     width: min(260px, calc(100vw - 92px));
-    max-height: min(420px, calc(100vh - 24px));
+    max-height: min(420px, calc(100dvh - 24px));
     overflow: auto;
     padding: 12px;
     background: rgb(251 245 236 / 96%);
@@ -366,7 +366,7 @@
   }
 
   .ptar-header__dropdown.is-open .ptar-header__menu {
-    max-height: min(320px, calc(100vh - 132px));
+    max-height: min(320px, calc(100dvh - 132px));
     margin-top: 8px;
     padding: 8px;
     opacity: 1;

@@ -222,6 +222,8 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
   const viewportEscenaRef = useRef(null)
   const panelEscenaRef = useRef(null)
   const arrastreResiduoRef = useRef(null)
+  const ultimoAspectoEscenaRef = useRef(ASPECTO_ESCENA_POZO1_DESKTOP)
+  const aspectoBloqueadoFullscreenRef = useRef(null)
   const posicionesResiduosRef = useRef(POSICIONES_INICIALES_RESIDUOS)
   const residuosRetiradosRef = useRef({})
   const audioObjetosRef = useRef(null)
@@ -535,6 +537,15 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
     if (!viewport) {
       return undefined
     }
+    const visualViewport = window.visualViewport
+
+    const programarActualizacionEscena = () => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          actualizarDimensionesEscena()
+        })
+      })
+    }
 
     const actualizarDimensionesEscena = () => {
       const { width, height } = viewport.getBoundingClientRect()
@@ -546,14 +557,16 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
         width > height &&
         width <= ANCHO_MAXIMO_MOVIL_LANDSCAPE &&
         height <= ALTO_MAXIMO_MOVIL_LANDSCAPE
-      const aspectoViewport = width / height
-      const aspectoEscena = esMovilLandscape
-        ? ASPECTO_ESCENA_POZO1_MOVIL
-        : limitar(
-          aspectoViewport,
-          ASPECTO_ESCENA_POZO1_DESKTOP,
-          ASPECTO_ESCENA_POZO1_DESKTOP_MAX
-        )
+      const aspectoEscena = aspectoBloqueadoFullscreenRef.current ??
+        (esMovilLandscape
+          ? ASPECTO_ESCENA_POZO1_MOVIL
+          : limitar(
+            width / height,
+            ASPECTO_ESCENA_POZO1_DESKTOP,
+            ASPECTO_ESCENA_POZO1_DESKTOP_MAX
+          ))
+
+      ultimoAspectoEscenaRef.current = aspectoEscena
 
       let anchoEscena = width
       let altoEscena = anchoEscena / aspectoEscena
@@ -579,12 +592,32 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
       })
     }
 
+    const manejarCambioFullscreen = () => {
+      const hayFullscreen = Boolean(
+        document.fullscreenElement || document.webkitFullscreenElement
+      )
+
+      aspectoBloqueadoFullscreenRef.current = hayFullscreen
+        ? ultimoAspectoEscenaRef.current
+        : null
+
+      programarActualizacionEscena()
+    }
+
     actualizarDimensionesEscena()
+    window.addEventListener('resize', actualizarDimensionesEscena)
+    window.addEventListener('orientationchange', programarActualizacionEscena)
+    document.addEventListener('fullscreenchange', manejarCambioFullscreen)
+    document.addEventListener('webkitfullscreenchange', manejarCambioFullscreen)
+    visualViewport?.addEventListener('resize', actualizarDimensionesEscena)
 
     if (typeof ResizeObserver === 'undefined') {
-      window.addEventListener('resize', actualizarDimensionesEscena)
       return () => {
         window.removeEventListener('resize', actualizarDimensionesEscena)
+        window.removeEventListener('orientationchange', programarActualizacionEscena)
+        document.removeEventListener('fullscreenchange', manejarCambioFullscreen)
+        document.removeEventListener('webkitfullscreenchange', manejarCambioFullscreen)
+        visualViewport?.removeEventListener('resize', actualizarDimensionesEscena)
       }
     }
 
@@ -596,6 +629,11 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
 
     return () => {
       resizeObserver.disconnect()
+      window.removeEventListener('resize', actualizarDimensionesEscena)
+      window.removeEventListener('orientationchange', programarActualizacionEscena)
+      document.removeEventListener('fullscreenchange', manejarCambioFullscreen)
+      document.removeEventListener('webkitfullscreenchange', manejarCambioFullscreen)
+      visualViewport?.removeEventListener('resize', actualizarDimensionesEscena)
     }
   }, [])
 
