@@ -9,7 +9,7 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: #2f251c;
+  background: var(--ptar-color-station-bg, #2f251c);
 }
 
 .ptar-pozo1__panel {
@@ -25,7 +25,7 @@
   border-radius: 0;
   overflow: hidden;
   isolation: isolate;
-  background: #2f251c;
+  background: var(--ptar-color-station-bg, #2f251c);
   box-shadow: none;
 }
 
@@ -62,7 +62,7 @@
   width: clamp(52px, 5.6%, 88px);
   height: clamp(28px, 3%, 48px);
   transform: translate(-50%, -50%);
-  background: #df2d2d;
+  background: var(--ptar-color-primary, #df2d2d);
   clip-path: polygon(0 18%, 72% 18%, 72% 0, 100% 50%, 72% 100%, 72% 82%, 0 82%);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   z-index: 6;
@@ -165,7 +165,7 @@
 
 .ptar-pozo1__video-preview-final {
   width: min(25vw, 900px);
-  border: 3px solid #f14a4a;
+  border: 3px solid var(--ptar-color-primary, #f14a4a);
   border-radius: 34px;
   overflow: hidden;
   padding: 0;
@@ -223,8 +223,8 @@
   height: 34px;
   border-radius: 50%;
   border: none;
-  background: #df2028;
-  color: #fff;
+  background: var(--ptar-color-primary, #df2028);
+  color: var(--ptar-color-on-primary, #fff);
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
@@ -236,10 +236,10 @@
   top: 0;
   left: calc(100% + 10px);
   width: min(32vw, 340px);
-  background: #ece6dd;
+  background: var(--ptar-color-surface, #ece6dd);
   border-radius: 16px;
   padding: 16px 20px;
-  color: #151515;
+  color: var(--ptar-color-on-surface, #151515);
   opacity: 0;
   transform: translateX(-12px);
   pointer-events: none;
@@ -275,7 +275,7 @@
 .ptar-pozo1__modal-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--ptar-color-overlay, rgba(0, 0, 0, 0.6));
   border: none;
   padding: 0;
 }
@@ -285,8 +285,8 @@
   width: min(95vw, 980px);
   border-radius: 14px;
   overflow: hidden;
-  border: 4px solid #0f0f0f;
-  background: #000;
+  border: 4px solid var(--ptar-color-border, #0f0f0f);
+  background: var(--ptar-color-station-bg, #000);
 }
 
 .ptar-pozo1__video-player {
@@ -299,7 +299,7 @@
   border: none;
   aspect-ratio: 16 / 9;
   height: auto;
-  background: #000;
+  background: var(--ptar-color-station-bg, #000);
 }
 
 .ptar-pozo1__modal-close {
@@ -313,8 +313,8 @@
   border: none;
   font-size: 28px;
   line-height: 1;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.45);
+  color: var(--ptar-color-on-primary, #fff);
+  background: var(--ptar-color-primary, rgba(0, 0, 0, 0.45));
   cursor: pointer;
 }
 
@@ -422,10 +422,10 @@
 .ptar-pozo1__hint {
   position: absolute;
   left: 50%;
-  bottom: clamp(14px, 2.2vh, 24px);
+  bottom: clamp(60px, 7.4vh, 86px);
   transform: translateX(-50%);
   margin: 0;
-  color: #f4ecde;
+  color: var(--ptar-color-hint, #f4ecde);
   font-size: clamp(16px, 1.45vw, 28px);
   font-weight: 700;
   letter-spacing: 0.3px;
@@ -458,8 +458,8 @@
   margin: 0;
   padding: 10px 12px;
   border-radius: 12px;
-  background: rgba(18, 18, 18, 0.72);
-  color: #f5f5f5;
+  background: var(--ptar-color-panel-dark, rgba(18, 18, 18, 0.72));
+  color: var(--ptar-color-on-dark, #f5f5f5);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
   z-index: 15;
   pointer-events: auto;
@@ -489,15 +489,16 @@
   border: none;
   border-radius: 8px;
   padding: 6px 10px;
-  background: #ef4444;
-  color: #fff;
+  background: var(--ptar-color-primary, #ef4444);
+  color: var(--ptar-color-on-primary, #fff);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
 }
 
 .ptar-pozo1__debug-boton--secundario {
-  background: #4b5563;
+  background: var(--ptar-color-secondary, #4b5563);
+  color: var(--ptar-color-on-secondary, #fff);
 }
 
 .ptar-pozo1__panel.is-regresando {
@@ -545,25 +546,25 @@
 
 .ptar-pozo1__transicion-franja--roja {
   top: -52vh;
-  background: #f20732;
+  background: var(--ptar-color-primary, #f20732);
   animation-delay: 0ms;
 }
 
 .ptar-pozo1__transicion-franja--vinotinto {
   top: -10vh;
-  background: #700014;
+  background: var(--ptar-color-secondary, #700014);
   animation-delay: 100ms;
 }
 
 .ptar-pozo1__transicion-franja--crema {
   top: 25vh;
-  background: #ece6dd;
+  background: var(--ptar-color-transition-light, #ece6dd);
   animation-delay: 200ms;
 }
 
 .ptar-pozo1__transicion-franja--gris {
   top: 62vh;
-  background: #e8e8e8;
+  background: var(--ptar-color-transition-neutral, #e8e8e8);
   animation-delay: 300ms;
 }
 
@@ -575,7 +576,7 @@
   font-size: clamp(30px, 6.4vw, 106px);
   font-weight: 800;
   letter-spacing: 0.03em;
-  color: rgba(112, 0, 20, 0.9);
+  color: var(--ptar-color-secondary, #700014);
   text-shadow: 0 5px 12px rgba(255, 255, 255, 0.5);
   transform: translate(-50%, -50%) scale(0.82);
   opacity: 0;
@@ -751,7 +752,7 @@
 
   .ptar-pozo1__hint {
     width: min(90vw, 560px);
-    bottom: 12px;
+    bottom: 64px;
   }
 
   .ptar-pozo1__paso {

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { obtenerDireccionScrollPorGesto } from '../../utils/wheelStepNavigation'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useControlesNavegacion } from '../../hooks/useControlesNavegacion'
 import { useNarracionVoces } from '../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../utils/voiceLibrary'
 import './casosUsos.css'
@@ -352,16 +352,9 @@ function CasosUsos({ onVolverAPozo2, onCompletarUsos, iniciarEnFinal = false }) 
     setBurbujaDerechaVisible(true)
   }, [paso.burbujaDerecha])
 
-  useEffect(() => {
-    const manejarRueda = (event) => {
-      const direccionScroll = obtenerDireccionScrollPorGesto(
-            event,
-            acumulacionScrollRef,
-            ultimaMarcaScrollRef,
-            ultimaActivacionScrollRef
-        )
-
-            if (bloqueoScrollRef.current || direccionScroll === 0) {
+  const manejarCambioPaso = useCallback(
+    (direccionScroll) => {
+      if (bloqueoScrollRef.current || direccionScroll === 0) {
         return
       }
 
@@ -369,7 +362,9 @@ function CasosUsos({ onVolverAPozo2, onCompletarUsos, iniciarEnFinal = false }) 
 
       if (direccionScroll > 0) {
         if (pasoActual < PASOS_RECORRIDO.length - 1) {
-          setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+          setPasoActual((pasoAnterior) =>
+            Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1)
+          )
         } else if (typeof onCompletarUsos === 'function') {
           onCompletarUsos()
         }
@@ -387,13 +382,17 @@ function CasosUsos({ onVolverAPozo2, onCompletarUsos, iniciarEnFinal = false }) 
         bloqueoScrollRef.current = false
         timeoutBloqueoRef.current = null
       }, DURACION_BLOQUEO_SCROLL)
-    }
+    },
+    [pasoActual, onVolverAPozo2, onCompletarUsos]
+  )
 
-    window.addEventListener('wheel', manejarRueda, { passive: true })
-    return () => {
-      window.removeEventListener('wheel', manejarRueda)
-    }
-  }, [pasoActual, onVolverAPozo2, onCompletarUsos])
+  useControlesNavegacion({
+    acumulacionScrollRef,
+    ultimaMarcaScrollRef,
+    ultimaActivacionScrollRef,
+    onAvanzar: useCallback(() => manejarCambioPaso(1), [manejarCambioPaso]),
+    onRetroceder: useCallback(() => manejarCambioPaso(-1), [manejarCambioPaso])
+  })
 
   useEffect(() => {
     return () => {

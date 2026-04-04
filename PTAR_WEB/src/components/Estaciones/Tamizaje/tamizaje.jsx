@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
+import { useControlesNavegacion } from '../../../hooks/useControlesNavegacion'
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
@@ -390,58 +390,52 @@ function Tamizaje({ onVolverALechos, onCompletarTamizaje, iniciarEnFinal = false
         }
     }, [paso])
 
-    useEffect(() => {
-        const manejarRueda = (event) => {
-            const direccionScroll = obtenerDireccionScrollPorGesto(
-            event,
-            acumulacionScrollRef,
-            ultimaMarcaScrollRef,
-            ultimaActivacionScrollRef
-        )
-
-            if (bloqueoScrollRef.current || direccionScroll === 0) {
-                return
-            }
-
-            if (paso.soloTransicion) {
-                return
-            }
-
-            bloqueoScrollRef.current = true
-
-            if (direccionScroll > 0) {
-                if (pasoActual >= PASOS_RECORRIDO.length - 1) {
-                    if (typeof onCompletarTamizaje === 'function') {
-                        onCompletarTamizaje()
-                    }
-                } else {
-                    setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
-                }
-            } else if (pasoActual > 0) {
-                if (pasoActual === PASO_CAMBIO_ESCENARIO) {
-                    setPasoActual(PASO_PREVIO_TRANSICION_ESCENARIO)
-                } else {
-                    setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
-                }
-            } else if (typeof onVolverALechos === 'function') {
-                onVolverALechos()
-            }
-
-            if (timeoutBloqueoRef.current) {
-                window.clearTimeout(timeoutBloqueoRef.current)
-            }
-
-            timeoutBloqueoRef.current = window.setTimeout(() => {
-                bloqueoScrollRef.current = false
-                timeoutBloqueoRef.current = null
-            }, DURACION_BLOQUEO_SCROLL)
+    const manejarCambioPaso = useCallback((direccionScroll) => {
+        if (bloqueoScrollRef.current || direccionScroll === 0) {
+            return
         }
 
-        window.addEventListener('wheel', manejarRueda, { passive: true })
-        return () => {
-            window.removeEventListener('wheel', manejarRueda)
+        if (paso.soloTransicion) {
+            return
         }
+
+        bloqueoScrollRef.current = true
+
+        if (direccionScroll > 0) {
+            if (pasoActual >= PASOS_RECORRIDO.length - 1) {
+                if (typeof onCompletarTamizaje === 'function') {
+                    onCompletarTamizaje()
+                }
+            } else {
+                setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+            }
+        } else if (pasoActual > 0) {
+            if (pasoActual === PASO_CAMBIO_ESCENARIO) {
+                setPasoActual(PASO_PREVIO_TRANSICION_ESCENARIO)
+            } else {
+                setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
+            }
+        } else if (typeof onVolverALechos === 'function') {
+            onVolverALechos()
+        }
+
+        if (timeoutBloqueoRef.current) {
+            window.clearTimeout(timeoutBloqueoRef.current)
+        }
+
+        timeoutBloqueoRef.current = window.setTimeout(() => {
+            bloqueoScrollRef.current = false
+            timeoutBloqueoRef.current = null
+        }, DURACION_BLOQUEO_SCROLL)
     }, [pasoActual, paso, onCompletarTamizaje, onVolverALechos])
+
+    useControlesNavegacion({
+        acumulacionScrollRef,
+        ultimaMarcaScrollRef,
+        ultimaActivacionScrollRef,
+        onAvanzar: useCallback(() => manejarCambioPaso(1), [manejarCambioPaso]),
+        onRetroceder: useCallback(() => manejarCambioPaso(-1), [manejarCambioPaso])
+    })
 
     useEffect(() => {
         const manejarTecladoDebug = (event) => {

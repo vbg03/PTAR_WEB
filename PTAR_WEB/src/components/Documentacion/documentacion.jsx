@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
-import { obtenerDireccionScrollPorGesto } from '../../utils/wheelStepNavigation'
+import { useCallback, useEffect, useRef } from 'react'
+import { useControlesNavegacion } from '../../hooks/useControlesNavegacion'
 import './documentacion.css'
 
 const DURACION_BLOQUEO_SCROLL = 340
@@ -16,45 +16,43 @@ function Documentacion({ onVolverAUsos }) {
   const ultimaActivacionScrollRef = useRef(0)
   const timeoutBloqueoRef = useRef(null)
 
-  useEffect(() => {
-    const manejarRueda = (event) => {
-      const direccionScroll = obtenerDireccionScrollPorGesto(
-            event,
-            acumulacionScrollRef,
-            ultimaMarcaScrollRef,
-            ultimaActivacionScrollRef
-        )
-
-            if (bloqueoScrollRef.current || direccionScroll === 0) {
-        return
-      }
-
-      bloqueoScrollRef.current = true
-
-      if (direccionScroll < 0 && typeof onVolverAUsos === 'function') {
-        onVolverAUsos()
-      }
-
-      if (timeoutBloqueoRef.current) {
-        window.clearTimeout(timeoutBloqueoRef.current)
-      }
-
-      timeoutBloqueoRef.current = window.setTimeout(() => {
-        bloqueoScrollRef.current = false
-        timeoutBloqueoRef.current = null
-      }, DURACION_BLOQUEO_SCROLL)
+  const retrocederDocumentacion = useCallback(() => {
+    if (bloqueoScrollRef.current) {
+      return
     }
 
-    window.addEventListener('wheel', manejarRueda, { passive: true })
+    bloqueoScrollRef.current = true
 
-    return () => {
-      window.removeEventListener('wheel', manejarRueda)
-      if (timeoutBloqueoRef.current) {
-        window.clearTimeout(timeoutBloqueoRef.current)
-        timeoutBloqueoRef.current = null
-      }
+    if (typeof onVolverAUsos === 'function') {
+      onVolverAUsos()
     }
+
+    if (timeoutBloqueoRef.current) {
+      window.clearTimeout(timeoutBloqueoRef.current)
+    }
+
+    timeoutBloqueoRef.current = window.setTimeout(() => {
+      bloqueoScrollRef.current = false
+      timeoutBloqueoRef.current = null
+    }, DURACION_BLOQUEO_SCROLL)
   }, [onVolverAUsos])
+
+  useControlesNavegacion({
+    acumulacionScrollRef,
+    ultimaMarcaScrollRef,
+    ultimaActivacionScrollRef,
+    onAvanzar: useCallback(() => {}, []),
+    onRetroceder: retrocederDocumentacion
+  })
+
+  useEffect(() => {
+    return () => {
+      if (timeoutBloqueoRef.current) {
+        window.clearTimeout(timeoutBloqueoRef.current)
+        timeoutBloqueoRef.current = null
+      }
+    }
+  }, [])
 
   return (
     <main className="ptar-documentacion">
