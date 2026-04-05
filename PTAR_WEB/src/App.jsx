@@ -16,10 +16,18 @@ import Pozo2 from './components/Estaciones/Pozo2/pozo2.jsx'
 import CasosUsos from './components/Usos/casosUsos.jsx'
 import Documentacion from './components/Documentacion/documentacion.jsx'
 import Herramientas from './components/Herramientas/herramientas.jsx'
+import NavegacionBotones from './components/NavegacionBotones/navegacionBotones.jsx'
 import {
   EVENTO_CAMBIO_CONFIG_AUDIO,
   obtenerVolumenMusica
 } from './utils/audioSettings'
+import {
+  construirVariablesCssTema,
+  guardarConfiguracionVisual,
+  leerConfiguracionVisualGuardada,
+  normalizarConfiguracionVisual,
+  restablecerPaletaActiva
+} from './utils/themeSettings'
 
 const DURACION_TRANSICION_ESTACION = 760
 const MITAD_TRANSICION_ESTACION = 340
@@ -84,6 +92,34 @@ function App() {
   const fadeAudioRef = useRef(null)
   const fadeAudioSedimentadorRef = useRef(null)
   const volumenMusicaRef = useRef(obtenerVolumenMusica())
+  const [configVisual, setConfigVisual] = useState(() =>
+    leerConfiguracionVisualGuardada()
+  )
+  const [configVisualGuardada, setConfigVisualGuardada] = useState(() =>
+    leerConfiguracionVisualGuardada()
+  )
+
+  const actualizarConfigVisual = useCallback((actualizacion) => {
+    setConfigVisual((configAnterior) =>
+      normalizarConfiguracionVisual(
+        typeof actualizacion === 'function'
+          ? actualizacion(configAnterior)
+          : actualizacion
+      )
+    )
+  }, [])
+
+  const guardarConfigVisualActual = useCallback(() => {
+    const configuracionNormalizada = normalizarConfiguracionVisual(configVisual)
+
+    guardarConfiguracionVisual(configuracionNormalizada)
+    setConfigVisual(configuracionNormalizada)
+    setConfigVisualGuardada(configuracionNormalizada)
+  }, [configVisual])
+
+  const restablecerConfigVisualActual = useCallback(() => {
+    setConfigVisual((configAnterior) => restablecerPaletaActiva(configAnterior))
+  }, [])
 
   const limpiarFadeAudio = useCallback(() => {
     if (!fadeAudioRef.current) {
@@ -414,9 +450,17 @@ function App() {
     }[seccionActiva] || ''
   const esSeccionEstacion = SECCIONES_ESTACIONES.includes(seccionActiva)
   const ocultarHeaderHastaZonaSuperior = esSeccionEstacion
+  const variablesTema = construirVariablesCssTema(configVisual)
+  const mostrarBotonesNavegacion = !transicionEstacionActiva && seccionActiva !== 'inicio'
+  const mostrarBotonAvanzar = seccionActiva !== 'documentacion'
+  const mostrarBotonRetroceder = seccionActiva !== 'inicio'
 
   return (
-    <div className={`ptar-app ${claseApp} ${esSeccionEstacion ? 'ptar-app--estacion' : ''}`}>
+    <div
+      className={`ptar-app ${claseApp} ${esSeccionEstacion ? 'ptar-app--estacion' : ''}`}
+      data-theme-mode={configVisual.modoActivo}
+      style={variablesTema}
+    >
       <Header
         onLogoClick={() => {
           setVolverAUbicacion(false)
@@ -630,7 +674,19 @@ function App() {
         }}
         ocultarEnModoEstacion={ocultarHeaderHastaZonaSuperior}
       />
-      <Herramientas mostrarPantallaCompletaEnEstacion={esSeccionEstacion} />
+      <Herramientas
+        mostrarPantallaCompletaEnEstacion={esSeccionEstacion}
+        configVisual={configVisual}
+        configVisualGuardada={configVisualGuardada}
+        onCambiarConfigVisual={actualizarConfigVisual}
+        onGuardarConfigVisual={guardarConfigVisualActual}
+        onRestablecerConfigVisual={restablecerConfigVisualActual}
+      />
+      <NavegacionBotones
+        mostrar={mostrarBotonesNavegacion}
+        mostrarBotonAvanzar={mostrarBotonAvanzar}
+        mostrarBotonRetroceder={mostrarBotonRetroceder}
+      />
       <div className="ptar-app__orientacion" aria-live="polite" aria-label="Aviso de orientacion">
         <div className="ptar-app__orientacion-card">
           <span className="ptar-app__orientacion-icon" aria-hidden="true">

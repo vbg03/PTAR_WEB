@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
+import { useControlesNavegacion } from '../../../hooks/useControlesNavegacion'
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { useEsNavegacionTactil } from '../../../hooks/useEsNavegacionTactil'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
@@ -8,6 +8,7 @@ import {
   EVENTO_CAMBIO_CONFIG_AUDIO,
   obtenerVolumenMusica
 } from '../../../utils/audioSettings'
+import { MODO_NAVEGACION_BOTONES } from '../../../utils/navigationSettings'
 import './pozo1.css'
 
 const DURACION_TRANSICION_REGRESO = 1180
@@ -678,20 +679,21 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
     }
   }, [detenerAudioObjetos])
 
-  useEffect(() => {
-    const manejarRueda = (event) => {
-      const direccionScroll = obtenerDireccionScrollPorGesto(
-      event,
-      acumulacionScrollRef,
-      ultimaMarcaScrollRef,
-      ultimaActivacionScrollRef
-    )
-
-    if (bloqueoScrollRef.current || transicionRegresoRef.current || direccionScroll === 0) {
+  const manejarCambioPaso = useCallback(
+    (direccionScroll) => {
+      if (
+        bloqueoScrollRef.current ||
+        transicionRegresoRef.current ||
+        direccionScroll === 0
+      ) {
         return
       }
 
-      if (direccionScroll > 0 && pasoActual === PASO_RETIRO_SOLIDOS && !retiroSolidosCompletado) {
+      if (
+        direccionScroll > 0 &&
+        pasoActual === PASO_RETIRO_SOLIDOS &&
+        !retiroSolidosCompletado
+      ) {
         return
       }
 
@@ -703,7 +705,9 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
             onCompletarPozo1()
           }
         } else {
-          setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+          setPasoActual((pasoAnterior) =>
+            Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1)
+          )
         }
       } else if (pasoActual > 0) {
         setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
@@ -720,14 +724,22 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
           bloqueoScrollRef.current = false
         }
       }, DURACION_BLOQUEO_SCROLL)
-    }
+    },
+    [
+      pasoActual,
+      iniciarTransicionRegreso,
+      retiroSolidosCompletado,
+      onCompletarPozo1
+    ]
+  )
 
-    window.addEventListener('wheel', manejarRueda, { passive: true })
-
-    return () => {
-      window.removeEventListener('wheel', manejarRueda)
-    }
-  }, [pasoActual, iniciarTransicionRegreso, retiroSolidosCompletado, onCompletarPozo1])
+  const modoNavegacion = useControlesNavegacion({
+    acumulacionScrollRef,
+    ultimaMarcaScrollRef,
+    ultimaActivacionScrollRef,
+    onAvanzar: useCallback(() => manejarCambioPaso(1), [manejarCambioPaso]),
+    onRetroceder: useCallback(() => manejarCambioPaso(-1), [manejarCambioPaso])
+  })
 
   useEffect(() => {
     const manejarTecladoDebug = (event) => {
@@ -1000,7 +1012,9 @@ function Pozo1({ onVolverAUbicacion, onCompletarPozo1, iniciarEnFinal = false })
 
         {pasoActual <= 1 ? (
           <p className="ptar-pozo1__hint" aria-live="polite">
-            {esNavegacionTactil
+            {modoNavegacion === MODO_NAVEGACION_BOTONES
+              ? 'Mueve la gota con las flechas: derecha avanza, izquierda retrocede'
+              : esNavegacionTactil
               ? 'Mueve la gota deslizando: izquierda avanza, derecha retrocede'
               : 'Mueve la gota de agua con la rueda del raton'}
           </p>

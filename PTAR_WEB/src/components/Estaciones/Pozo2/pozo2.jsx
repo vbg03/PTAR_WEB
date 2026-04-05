@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
+import { useControlesNavegacion } from '../../../hooks/useControlesNavegacion'
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
@@ -444,50 +444,44 @@ function Pozo2({
         }, 1200)
     }, [obtenerCamaraActivaPaso])
 
-    useEffect(() => {
-        const manejarRueda = (event) => {
-            const direccionScroll = obtenerDireccionScrollPorGesto(
-            event,
-            acumulacionScrollRef,
-            ultimaMarcaScrollRef,
-            ultimaActivacionScrollRef
-        )
+    const manejarCambioPaso = useCallback((direccionScroll) => {
+        if (bloqueoScrollRef.current || direccionScroll === 0) {
+            return
+        }
 
-            if (bloqueoScrollRef.current || direccionScroll === 0) {
-                return
-            }
+        bloqueoScrollRef.current = true
 
-            bloqueoScrollRef.current = true
-
-            if (direccionScroll > 0) {
-                if (pasoActual >= PASOS_RECORRIDO.length - 1) {
-                    if (typeof onCompletarPozo2 === 'function') {
-                        onCompletarPozo2()
-                    }
-                } else {
-                    setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+        if (direccionScroll > 0) {
+            if (pasoActual >= PASOS_RECORRIDO.length - 1) {
+                if (typeof onCompletarPozo2 === 'function') {
+                    onCompletarPozo2()
                 }
-            } else if (pasoActual > 0) {
-                setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
-            } else if (typeof onVolver === 'function') {
-                onVolver()
+            } else {
+                setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
             }
-
-            if (timeoutBloqueoRef.current) {
-                window.clearTimeout(timeoutBloqueoRef.current)
-            }
-
-            timeoutBloqueoRef.current = window.setTimeout(() => {
-                bloqueoScrollRef.current = false
-                timeoutBloqueoRef.current = null
-            }, DURACION_BLOQUEO_SCROLL)
+        } else if (pasoActual > 0) {
+            setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
+        } else if (typeof onVolver === 'function') {
+            onVolver()
         }
 
-        window.addEventListener('wheel', manejarRueda, { passive: true })
-        return () => {
-            window.removeEventListener('wheel', manejarRueda)
+        if (timeoutBloqueoRef.current) {
+            window.clearTimeout(timeoutBloqueoRef.current)
         }
+
+        timeoutBloqueoRef.current = window.setTimeout(() => {
+            bloqueoScrollRef.current = false
+            timeoutBloqueoRef.current = null
+        }, DURACION_BLOQUEO_SCROLL)
     }, [pasoActual, onVolver, onCompletarPozo2])
+
+    useControlesNavegacion({
+        acumulacionScrollRef,
+        ultimaMarcaScrollRef,
+        ultimaActivacionScrollRef,
+        onAvanzar: useCallback(() => manejarCambioPaso(1), [manejarCambioPaso]),
+        onRetroceder: useCallback(() => manejarCambioPaso(-1), [manejarCambioPaso])
+    })
 
     useEffect(() => {
         const manejarTecladoDebug = (event) => {

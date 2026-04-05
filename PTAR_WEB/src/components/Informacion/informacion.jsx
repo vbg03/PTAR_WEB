@@ -1,8 +1,9 @@
 ﻿import { useEffect, useRef, useState } from 'react'
-import { obtenerDireccionScrollPorGesto } from '../../utils/wheelStepNavigation'
+import { useControlesNavegacion } from '../../hooks/useControlesNavegacion'
 import { useCallback } from 'react'
 import { useNarracionVoces } from '../../hooks/useNarracionVoces'
 import { useEsNavegacionTactil } from '../../hooks/useEsNavegacionTactil'
+import { MODO_NAVEGACION_BOTONES } from '../../utils/navigationSettings'
 import './informacion.css'
 
 const ETAPA_BIENVENIDA = 0
@@ -87,16 +88,13 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
     }
   }, [])
 
-  useEffect(() => {
-    const manejarRueda = (event) => {
-      const direccionScroll = obtenerDireccionScrollPorGesto(
-        event,
-        acumulacionScrollRef,
-        ultimaMarcaScrollRef,
-        ultimaActivacionScrollRef
-      )
-
-      if (bloqueoScrollRef.current || transicionPozoRef.current || direccionScroll === 0) {
+  const manejarCambioPaso = useCallback(
+    (direccionScroll) => {
+      if (
+        bloqueoScrollRef.current ||
+        transicionPozoRef.current ||
+        direccionScroll === 0
+      ) {
         return
       }
 
@@ -158,14 +156,22 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
           bloqueoScrollRef.current = false
         }
       }, 320)
-    }
+    },
+    [
+      etapaActual,
+      pasoConversacionVideo,
+      pasoConversacionUbicacion,
+      iniciarTransicionPozo
+    ]
+  )
 
-    window.addEventListener('wheel', manejarRueda, { passive: true })
-
-    return () => {
-      window.removeEventListener('wheel', manejarRueda)
-    }
-  }, [etapaActual, pasoConversacionVideo, pasoConversacionUbicacion, iniciarTransicionPozo])
+  const modoNavegacion = useControlesNavegacion({
+    acumulacionScrollRef,
+    ultimaMarcaScrollRef,
+    ultimaActivacionScrollRef,
+    onAvanzar: useCallback(() => manejarCambioPaso(1), [manejarCambioPaso]),
+    onRetroceder: useCallback(() => manejarCambioPaso(-1), [manejarCambioPaso])
+  })
 
   useEffect(() => {
     if (etapaActual !== ETAPA_VIDEO) {
@@ -242,10 +248,14 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
   const textoIndicacionScroll =
     etapaActual === ETAPA_UBICACION &&
     pasoConversacionUbicacion === PASO_UBICACION_PREGUNTA
-      ? esNavegacionTactil
+      ? modoNavegacion === MODO_NAVEGACION_BOTONES
+        ? 'Usa la flecha derecha para seguir a Pozo 1'
+        : esNavegacionTactil
         ? 'Desliza a la izquierda para seguir a Pozo 1'
         : 'Sigue con la rueda para ir a la estacion Pozo 1'
-      : esNavegacionTactil
+      : modoNavegacion === MODO_NAVEGACION_BOTONES
+        ? 'Usa las flechas: derecha avanza, izquierda retrocede'
+        : esNavegacionTactil
         ? 'Desliza: izquierda avanza, derecha retrocede'
         : 'Muevete usando la rueda del raton'
 

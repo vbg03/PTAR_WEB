@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
+import { useControlesNavegacion } from '../../../hooks/useControlesNavegacion'
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
@@ -396,50 +396,44 @@ function Filtro({ onVolverATamizaje, onCompletarFiltracion, iniciarEnFinal = fal
         }
     }, [paso])
 
-    useEffect(() => {
-        const manejarRueda = (event) => {
-            const direccionScroll = obtenerDireccionScrollPorGesto(
-            event,
-            acumulacionScrollRef,
-            ultimaMarcaScrollRef,
-            ultimaActivacionScrollRef
-        )
+    const manejarCambioPaso = useCallback((direccionScroll) => {
+        if (bloqueoScrollRef.current || direccionScroll === 0) {
+            return
+        }
 
-            if (bloqueoScrollRef.current || direccionScroll === 0) {
-                return
-            }
+        bloqueoScrollRef.current = true
 
-            bloqueoScrollRef.current = true
-
-            if (direccionScroll > 0) {
-                if (pasoActual >= PASOS_RECORRIDO.length - 1) {
-                    if (typeof onCompletarFiltracion === 'function') {
-                        onCompletarFiltracion()
-                    }
-                } else {
-                    setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+        if (direccionScroll > 0) {
+            if (pasoActual >= PASOS_RECORRIDO.length - 1) {
+                if (typeof onCompletarFiltracion === 'function') {
+                    onCompletarFiltracion()
                 }
-            } else if (pasoActual > 0) {
-                setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
-            } else if (typeof onVolverATamizaje === 'function') {
-                onVolverATamizaje()
+            } else {
+                setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
             }
-
-            if (timeoutBloqueoRef.current) {
-                window.clearTimeout(timeoutBloqueoRef.current)
-            }
-
-            timeoutBloqueoRef.current = window.setTimeout(() => {
-                bloqueoScrollRef.current = false
-                timeoutBloqueoRef.current = null
-            }, DURACION_BLOQUEO_SCROLL)
+        } else if (pasoActual > 0) {
+            setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
+        } else if (typeof onVolverATamizaje === 'function') {
+            onVolverATamizaje()
         }
 
-        window.addEventListener('wheel', manejarRueda, { passive: true })
-        return () => {
-            window.removeEventListener('wheel', manejarRueda)
+        if (timeoutBloqueoRef.current) {
+            window.clearTimeout(timeoutBloqueoRef.current)
         }
+
+        timeoutBloqueoRef.current = window.setTimeout(() => {
+            bloqueoScrollRef.current = false
+            timeoutBloqueoRef.current = null
+        }, DURACION_BLOQUEO_SCROLL)
     }, [pasoActual, onCompletarFiltracion, onVolverATamizaje])
+
+    useControlesNavegacion({
+        acumulacionScrollRef,
+        ultimaMarcaScrollRef,
+        ultimaActivacionScrollRef,
+        onAvanzar: useCallback(() => manejarCambioPaso(1), [manejarCambioPaso]),
+        onRetroceder: useCallback(() => manejarCambioPaso(-1), [manejarCambioPaso])
+    })
 
     useEffect(() => {
         const manejarTecladoDebug = (event) => {

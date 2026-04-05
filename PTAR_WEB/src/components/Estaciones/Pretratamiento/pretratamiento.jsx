@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { obtenerDireccionScrollPorGesto } from '../../../utils/wheelStepNavigation'
+import { useControlesNavegacion } from '../../../hooks/useControlesNavegacion'
 import { useNarracionVoces } from '../../../hooks/useNarracionVoces'
 import { construirIndicesAudioPorPaso } from '../../../utils/voiceLibrary'
 import { DEBUG_CAMARA_HABILITADO } from '../../../config/debugFlags'
@@ -738,57 +738,51 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
         }
     }, [canastaArrastreCompletado, canastaRetornoCompletado, paso])
 
-    useEffect(() => {
-        const manejarRueda = (event) => {
-            const direccionScroll = obtenerDireccionScrollPorGesto(
-            event,
-            acumulacionScrollRef,
-            ultimaMarcaScrollRef,
-            ultimaActivacionScrollRef
-        )
+    const manejarCambioPaso = useCallback((direccionScroll) => {
+        if (bloqueoScrollRef.current || direccionScroll === 0) {
+            return
+        }
 
-            if (bloqueoScrollRef.current || direccionScroll === 0) {
-                return
-            }
+        if (direccionScroll > 0 && pasoRequiereArrastreCanasta && !canastaRetornoCompletado) {
+            return
+        }
 
-            if (direccionScroll > 0 && pasoRequiereArrastreCanasta && !canastaRetornoCompletado) {
-                return
-            }
+        if (direccionScroll > 0 && paso.mostrarBotonActivar) {
+            return
+        }
 
-            if (direccionScroll > 0 && paso.mostrarBotonActivar) {
-                return
-            }
+        bloqueoScrollRef.current = true
 
-            bloqueoScrollRef.current = true
-
-            if (direccionScroll > 0) {
-                if (pasoActual >= PASOS_RECORRIDO.length - 1) {
-                    if (typeof onCompletarPretratamiento === 'function') {
-                        onCompletarPretratamiento()
-                    }
-                } else {
-                    setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
+        if (direccionScroll > 0) {
+            if (pasoActual >= PASOS_RECORRIDO.length - 1) {
+                if (typeof onCompletarPretratamiento === 'function') {
+                    onCompletarPretratamiento()
                 }
-            } else if (pasoActual > 0) {
-                setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
-            } else if (typeof onVolverAPozo1 === 'function') {
-                onVolverAPozo1()
+            } else {
+                setPasoActual((pasoAnterior) => Math.min(pasoAnterior + 1, PASOS_RECORRIDO.length - 1))
             }
-
-            if (timeoutBloqueoRef.current) {
-                window.clearTimeout(timeoutBloqueoRef.current)
-            }
-
-            timeoutBloqueoRef.current = window.setTimeout(() => {
-                bloqueoScrollRef.current = false
-            }, DURACION_BLOQUEO_SCROLL)
+        } else if (pasoActual > 0) {
+            setPasoActual((pasoAnterior) => Math.max(pasoAnterior - 1, 0))
+        } else if (typeof onVolverAPozo1 === 'function') {
+            onVolverAPozo1()
         }
 
-        window.addEventListener('wheel', manejarRueda, { passive: true })
-        return () => {
-            window.removeEventListener('wheel', manejarRueda)
+        if (timeoutBloqueoRef.current) {
+            window.clearTimeout(timeoutBloqueoRef.current)
         }
+
+        timeoutBloqueoRef.current = window.setTimeout(() => {
+            bloqueoScrollRef.current = false
+        }, DURACION_BLOQUEO_SCROLL)
     }, [pasoActual, onVolverAPozo1, onCompletarPretratamiento, pasoRequiereArrastreCanasta, canastaRetornoCompletado, paso.mostrarBotonActivar])
+
+    useControlesNavegacion({
+        acumulacionScrollRef,
+        ultimaMarcaScrollRef,
+        ultimaActivacionScrollRef,
+        onAvanzar: useCallback(() => manejarCambioPaso(1), [manejarCambioPaso]),
+        onRetroceder: useCallback(() => manejarCambioPaso(-1), [manejarCambioPaso])
+    })
 
     useEffect(() => {
         const manejarTecladoDebug = (event) => {
@@ -967,6 +961,14 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
     const renderCanastaLimpia = mostrarCanastaLimpia || pasoRequiereArrastreCanasta
     const mostrarIndicacionRegresarCanasta =
         pasoRequiereArrastreCanasta && canastaArrastreCompletado && !canastaRetornoCompletado
+    const mostrarIndicacionArrastreCanasta =
+        pasoRequiereArrastreCanasta &&
+        !canastaArrastreCompletado &&
+        !canastaArrastrando
+    const estiloIndicacionArrastreCanasta = {
+        left: `${canastaSuciaPosicion?.x ?? paso.canastaSucia.x}%`,
+        top: `${canastaSuciaPosicion?.y ?? paso.canastaSucia.y}%`
+    }
     const burbujaDerechaActiva =
         mostrarIndicacionRegresarCanasta
             ? 'Ahora regresa la canasta limpia a su lugar.'
@@ -1226,6 +1228,22 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
                         style={estiloCanastaSucia}
                         onPointerDown={iniciarArrastreCanasta}
                     />
+                ) : null}
+
+                {mostrarIndicacionArrastreCanasta ? (
+                    <div
+                        className="ptar-pre__drag-hint"
+                        style={estiloIndicacionArrastreCanasta}
+                        aria-hidden="true"
+                    >
+                        <span className="ptar-pre__drag-hint-line" />
+                        <span className="ptar-pre__drag-hint-arrow" />
+                        <img
+                            className="ptar-pre__drag-hint-icon"
+                            src="/images/dedo-click.png"
+                            alt=""
+                        />
+                    </div>
                 ) : null}
 
                 {renderCanastaLimpia ? (
