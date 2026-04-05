@@ -478,7 +478,7 @@ function Herramientas({
       try {
         await salirPantallaCompleta()
       } catch {
-        // Ignora rechazos si el estado cambio fuera del gesto del usuario.
+        return
       }
 
       return
@@ -513,11 +513,11 @@ function Herramientas({
         try {
           await window.screen.orientation.lock('landscape')
         } catch {
-          // Algunos navegadores no permiten bloquear la orientacion.
+          return
         }
       }
     } catch {
-      // La API puede no estar disponible o ser rechazada por el navegador.
+      return
     }
   }
 
