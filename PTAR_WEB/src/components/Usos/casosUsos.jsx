@@ -99,11 +99,6 @@ const PASOS_RECORRIDO = [
     burbujaDerecha:
       'Es la forma en que la universidad asume su responsabilidad ambiental y hace más sostenible el uso del agua en el campus.'
   },
-  {
-    titulo: 'REFLEXIÓN FINAL',
-    mediaId: 'reflexion',
-    burbujaIzquierda: 'O sea, la PTAR es como la UAO se hace responsable del agua que usa.'
-  }
 ]
 
 const INDICES_AUDIO_BLANCO = construirIndicesAudioPorPaso(

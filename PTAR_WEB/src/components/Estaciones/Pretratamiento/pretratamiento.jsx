@@ -961,6 +961,14 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
     const renderCanastaLimpia = mostrarCanastaLimpia || pasoRequiereArrastreCanasta
     const mostrarIndicacionRegresarCanasta =
         pasoRequiereArrastreCanasta && canastaArrastreCompletado && !canastaRetornoCompletado
+    const mostrarIndicacionArrastreCanasta =
+        pasoRequiereArrastreCanasta &&
+        !canastaArrastreCompletado &&
+        !canastaArrastrando
+    const estiloIndicacionArrastreCanasta = {
+        left: `${canastaSuciaPosicion?.x ?? paso.canastaSucia.x}%`,
+        top: `${canastaSuciaPosicion?.y ?? paso.canastaSucia.y}%`
+    }
     const burbujaDerechaActiva =
         mostrarIndicacionRegresarCanasta
             ? 'Ahora regresa la canasta limpia a su lugar.'
@@ -1220,6 +1228,22 @@ function Pretratamiento({ onVolverAPozo1, onCompletarPretratamiento, iniciarEnFi
                         style={estiloCanastaSucia}
                         onPointerDown={iniciarArrastreCanasta}
                     />
+                ) : null}
+
+                {mostrarIndicacionArrastreCanasta ? (
+                    <div
+                        className="ptar-pre__drag-hint"
+                        style={estiloIndicacionArrastreCanasta}
+                        aria-hidden="true"
+                    >
+                        <span className="ptar-pre__drag-hint-line" />
+                        <span className="ptar-pre__drag-hint-arrow" />
+                        <img
+                            className="ptar-pre__drag-hint-icon"
+                            src="/images/dedo-click.png"
+                            alt=""
+                        />
+                    </div>
                 ) : null}
 
                 {renderCanastaLimpia ? (

@@ -478,6 +478,7 @@ function Herramientas({
       try {
         await salirPantallaCompleta()
       } catch {
+        // Ignora rechazos si el estado cambio fuera del gesto del usuario.
       }
 
       return
@@ -512,9 +513,11 @@ function Herramientas({
         try {
           await window.screen.orientation.lock('landscape')
         } catch {
+          // Algunos navegadores no permiten bloquear la orientacion.
         }
       }
     } catch {
+      // La API puede no estar disponible o ser rechazada por el navegador.
     }
   }
 
@@ -930,16 +933,27 @@ function Herramientas({
           aria-labelledby="ptar-help-title"
         >
           <section className="ptar-help-overlay__card" onClick={(event) => event.stopPropagation()}>
-            <button
-              type="button"
-              className="ptar-help-overlay__close"
-              onClick={() => setMostrarInstrucciones(false)}
-              aria-label="Cerrar instrucciones"
-            >
-              Cerrar
-            </button>
+            <div className="ptar-help-overlay__head">
+              <div className="ptar-help-overlay__copy">
+                <p className="ptar-help-overlay__eyebrow">Guia rapida</p>
+                <h2 id="ptar-help-title">Instrucciones</h2>
+                <p className="ptar-help-overlay__intro">
+                  Usa estas indicaciones para recorrer la experiencia y ajusta
+                  navegacion, sonido o accesibilidad desde la barra lateral cuando lo
+                  necesites.
+                </p>
+              </div>
 
-            <h2 id="ptar-help-title">Instrucciones</h2>
+              <button
+                type="button"
+                className="ptar-help-overlay__close"
+                onClick={() => setMostrarInstrucciones(false)}
+                aria-label="Cerrar instrucciones"
+              >
+                Cerrar
+              </button>
+            </div>
+
             <ul>
               {modoNavegacion === MODO_NAVEGACION_BOTONES ? (
                 <>
