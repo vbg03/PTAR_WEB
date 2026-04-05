@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { useModoNavegacion } from '../../hooks/useModoNavegacion'
 import {
   emitirEventoNavegacion,
@@ -34,18 +33,10 @@ function NavegacionBotones({
   mostrarBotonRetroceder = true
 }) {
   const modoNavegacion = useModoNavegacion()
-  const mostrarControles = useMemo(
-    () =>
-      mostrar &&
-      modoNavegacion === MODO_NAVEGACION_BOTONES &&
-      (mostrarBotonAvanzar || mostrarBotonRetroceder),
-    [
-      modoNavegacion,
-      mostrar,
-      mostrarBotonAvanzar,
-      mostrarBotonRetroceder
-    ]
-  )
+  const mostrarControles =
+    mostrar &&
+    modoNavegacion === MODO_NAVEGACION_BOTONES &&
+    (mostrarBotonAvanzar || mostrarBotonRetroceder)
 
   if (!mostrarControles) {
     return null

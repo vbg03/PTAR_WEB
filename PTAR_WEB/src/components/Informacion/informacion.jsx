@@ -1,6 +1,5 @@
-﻿import { useEffect, useRef, useState } from 'react'
+﻿import { useCallback, useEffect, useRef, useState } from 'react'
 import { useControlesNavegacion } from '../../hooks/useControlesNavegacion'
-import { useCallback } from 'react'
 import { useNarracionVoces } from '../../hooks/useNarracionVoces'
 import { useEsNavegacionTactil } from '../../hooks/useEsNavegacionTactil'
 import { MODO_NAVEGACION_BOTONES } from '../../utils/navigationSettings'
@@ -619,3 +618,4 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
 }
 
 export default Informacion
+

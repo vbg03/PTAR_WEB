@@ -56,6 +56,12 @@ const SECCIONES_ESTACIONES = [
   'pozo2'
 ]
 
+const incrementarRenderKey = (setRenderKey) => {
+  if (typeof setRenderKey === 'function') {
+    setRenderKey((valorAnterior) => valorAnterior + 1)
+  }
+}
+
 function App() {
   const [seccionActiva, setSeccionActiva] = useState('inicio')
   const [volverAUbicacion, setVolverAUbicacion] = useState(false)
@@ -431,6 +437,47 @@ function App() {
     }
   }, [seccionActiva, pozo2IniciarEnFinal])
 
+  const actualizarEstadoRecorrido = (estado = {}) => {
+    setVolverAUbicacion(estado.volverAUbicacion ?? false)
+    setUsosIniciarEnFinal(estado.usosIniciarEnFinal ?? false)
+    setPozo1IniciarEnFinal(estado.pozo1IniciarEnFinal ?? false)
+    setPretratamientoIniciarEnFinal(estado.pretratamientoIniciarEnFinal ?? false)
+    setAreacionEntradaSuave(estado.areacionEntradaSuave ?? false)
+    setAreacionIniciarEnFinal(estado.areacionIniciarEnFinal ?? false)
+    setSedimentadorIniciarEnFinal(estado.sedimentadorIniciarEnFinal ?? false)
+    setLechosIniciarEnFinal(estado.lechosIniciarEnFinal ?? false)
+    setTamizajeIniciarEnFinal(estado.tamizajeIniciarEnFinal ?? false)
+    setFiltroIniciarEnFinal(estado.filtroIniciarEnFinal ?? false)
+    setDesinfeccionIniciarEnFinal(estado.desinfeccionIniciarEnFinal ?? false)
+    setAlmacenamientoIniciarEnFinal(estado.almacenamientoIniciarEnFinal ?? false)
+    setPozo2IniciarEnFinal(estado.pozo2IniciarEnFinal ?? false)
+  }
+
+  const cambiarSeccion = (seccion, { estado, renderKeySetter } = {}) => {
+    actualizarEstadoRecorrido(estado)
+    setSeccionActiva(seccion)
+    incrementarRenderKey(renderKeySetter)
+  }
+
+  const cambiarSeccionConTransicion = (direccion, seccion, opciones) => {
+    ejecutarTransicionEstacion(direccion, () => {
+      cambiarSeccion(seccion, opciones)
+    })
+  }
+
+  const estacionesMenu = [
+    { seccion: 'pozo1', renderKeySetter: setPozo1RenderKey },
+    { seccion: 'pretratamiento', renderKeySetter: setPretratamientoRenderKey },
+    { seccion: 'areacion', renderKeySetter: setAreacionRenderKey },
+    { seccion: 'sedimentador', renderKeySetter: setSedimentadorRenderKey },
+    { seccion: 'lechos', renderKeySetter: setLechosRenderKey },
+    { seccion: 'tamizaje', renderKeySetter: setTamizajeRenderKey },
+    { seccion: 'filtro', renderKeySetter: setFiltroRenderKey },
+    { seccion: 'desinfeccion', renderKeySetter: setDesinfeccionRenderKey },
+    { seccion: 'almacenamiento', renderKeySetter: setAlmacenamientoRenderKey },
+    { seccion: 'pozo2', renderKeySetter: setPozo2RenderKey }
+  ]
+
   const claseApp =
     {
       pozo1: 'ptar-app--pozo1',
@@ -462,216 +509,20 @@ function App() {
       style={variablesTema}
     >
       <Header
-        onLogoClick={() => {
-          setVolverAUbicacion(false)
-          setPozo1IniciarEnFinal(false)
-          setPretratamientoIniciarEnFinal(false)
-          setAreacionEntradaSuave(false)
-          setAreacionIniciarEnFinal(false)
-          setSedimentadorIniciarEnFinal(false)
-          setLechosIniciarEnFinal(false)
-          setTamizajeIniciarEnFinal(false)
-          setFiltroIniciarEnFinal(false)
-          setDesinfeccionIniciarEnFinal(false)
-          setAlmacenamientoIniciarEnFinal(false)
-          setPozo2IniciarEnFinal(false)
-          setSeccionActiva('inicio')
-        }}
+        onLogoClick={() => cambiarSeccion('inicio')}
         onSeleccionarEstacion={(_, indice) => {
-          if (indice === 0) {
-            setVolverAUbicacion(false)
-            setPozo1IniciarEnFinal(false)
-            setPretratamientoIniciarEnFinal(false)
-            setAreacionEntradaSuave(false)
-            setAreacionIniciarEnFinal(false)
-            setSedimentadorIniciarEnFinal(false)
-            setLechosIniciarEnFinal(false)
-            setTamizajeIniciarEnFinal(false)
-            setFiltroIniciarEnFinal(false)
-            setDesinfeccionIniciarEnFinal(false)
-            setSeccionActiva('pozo1')
-            setPozo1RenderKey((valorAnterior) => valorAnterior + 1)
+          const estacionSeleccionada = estacionesMenu[indice]
+
+          if (!estacionSeleccionada) {
             return
           }
 
-          if (indice === 1) {
-            setVolverAUbicacion(false)
-            setPozo1IniciarEnFinal(false)
-            setPretratamientoIniciarEnFinal(false)
-            setAreacionEntradaSuave(false)
-            setAreacionIniciarEnFinal(false)
-            setSedimentadorIniciarEnFinal(false)
-            setLechosIniciarEnFinal(false)
-            setTamizajeIniciarEnFinal(false)
-            setFiltroIniciarEnFinal(false)
-            setDesinfeccionIniciarEnFinal(false)
-            setSeccionActiva('pretratamiento')
-            setPretratamientoRenderKey((valorAnterior) => valorAnterior + 1)
-            return
-          }
-
-          if (indice === 2) {
-            setVolverAUbicacion(false)
-            setPozo1IniciarEnFinal(false)
-            setPretratamientoIniciarEnFinal(false)
-            setAreacionEntradaSuave(false)
-            setAreacionIniciarEnFinal(false)
-            setSedimentadorIniciarEnFinal(false)
-            setLechosIniciarEnFinal(false)
-            setTamizajeIniciarEnFinal(false)
-            setFiltroIniciarEnFinal(false)
-            setDesinfeccionIniciarEnFinal(false)
-            setSeccionActiva('areacion')
-            setAreacionRenderKey((valorAnterior) => valorAnterior + 1)
-            return
-          }
-
-          if (indice === 3) {
-            setVolverAUbicacion(false)
-            setPozo1IniciarEnFinal(false)
-            setPretratamientoIniciarEnFinal(false)
-            setAreacionEntradaSuave(false)
-            setAreacionIniciarEnFinal(false)
-            setSedimentadorIniciarEnFinal(false)
-            setLechosIniciarEnFinal(false)
-            setTamizajeIniciarEnFinal(false)
-            setFiltroIniciarEnFinal(false)
-            setDesinfeccionIniciarEnFinal(false)
-            setSeccionActiva('sedimentador')
-            setSedimentadorRenderKey((valorAnterior) => valorAnterior + 1)
-            return
-          }
-
-          if (indice === 4) {
-            setVolverAUbicacion(false)
-            setPozo1IniciarEnFinal(false)
-            setPretratamientoIniciarEnFinal(false)
-            setAreacionEntradaSuave(false)
-            setAreacionIniciarEnFinal(false)
-            setSedimentadorIniciarEnFinal(false)
-            setLechosIniciarEnFinal(false)
-            setTamizajeIniciarEnFinal(false)
-            setFiltroIniciarEnFinal(false)
-            setDesinfeccionIniciarEnFinal(false)
-            setSeccionActiva('lechos')
-            setLechosRenderKey((valorAnterior) => valorAnterior + 1)
-            return
-          }
-
-          if (indice === 5) {
-            setVolverAUbicacion(false)
-            setPozo1IniciarEnFinal(false)
-            setPretratamientoIniciarEnFinal(false)
-            setAreacionEntradaSuave(false)
-            setAreacionIniciarEnFinal(false)
-            setSedimentadorIniciarEnFinal(false)
-            setLechosIniciarEnFinal(false)
-            setTamizajeIniciarEnFinal(false)
-            setFiltroIniciarEnFinal(false)
-            setDesinfeccionIniciarEnFinal(false)
-            setSeccionActiva('tamizaje')
-            setTamizajeRenderKey((valorAnterior) => valorAnterior + 1)
-            return
-          }
-
-          if (indice === 6) {
-            setVolverAUbicacion(false)
-            setPozo1IniciarEnFinal(false)
-            setPretratamientoIniciarEnFinal(false)
-            setAreacionEntradaSuave(false)
-            setAreacionIniciarEnFinal(false)
-            setSedimentadorIniciarEnFinal(false)
-            setLechosIniciarEnFinal(false)
-            setTamizajeIniciarEnFinal(false)
-            setFiltroIniciarEnFinal(false)
-            setDesinfeccionIniciarEnFinal(false)
-            setSeccionActiva('filtro')
-            setFiltroRenderKey((valorAnterior) => valorAnterior + 1)
-            return
-          }
-
-          if (indice === 7) {
-            setVolverAUbicacion(false)
-            setPozo1IniciarEnFinal(false)
-            setPretratamientoIniciarEnFinal(false)
-            setAreacionEntradaSuave(false)
-            setAreacionIniciarEnFinal(false)
-            setSedimentadorIniciarEnFinal(false)
-            setLechosIniciarEnFinal(false)
-            setTamizajeIniciarEnFinal(false)
-            setFiltroIniciarEnFinal(false)
-            setDesinfeccionIniciarEnFinal(false)
-            setSeccionActiva('desinfeccion')
-            setDesinfeccionRenderKey((valorAnterior) => valorAnterior + 1)
-            return
-          }
-
-          if (indice === 8) {
-            setVolverAUbicacion(false)
-            setPozo1IniciarEnFinal(false)
-            setPretratamientoIniciarEnFinal(false)
-            setAreacionEntradaSuave(false)
-            setAreacionIniciarEnFinal(false)
-            setSedimentadorIniciarEnFinal(false)
-            setLechosIniciarEnFinal(false)
-            setTamizajeIniciarEnFinal(false)
-            setFiltroIniciarEnFinal(false)
-            setDesinfeccionIniciarEnFinal(false)
-            setAlmacenamientoIniciarEnFinal(false)
-            setSeccionActiva('almacenamiento')
-            setAlmacenamientoRenderKey((valorAnterior) => valorAnterior + 1)
-            return
-          }
-
-          if (indice === 9) {
-            setVolverAUbicacion(false)
-            setPozo1IniciarEnFinal(false)
-            setPretratamientoIniciarEnFinal(false)
-            setAreacionEntradaSuave(false)
-            setAreacionIniciarEnFinal(false)
-            setSedimentadorIniciarEnFinal(false)
-            setLechosIniciarEnFinal(false)
-            setTamizajeIniciarEnFinal(false)
-            setFiltroIniciarEnFinal(false)
-            setDesinfeccionIniciarEnFinal(false)
-            setPozo2IniciarEnFinal(false)
-            setSeccionActiva('pozo2')
-            setPozo2RenderKey((valorAnterior) => valorAnterior + 1)
-            return
-          }
+          cambiarSeccion(estacionSeleccionada.seccion, {
+            renderKeySetter: estacionSeleccionada.renderKeySetter
+          })
         }}
-        onIrAUsos={() => {
-          setVolverAUbicacion(false)
-          setPozo1IniciarEnFinal(false)
-          setPretratamientoIniciarEnFinal(false)
-          setAreacionEntradaSuave(false)
-          setAreacionIniciarEnFinal(false)
-          setSedimentadorIniciarEnFinal(false)
-          setLechosIniciarEnFinal(false)
-          setTamizajeIniciarEnFinal(false)
-          setFiltroIniciarEnFinal(false)
-          setDesinfeccionIniciarEnFinal(false)
-          setAlmacenamientoIniciarEnFinal(false)
-          setPozo2IniciarEnFinal(false)
-          setUsosIniciarEnFinal(false)
-          setSeccionActiva('usos')
-          setUsosRenderKey((valorAnterior) => valorAnterior + 1)
-        }}
-        onIrADocumentacion={() => {
-          setVolverAUbicacion(false)
-          setPozo1IniciarEnFinal(false)
-          setPretratamientoIniciarEnFinal(false)
-          setAreacionEntradaSuave(false)
-          setAreacionIniciarEnFinal(false)
-          setSedimentadorIniciarEnFinal(false)
-          setLechosIniciarEnFinal(false)
-          setTamizajeIniciarEnFinal(false)
-          setFiltroIniciarEnFinal(false)
-          setDesinfeccionIniciarEnFinal(false)
-          setAlmacenamientoIniciarEnFinal(false)
-          setPozo2IniciarEnFinal(false)
-          setSeccionActiva('documentacion')
-        }}
+        onIrAUsos={() => cambiarSeccion('usos', { renderKeySetter: setUsosRenderKey })}
+        onIrADocumentacion={() => cambiarSeccion('documentacion')}
         ocultarEnModoEstacion={ocultarHeaderHastaZonaSuperior}
       />
       <Herramientas
@@ -702,38 +553,14 @@ function App() {
       <div className="ptar-app__content">
         {seccionActiva === 'inicio' ? (
           <Inicio
-            onIniciarRecorrido={() => {
-              setVolverAUbicacion(false)
-              setPozo1IniciarEnFinal(false)
-              setPretratamientoIniciarEnFinal(false)
-              setAreacionEntradaSuave(false)
-              setAreacionIniciarEnFinal(false)
-              setSedimentadorIniciarEnFinal(false)
-              setLechosIniciarEnFinal(false)
-              setTamizajeIniciarEnFinal(false)
-              setFiltroIniciarEnFinal(false)
-              setDesinfeccionIniciarEnFinal(false)
-              setSeccionActiva('informacion')
-            }}
+            onIniciarRecorrido={() => cambiarSeccion('informacion')}
           />
         ) : null}
 
         {seccionActiva === 'informacion' ? (
           <Informacion
             iniciarEnUbicacion={volverAUbicacion}
-            onCompletarInformacion={() => {
-              setVolverAUbicacion(false)
-              setPozo1IniciarEnFinal(false)
-              setPretratamientoIniciarEnFinal(false)
-              setAreacionEntradaSuave(false)
-              setAreacionIniciarEnFinal(false)
-              setSedimentadorIniciarEnFinal(false)
-              setLechosIniciarEnFinal(false)
-              setTamizajeIniciarEnFinal(false)
-              setFiltroIniciarEnFinal(false)
-              setDesinfeccionIniciarEnFinal(false)
-              setSeccionActiva('pozo1')
-            }}
+            onCompletarInformacion={() => cambiarSeccion('pozo1')}
           />
         ) : null}
 
@@ -742,33 +569,14 @@ function App() {
             key={pozo1RenderKey}
             iniciarEnFinal={pozo1IniciarEnFinal}
             onCompletarPozo1={() => {
-              ejecutarTransicionEstacion('avance', () => {
-                setPozo1IniciarEnFinal(false)
-                setPretratamientoIniciarEnFinal(false)
-                setAreacionEntradaSuave(false)
-                setAreacionIniciarEnFinal(false)
-                setSedimentadorIniciarEnFinal(false)
-                setLechosIniciarEnFinal(false)
-                setTamizajeIniciarEnFinal(false)
-                setFiltroIniciarEnFinal(false)
-                setDesinfeccionIniciarEnFinal(false)
-                setSeccionActiva('pretratamiento')
-                setPretratamientoRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('avance', 'pretratamiento', {
+                renderKeySetter: setPretratamientoRenderKey
               })
             }}
-            onVolverAUbicacion={() => {
-              setVolverAUbicacion(true)
-              setPozo1IniciarEnFinal(false)
-              setPretratamientoIniciarEnFinal(false)
-              setAreacionEntradaSuave(false)
-              setAreacionIniciarEnFinal(false)
-              setSedimentadorIniciarEnFinal(false)
-              setLechosIniciarEnFinal(false)
-              setTamizajeIniciarEnFinal(false)
-              setFiltroIniciarEnFinal(false)
-              setDesinfeccionIniciarEnFinal(false)
-              setSeccionActiva('informacion')
-            }}
+            onVolverAUbicacion={() =>
+              cambiarSeccion('informacion', {
+                estado: { volverAUbicacion: true }
+              })}
           />
         ) : null}
 
@@ -777,32 +585,16 @@ function App() {
             key={pretratamientoRenderKey}
             iniciarEnFinal={pretratamientoIniciarEnFinal}
             onVolverAPozo1={() => {
-              ejecutarTransicionEstacion('retroceso', () => {
-                setPozo1IniciarEnFinal(true)
-                setPretratamientoIniciarEnFinal(false)
-                setAreacionEntradaSuave(false)
-                setAreacionIniciarEnFinal(false)
-                setSedimentadorIniciarEnFinal(false)
-                setLechosIniciarEnFinal(false)
-                setTamizajeIniciarEnFinal(false)
-                setFiltroIniciarEnFinal(false)
-                setDesinfeccionIniciarEnFinal(false)
-                setSeccionActiva('pozo1')
-                setPozo1RenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('retroceso', 'pozo1', {
+                estado: { pozo1IniciarEnFinal: true },
+                renderKeySetter: setPozo1RenderKey
               })
             }}
-            onCompletarPretratamiento={() => {
-              setPretratamientoIniciarEnFinal(false)
-              setAreacionEntradaSuave(true)
-              setAreacionIniciarEnFinal(false)
-              setSedimentadorIniciarEnFinal(false)
-              setLechosIniciarEnFinal(false)
-              setTamizajeIniciarEnFinal(false)
-              setFiltroIniciarEnFinal(false)
-              setDesinfeccionIniciarEnFinal(false)
-              setSeccionActiva('areacion')
-              setAreacionRenderKey((valorAnterior) => valorAnterior + 1)
-            }}
+            onCompletarPretratamiento={() =>
+              cambiarSeccion('areacion', {
+                estado: { areacionEntradaSuave: true },
+                renderKeySetter: setAreacionRenderKey
+              })}
           />
         ) : null}
 
@@ -811,29 +603,14 @@ function App() {
             key={areacionRenderKey}
             entradaSuaveDesdePretratamiento={areacionEntradaSuave}
             iniciarEnFinal={areacionIniciarEnFinal}
-            onVolverAPretratamiento={() => {
-              setPretratamientoIniciarEnFinal(true)
-              setAreacionEntradaSuave(false)
-              setAreacionIniciarEnFinal(false)
-              setSedimentadorIniciarEnFinal(false)
-              setLechosIniciarEnFinal(false)
-              setTamizajeIniciarEnFinal(false)
-              setFiltroIniciarEnFinal(false)
-              setDesinfeccionIniciarEnFinal(false)
-              setSeccionActiva('pretratamiento')
-              setPretratamientoRenderKey((valorAnterior) => valorAnterior + 1)
-            }}
+            onVolverAPretratamiento={() =>
+              cambiarSeccion('pretratamiento', {
+                estado: { pretratamientoIniciarEnFinal: true },
+                renderKeySetter: setPretratamientoRenderKey
+              })}
             onCompletarAreacion={() => {
-              ejecutarTransicionEstacion('avance', () => {
-                setAreacionEntradaSuave(false)
-                setAreacionIniciarEnFinal(false)
-                setSedimentadorIniciarEnFinal(false)
-                setLechosIniciarEnFinal(false)
-                setTamizajeIniciarEnFinal(false)
-                setFiltroIniciarEnFinal(false)
-                setDesinfeccionIniciarEnFinal(false)
-                setSeccionActiva('sedimentador')
-                setSedimentadorRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('avance', 'sedimentador', {
+                renderKeySetter: setSedimentadorRenderKey
               })
             }}
           />
@@ -844,27 +621,14 @@ function App() {
             key={sedimentadorRenderKey}
             iniciarEnFinal={sedimentadorIniciarEnFinal}
             onVolverAAreacion={() => {
-              ejecutarTransicionEstacion('retroceso', () => {
-                setAreacionEntradaSuave(false)
-                setAreacionIniciarEnFinal(true)
-                setSedimentadorIniciarEnFinal(false)
-                setLechosIniciarEnFinal(false)
-                setTamizajeIniciarEnFinal(false)
-                setFiltroIniciarEnFinal(false)
-                setDesinfeccionIniciarEnFinal(false)
-                setSeccionActiva('areacion')
-                setAreacionRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('retroceso', 'areacion', {
+                estado: { areacionIniciarEnFinal: true },
+                renderKeySetter: setAreacionRenderKey
               })
             }}
             onCompletarSedimentador={() => {
-              ejecutarTransicionEstacion('avance', () => {
-                setSedimentadorIniciarEnFinal(false)
-                setLechosIniciarEnFinal(false)
-                setTamizajeIniciarEnFinal(false)
-                setFiltroIniciarEnFinal(false)
-                setDesinfeccionIniciarEnFinal(false)
-                setSeccionActiva('lechos')
-                setLechosRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('avance', 'lechos', {
+                renderKeySetter: setLechosRenderKey
               })
             }}
           />
@@ -875,25 +639,14 @@ function App() {
             key={lechosRenderKey}
             iniciarEnFinal={lechosIniciarEnFinal}
             onVolverASedimentador={() => {
-              ejecutarTransicionEstacion('retroceso', () => {
-                setLechosIniciarEnFinal(false)
-                setSedimentadorIniciarEnFinal(true)
-                setTamizajeIniciarEnFinal(false)
-                setFiltroIniciarEnFinal(false)
-                setDesinfeccionIniciarEnFinal(false)
-                setSeccionActiva('sedimentador')
-                setSedimentadorRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('retroceso', 'sedimentador', {
+                estado: { sedimentadorIniciarEnFinal: true },
+                renderKeySetter: setSedimentadorRenderKey
               })
             }}
             onCompletarLechos={() => {
-              ejecutarTransicionEstacion('avance', () => {
-                setLechosIniciarEnFinal(false)
-                setSedimentadorIniciarEnFinal(false)
-                setTamizajeIniciarEnFinal(false)
-                setFiltroIniciarEnFinal(false)
-                setDesinfeccionIniciarEnFinal(false)
-                setSeccionActiva('tamizaje')
-                setTamizajeRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('avance', 'tamizaje', {
+                renderKeySetter: setTamizajeRenderKey
               })
             }}
           />
@@ -904,23 +657,14 @@ function App() {
             key={tamizajeRenderKey}
             iniciarEnFinal={tamizajeIniciarEnFinal}
             onVolverALechos={() => {
-              ejecutarTransicionEstacion('retroceso', () => {
-                setLechosIniciarEnFinal(true)
-                setSedimentadorIniciarEnFinal(false)
-                setTamizajeIniciarEnFinal(false)
-                setFiltroIniciarEnFinal(false)
-                setDesinfeccionIniciarEnFinal(false)
-                setSeccionActiva('lechos')
-                setLechosRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('retroceso', 'lechos', {
+                estado: { lechosIniciarEnFinal: true },
+                renderKeySetter: setLechosRenderKey
               })
             }}
             onCompletarTamizaje={() => {
-              ejecutarTransicionEstacion('avance', () => {
-                setTamizajeIniciarEnFinal(false)
-                setFiltroIniciarEnFinal(false)
-                setDesinfeccionIniciarEnFinal(false)
-                setSeccionActiva('filtro')
-                setFiltroRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('avance', 'filtro', {
+                renderKeySetter: setFiltroRenderKey
               })
             }}
           />
@@ -931,20 +675,14 @@ function App() {
             key={filtroRenderKey}
             iniciarEnFinal={filtroIniciarEnFinal}
             onVolverATamizaje={() => {
-              ejecutarTransicionEstacion('retroceso', () => {
-                setTamizajeIniciarEnFinal(true)
-                setFiltroIniciarEnFinal(false)
-                setDesinfeccionIniciarEnFinal(false)
-                setSeccionActiva('tamizaje')
-                setTamizajeRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('retroceso', 'tamizaje', {
+                estado: { tamizajeIniciarEnFinal: true },
+                renderKeySetter: setTamizajeRenderKey
               })
             }}
             onCompletarFiltracion={() => {
-              ejecutarTransicionEstacion('avance', () => {
-                setFiltroIniciarEnFinal(false)
-                setDesinfeccionIniciarEnFinal(false)
-                setSeccionActiva('desinfeccion')
-                setDesinfeccionRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('avance', 'desinfeccion', {
+                renderKeySetter: setDesinfeccionRenderKey
               })
             }}
           />
@@ -955,19 +693,14 @@ function App() {
             key={desinfeccionRenderKey}
             iniciarEnFinal={desinfeccionIniciarEnFinal}
             onCompletarDesinfeccion={() => {
-              ejecutarTransicionEstacion('avance', () => {
-                setDesinfeccionIniciarEnFinal(false)
-                setAlmacenamientoIniciarEnFinal(false)
-                setSeccionActiva('almacenamiento')
-                setAlmacenamientoRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('avance', 'almacenamiento', {
+                renderKeySetter: setAlmacenamientoRenderKey
               })
             }}
             onVolverAFiltro={() => {
-              ejecutarTransicionEstacion('retroceso', () => {
-                setDesinfeccionIniciarEnFinal(false)
-                setFiltroIniciarEnFinal(true)
-                setSeccionActiva('filtro')
-                setFiltroRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('retroceso', 'filtro', {
+                estado: { filtroIniciarEnFinal: true },
+                renderKeySetter: setFiltroRenderKey
               })
             }}
           />
@@ -978,17 +711,14 @@ function App() {
             key={almacenamientoRenderKey}
             iniciarEnFinal={almacenamientoIniciarEnFinal}
             onVolverADesinfeccion={() => {
-              ejecutarTransicionEstacion('retroceso', () => {
-                setDesinfeccionIniciarEnFinal(true)
-                setSeccionActiva('desinfeccion')
-                setDesinfeccionRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('retroceso', 'desinfeccion', {
+                estado: { desinfeccionIniciarEnFinal: true },
+                renderKeySetter: setDesinfeccionRenderKey
               })
             }}
             onCompletarAlmacenamiento={() => {
-              ejecutarTransicionEstacion('avance', () => {
-                setPozo2IniciarEnFinal(false)
-                setSeccionActiva('pozo2')
-                setPozo2RenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('avance', 'pozo2', {
+                renderKeySetter: setPozo2RenderKey
               })
             }}
           />
@@ -999,18 +729,14 @@ function App() {
             key={pozo2RenderKey}
             iniciarEnFinal={pozo2IniciarEnFinal}
             onVolverAAlmacenamiento={() => {
-              ejecutarTransicionEstacion('retroceso', () => {
-                setAlmacenamientoIniciarEnFinal(true)
-                setSeccionActiva('almacenamiento')
-                setAlmacenamientoRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('retroceso', 'almacenamiento', {
+                estado: { almacenamientoIniciarEnFinal: true },
+                renderKeySetter: setAlmacenamientoRenderKey
               })
             }}
             onCompletarPozo2={() => {
-              ejecutarTransicionEstacion('avance', () => {
-                setPozo2IniciarEnFinal(false)
-                setUsosIniciarEnFinal(false)
-                setSeccionActiva('usos')
-                setUsosRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('avance', 'usos', {
+                renderKeySetter: setUsosRenderKey
               })
             }}
           />
@@ -1021,18 +747,13 @@ function App() {
             key={usosRenderKey}
             iniciarEnFinal={usosIniciarEnFinal}
             onVolverAPozo2={() => {
-              ejecutarTransicionEstacion('retroceso', () => {
-                setPozo2IniciarEnFinal(true)
-                setSeccionActiva('pozo2')
-                setPozo2RenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('retroceso', 'pozo2', {
+                estado: { pozo2IniciarEnFinal: true },
+                renderKeySetter: setPozo2RenderKey
               })
             }}
             onCompletarUsos={() => {
-              ejecutarTransicionEstacion('avance', () => {
-                setPozo2IniciarEnFinal(false)
-                setUsosIniciarEnFinal(false)
-                setSeccionActiva('documentacion')
-              })
+              cambiarSeccionConTransicion('avance', 'documentacion')
             }}
           />
         ) : null}
@@ -1040,10 +761,9 @@ function App() {
         {seccionActiva === 'documentacion' ? (
           <Documentacion
             onVolverAUsos={() => {
-              ejecutarTransicionEstacion('retroceso', () => {
-                setUsosIniciarEnFinal(true)
-                setSeccionActiva('usos')
-                setUsosRenderKey((valorAnterior) => valorAnterior + 1)
+              cambiarSeccionConTransicion('retroceso', 'usos', {
+                estado: { usosIniciarEnFinal: true },
+                renderKeySetter: setUsosRenderKey
               })
             }}
           />
