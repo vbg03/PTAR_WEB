@@ -63,7 +63,8 @@ const PASOS_RECORRIDO = [
   {
     titulo: 'RIEGO DE JARDINES',
     mediaId: 'jardines',
-    burbujaDerecha: TEXTO_BURBUJA_JARDINES
+    burbujaDerecha: 
+    "Y segundo, zonas verdes del campus, como los jardines externos. Es una forma de hacer mas sostenible el uso de los recursos."
   },
   {
     titulo: 'RIEGO DE JARDINES',
