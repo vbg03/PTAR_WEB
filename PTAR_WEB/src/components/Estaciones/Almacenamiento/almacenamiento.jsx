@@ -101,7 +101,7 @@ const PASOS_RECORRIDO = [
         zoom: 2.88,
         gota: { x: 50, y: 70, escala: 0.24 },
         burbujaDerecha:
-            'Desde ese tanque, unas bombas la envían por tuberías para regar jardines y zonas verdes del campus.'
+            'Desde ese tanque, unas bombas la envían por tuberías para regar jardines y zonas verdes del Campus.'
     }),
     crearPaso({
         camaraX: 7,

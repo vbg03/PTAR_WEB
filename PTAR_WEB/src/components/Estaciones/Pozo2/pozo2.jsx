@@ -100,7 +100,7 @@ const PASOS_RECORRIDO = [
         zoom: 3.08,
         gota: { x: 68, y: 54, escala: 0.3 },
         burbujaDerecha:
-            'Exactamente. Por eso es tan importante que la planta funcione bien: lo que hacemos dentro del campus se nota afuera. Si tratamos bien el agua, ayudamos a que el rio llegue en mejores condiciones para las personas y para los ecosistemas.'
+            'Exactamente. Por eso es tan importante que la planta funcione bien: lo que hacemos dentro del Campus se nota afuera. Si tratamos bien el agua, ayudamos a que el rio llegue en mejores condiciones para las personas y para los ecosistemas.'
     }),
     crearPaso({
         camaraX: 63.9,
@@ -124,7 +124,7 @@ const PASOS_RECORRIDO = [
         zoom: 2.38,
         gota: { x: 47, y: 78, escala: 0.25 },
         burbujaIzquierda:
-            'Ahora sí entiendo por qué la PTAR no es solo un tanque más, sino una forma de cuidar el río y el medio ambiente desde la universidad.'
+            'Ahora sí entiendo por qué la PTAR no es solo un tanque más, sino una forma de cuidar el río y el medio ambiente desde la Universidad.'
     }),
     crearPaso({
         camaraX: 96.3,

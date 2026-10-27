@@ -29,12 +29,12 @@ const CONVERSACIONES = {
   titulo: 'Sí, pero no tengo idea de lo que es eso. ¿Qué es exactamente una PTAR?',
   videoSiglas: 'PTAR son las siglas de "Planta de Tratamiento de Agua Residual".',
   videoExplicacion:
-    'Es una instalación especializada donde limpiamos toda el agua que se contamina por las actividades diarias de la universidad: baños, cafeterías, laboratorios, lavamanos... todo.',
+    'Es una instalación especializada donde limpiamos toda el agua que se contamina por las actividades diarias de la Universidad: baños, cafeterías, laboratorios, lavamanos... todo.',
   videoPregunta: 'Ah, entiendo. ¿Y dónde está ubicada exactamente aquí en la UAO?',
   ubicacionPregunta:
     'Ah sí, creo que la he visto de lejos. ¿Pero cuéntame, cómo funciona todo? ¿Por dónde empieza el proceso?',
   ubicacionRespuesta:
-    'La PTAR está ubicada en la parte posterior del campus, cerca de Villa Laurentino. Justo entre la calle 115 y la calle 42.'
+    'La PTAR está ubicada en la parte posterior del Campus, cerca de Villa Laurentino. Justo entre la calle 115 y la calle 42.'
 }
 
 function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
@@ -411,7 +411,7 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
                   <p>
                     La PTAR trata el agua residual en varias etapas para remover sólidos,
                     reducir la carga orgánica y devolver agua en mejores condiciones al entorno,
-                    ayudando al cuidado ambiental del campus.
+                    ayudando al cuidado ambiental del Campus.
                   </p>
                 </aside>
               </div>
@@ -465,7 +465,7 @@ function Informacion({ onCompletarInformacion, iniciarEnUbicacion = false }) {
                     <h3>Resumen del recorrido:</h3>
                     <p>
                       El recorrido muestra el acceso hacia la PTAR desde la zona posterior
-                      del campus y los puntos de referencia para llegar fácilmente.
+                      del Campus y los puntos de referencia para llegar fácilmente.
                     </p>
                   </aside>
                 </div>

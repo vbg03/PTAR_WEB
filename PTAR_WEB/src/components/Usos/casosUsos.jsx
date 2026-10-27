@@ -11,7 +11,7 @@ const RETRASO_ENTRADA_TITULO = 120
 const DURACION_TRANSICION_BURBUJA = 320
 const RETRASO_ENTRADA_BURBUJA = 22
 const TEXTO_BURBUJA_JARDINES =
-  'Y segundo, zonas verdes del campus, como los jardines externos. Es una forma de hacer mas sostenible el uso de los recursos.'
+  'Y segundo, zonas verdes del Campus, como los jardines externos. Es una forma de hacer mas sostenible el uso de los recursos.'
 const RUTA_AUDIO_BURBUJA_JARDINES = '/voces/rojo/Usos/Jessica_Usos_003.mp3'
 const VIDEO_CANCHAS_YOUTUBE_ID = 'MsnByyq5bjo'
 const VIDEO_CANCHAS_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_CANCHAS_YOUTUBE_ID}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${VIDEO_CANCHAS_YOUTUBE_ID}&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
@@ -27,7 +27,7 @@ const MEDIAS = {
     embedUrl: VIDEO_CANCHAS_EMBED_URL,
     reproducirInline: true,
     resumen:
-      'El agua tratada se reutiliza para el riego de canchas y zonas deportivas del campus, reduciendo el consumo de agua potable.'
+      'El agua tratada se reutiliza para el riego de canchas y zonas deportivas del Campus, reduciendo el consumo de agua potable.'
   },
   jardines: {
     titulo: 'RIEGO DE JARDINES',
@@ -35,14 +35,14 @@ const MEDIAS = {
     embedUrl: VIDEO_JARDINES_EMBED_URL,
     reproducirInline: true,
     resumen:
-      'Tambien se usa para jardines y zonas verdes externas, haciendo mas sostenible la gestion del agua dentro de la universidad.'
+      'Tambien se usa para jardines y zonas verdes externas, haciendo mas sostenible la gestion del agua dentro de la Universidad.'
   },
   reflexion: {
     titulo: 'REFLEXION FINAL',
     portada: '/images/casos/reflexion.jpg',
     embedUrl: VIDEO_REFLEXION_EMBED_URL,
     resumen:
-      'La PTAR permite limpiar y reutilizar parte del agua en el campus, y devolver el resto al rio en mejores condiciones.'
+      'La PTAR permite limpiar y reutilizar parte del agua en el Campus, y devolver el resto al rio en mejores condiciones.'
   }
 }
 
@@ -58,19 +58,19 @@ const PASOS_RECORRIDO = [
     titulo: 'RIEGO DE CANCHAS',
     mediaId: 'canchas',
     burbujaDerecha:
-      'Primero, para regar las zonas verdes del campus, como las canchas deportivas. Así no tenemos que gastar agua potable, lo que es mucho mas eficiente y ecológico.'
+      'Primero, para regar las zonas verdes del Campus, como las canchas deportivas. Así no tenemos que gastar agua potable, lo que es mucho mas eficiente y ecológico.'
   },
   {
     titulo: 'RIEGO DE JARDINES',
     mediaId: 'jardines',
     burbujaDerecha: 
-    "Y segundo, zonas verdes del campus, como los jardines externos. Es una forma de hacer mas sostenible el uso de los recursos."
+    "Y segundo, zonas verdes del Campus, como los jardines externos. Es una forma de hacer mas sostenible el uso de los recursos."
   },
   {
     titulo: 'RIEGO DE JARDINES',
     mediaId: 'jardines',
     burbujaIzquierda:
-      'Entonces, todo el proceso tiene un fin que no solo ayuda a la universidad, sino también al medio ambiente, ¿cierto?'
+      'Entonces, todo el proceso tiene un fin que no solo ayuda a la Universidad, sino también al medio ambiente, ¿cierto?'
   },
   {
     titulo: 'REFLEXIÓN FINAL',
@@ -81,7 +81,7 @@ const PASOS_RECORRIDO = [
     titulo: 'REFLEXIÓN FINAL',
     mediaId: 'reflexion',
     burbujaDerecha:
-      'La PTAR no es solo una obra de concreto; es una especie de compromiso de la universidad con el ambiente y con la ciudad.'
+      'La PTAR no es solo una obra de concreto; es una especie de compromiso de la Universidad con el ambiente y con la ciudad.'
   },
   {
     titulo: 'REFLEXIÓN FINAL',
@@ -92,13 +92,13 @@ const PASOS_RECORRIDO = [
     titulo: 'REFLEXIÓN FINAL',
     mediaId: 'reflexion',
     burbujaDerecha:
-      'Porque toda el agua sucia que generamos no puede ir directo al rio. La PTAR la limpia, permite reutilizar una parte en el campus y hace que lo que devolvemos al rio Lili llegue en mejores condiciones.'
+      'Porque toda el agua sucia que generamos no puede ir directo al rio. La PTAR la limpia, permite reutilizar una parte en el Campus y hace que lo que devolvemos al rio Lili llegue en mejores condiciones.'
   },
   {
     titulo: 'REFLEXIÓN FINAL',
     mediaId: 'reflexion',
     burbujaDerecha:
-      'Es la forma en que la universidad asume su responsabilidad ambiental y hace más sostenible el uso del agua en el campus.'
+      'Es la forma en que la Universidad asume su responsabilidad ambiental y hace más sostenible el uso del agua en el Campus.'
   },
 ]
 
