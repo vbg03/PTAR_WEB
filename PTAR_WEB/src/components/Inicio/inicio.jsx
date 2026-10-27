@@ -7,7 +7,7 @@ function Inicio({ onIniciarRecorrido }) {
         <div className="ptar-hero__canvas">
           <h1>EL VIAJE DEL AGUA</h1>
           <p>
-            Un recorrido por la planta de tratamiento de aguas residuales (PTAR) de la
+            Un recorrido por la Planta de Tratamiento de Agua Residual (PTAR) de la
             UAO
           </p>
           <button type="button" onClick={onIniciarRecorrido}>

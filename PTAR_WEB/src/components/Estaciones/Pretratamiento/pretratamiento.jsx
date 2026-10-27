@@ -77,7 +77,7 @@ const PASOS_RECORRIDO = [
         zoom: 7.27,
         gota: { x: 50, y: 42.5, escala: 1.1 },
         burbujaDerecha:
-            'Continuamos con el tratamiento preliminar, es la primera etapa de limpieza real. Aquí quitamos todo lo que no debería estar en el agua: sólidos, arena y grasas. Es fundamental para proteger los equipos que vienen después.'
+            'Continuamos con el tratamiento preliminar, que es la primera etapa de limpieza real. Aquí quitamos todo lo que no debería estar en el agua: sólidos, arena y grasas. Es fundamental para proteger los equipos que vienen después.'
     }),
     crearPaso({
         camaraX: 63.2,
