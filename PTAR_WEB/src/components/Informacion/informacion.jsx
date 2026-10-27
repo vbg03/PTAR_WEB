@@ -17,9 +17,9 @@ const PASO_UBICACION_RESPUESTA = 0
 const PASO_UBICACION_PREGUNTA = 1
 const DURACION_TRANSICION_ETAPA = 520
 const DURACION_TRANSICION_POZO = 1480
-const VIDEO_INICIAL_YOUTUBE_ID = 'AJVGGiLtAo8'
+const VIDEO_INICIAL_YOUTUBE_ID = 'YICbSy7Przw'
 const VIDEO_INICIAL_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_INICIAL_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
-const VIDEO_UBICACION_YOUTUBE_ID = '2VKo5IrmLqs'
+const VIDEO_UBICACION_YOUTUBE_ID = 'kDE_l1w6z9c'
 const VIDEO_UBICACION_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_UBICACION_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 const VIDEO_UBICACION_POSTER = '/images/ubicacion1.png'
 

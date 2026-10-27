@@ -16,7 +16,7 @@ const VALOR_MAX_CAMARA = 220
 const ZOOM_MIN_CAMARA = 0.2
 const ZOOM_MAX_CAMARA = 12
 const CANTIDAD_CAMAS = 4
-const VIDEO_LECHOS_YOUTUBE_ID = 'FzofFJl8jIU'
+const VIDEO_LECHOS_YOUTUBE_ID = 'RFUWUHMRvGI'
 const VIDEO_LECHOS_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_LECHOS_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 const ESCENA_LECHOS = '/images/lechos/lechos-fondo.svg'
 const ASSET_LODO = '/images/lechos/lodo.svg'

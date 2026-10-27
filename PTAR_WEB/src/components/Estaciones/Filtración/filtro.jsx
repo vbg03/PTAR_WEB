@@ -11,7 +11,7 @@ const VALOR_MIN_CAMARA = -120
 const VALOR_MAX_CAMARA = 220
 const ZOOM_MIN_CAMARA = 0.2
 const ZOOM_MAX_CAMARA = 12
-const VIDEO_FILTRO_YOUTUBE_ID = 'XiSZi4xwoM8'
+const VIDEO_FILTRO_YOUTUBE_ID = 'DNqGTs32XB0'
 const VIDEO_FILTRO_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_FILTRO_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 
 const ESCENA_FILTRO = '/images/tamizaje/tamizaje-filtro.svg'

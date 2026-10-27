@@ -17,7 +17,7 @@ const VALOR_MIN_CAMARA = -120
 const VALOR_MAX_CAMARA = 220
 const ZOOM_MIN_CAMARA = 0.2
 const ZOOM_MAX_CAMARA = 12
-const VIDEO_POZO1_YOUTUBE_ID = 'VhDasYTYGrI'
+const VIDEO_POZO1_YOUTUBE_ID = 'wOg2OYRtMqk'
 const VIDEO_POZO1_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_POZO1_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 const AUDIO_OBJETOS_POZO1 = '/audio/objetos.mp3'
 const ASPECTO_ESCENA_POZO1_DESKTOP = 16 / 9

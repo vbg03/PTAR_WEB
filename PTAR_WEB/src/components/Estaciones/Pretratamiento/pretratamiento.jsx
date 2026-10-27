@@ -19,7 +19,7 @@ const UMBRAL_RETORNO_CANASTA = 3.5
 const DURACION_AUTOAVANCE_CANASTA = 460
 const DURACION_AUTOAVANCE_ARENA = 420
 const DURACION_AUTOAVANCE_GRASAS = 720
-const VIDEO_PRETRATAMIENTO_YOUTUBE_ID = 'ieVJGjDm6-g'
+const VIDEO_PRETRATAMIENTO_YOUTUBE_ID = 'fwhDtp1xtHU'
 const VIDEO_PRETRATAMIENTO_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_PRETRATAMIENTO_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 
 const VISTA_LATERAL = '/svg/recorrido-pozo-pretratamiento.svg'

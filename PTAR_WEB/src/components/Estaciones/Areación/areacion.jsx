@@ -27,7 +27,7 @@ const PASO_DETALLE = 9
 const AUDIO_AREACION_INICIAL = '/audio/sonido-agua.mp3'
 const AUDIO_AREACION_POST_TRANSICION = '/audio/agua-estaciones.mp3'
 const AUDIO_AREACION_BURBUJAS = '/audio/burbujas.mp3'
-const VIDEO_AREACION_YOUTUBE_ID = 'yJgwavusvAo'
+const VIDEO_AREACION_YOUTUBE_ID = 'f_SCRHWxTz8'
 const VIDEO_AREACION_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_AREACION_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 const FACTOR_VOLUMEN_AGUA_ESTACIONES = 0.74
 const FACTOR_VOLUMEN_BURBUJAS = 0.20

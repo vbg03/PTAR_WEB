@@ -17,7 +17,7 @@ const ZOOM_MIN_CAMARA = 0.2
 const ZOOM_MAX_CAMARA = 12
 const AUDIO_DESINFECCION_AMBIENTE_AGUA = '/audio/sonido-agua.mp3'
 const AUDIO_DESINFECCION_AMBIENTE_ESTERILIZADOR = '/audio/esterilizador-activado.mp3'
-const VIDEO_DESINFECCION_YOUTUBE_ID = '719L3cGlwHc'
+const VIDEO_DESINFECCION_YOUTUBE_ID = '2Wupvk-hcTI'
 const VIDEO_DESINFECCION_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_DESINFECCION_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 const DURACION_FADE_AUDIO_DESINFECCION_MS = 640
 const INTERVALO_FADE_AUDIO_DESINFECCION_MS = 32

@@ -13,11 +13,11 @@ const RETRASO_ENTRADA_BURBUJA = 22
 const TEXTO_BURBUJA_JARDINES =
   'Y segundo, zonas verdes del Campus, como los jardines externos. Es una forma de hacer mas sostenible el uso de los recursos.'
 const RUTA_AUDIO_BURBUJA_JARDINES = '/voces/rojo/Usos/Jessica_Usos_003.mp3'
-const VIDEO_CANCHAS_YOUTUBE_ID = 'MsnByyq5bjo'
+const VIDEO_CANCHAS_YOUTUBE_ID = 'DCKlldQn-rY'
 const VIDEO_CANCHAS_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_CANCHAS_YOUTUBE_ID}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${VIDEO_CANCHAS_YOUTUBE_ID}&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
-const VIDEO_JARDINES_YOUTUBE_ID = 'd-3BLsPlAgY'
+const VIDEO_JARDINES_YOUTUBE_ID = 'i-qnLDOCcmg'
 const VIDEO_JARDINES_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_JARDINES_YOUTUBE_ID}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${VIDEO_JARDINES_YOUTUBE_ID}&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
-const VIDEO_REFLEXION_YOUTUBE_ID = 'BlmTnuo4tCE'
+const VIDEO_REFLEXION_YOUTUBE_ID = 'yW9UVm8mdPs'
 const VIDEO_REFLEXION_EMBED_URL = `https://www.youtube.com/embed/${VIDEO_REFLEXION_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=es&hl=es`
 
 const MEDIAS = {
